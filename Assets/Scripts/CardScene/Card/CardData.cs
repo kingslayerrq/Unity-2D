@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ using UnityEngine;
 public class CardData: ScriptableObject
 {
     [Header("Card Info")]
+    [SerializeField] private CardClass cardClass;
     [SerializeField] private string cardName;
     [SerializeField] private string cardDescription;
     [SerializeField] private int cardPrice;
@@ -14,10 +16,13 @@ public class CardData: ScriptableObject
     [SerializeField] private CardType cardType;
     [SerializeField] private Sprite cardSprite;
     [SerializeField] private TargetType targetType;
+    [SerializeField] private List<KeywordData> keywords;
     
     [Header("Effects")]
-    public List<CardEffectData> cardEffects;
-
+    [SerializeField] private List<CardEffectData> cardEffects;
+    
+    public CardClass CardClass => cardClass;
+    
     public string CardName => cardName;
 
     public string CardDescription => cardDescription;
@@ -35,8 +40,13 @@ public class CardData: ScriptableObject
     public Sprite CardSprite => cardSprite;
 
     public TargetType TargetType => targetType;
+    
+    public List<KeywordData> Keywords => keywords;
+    
+    public IReadOnlyList<CardEffectData> CardEffects => cardEffects;
 
-    public List<CardEffectData> CardEffects => cardEffects;
+	
+    
 }
 
 public enum TargetType
@@ -66,6 +76,15 @@ public enum CardRarity
     Common,
     Uncommon,
     Rare,
+}
+
+public enum CardClass
+{
+    Ironclad,
+    Silent,
+    Regent,
+    Necro,
+    None
 }
 
 

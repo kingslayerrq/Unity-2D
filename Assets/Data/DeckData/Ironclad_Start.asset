@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b12aa32e060a213409a39dd001e48f16, type: 3}
+  m_Name: Ironclad_Start
+  m_EditorClassIdentifier: Assembly-CSharp::DeckData
+  cardDataList:
+  - {fileID: 11400000, guid: 87d61f4169e4353439ddd100e390a6a0, type: 2}
+  - {fileID: 11400000, guid: 87d61f4169e4353439ddd100e390a6a0, type: 2}
+  - {fileID: 11400000, guid: 87d61f4169e4353439ddd100e390a6a0, type: 2}
+  - {fileID: 11400000, guid: 87d61f4169e4353439ddd100e390a6a0, type: 2}
+  - {fileID: 11400000, guid: f77324086e0da1241b58b1c564435dd1, type: 2}
+  - {fileID: 11400000, guid: f77324086e0da1241b58b1c564435dd1, type: 2}
+  - {fileID: 11400000, guid: f77324086e0da1241b58b1c564435dd1, type: 2}
+  - {fileID: 11400000, guid: f77324086e0da1241b58b1c564435dd1, type: 2}
+  - {fileID: 11400000, guid: f77324086e0da1241b58b1c564435dd1, type: 2}
+  - {fileID: 11400000, guid: fb9ea15d8b712a14187cdeef192ef9f0, type: 2}

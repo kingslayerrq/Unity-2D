@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e80577a1725afce4b96069f34f13843c, type: 3}
+  m_Name: VulnerableBuff
+  m_EditorClassIdentifier: Assembly-CSharp::VulnerableBuffData
+  buffName: Vulnerable
+  buffDescription: Receives 50% more damage from Attacks for X turns
+  buffIcon: {fileID: 0}
+  maxStacks: 99
+  isStackable: 1
+  isDebuff: 1
+  expiresAtEndOfTurn: 1

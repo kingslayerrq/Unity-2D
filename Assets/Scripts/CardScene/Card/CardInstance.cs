@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[Serializable]
 public class CardInstance
 {
     public CardData Data { get; private set; }
@@ -11,6 +13,7 @@ public class CardInstance
     public Sprite CurrentSprite { get; private set; }
     public TargetType CurrentTargetType { get; private set; }
     
+
     public CardInstance(CardData data)
     {
         // ref to base card data

@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class BlockEvent
 {
-    public Unit Source { get; }
-    public Unit Target { get; }
-    public float Amount { get; set; }
+    public UnitInstance Source { get; }
+    public UnitInstance Target { get; }
+    public int Amount { get; set; }
     public bool IsFromCard { get; }
 
-    public BlockEvent(Unit source, Unit target, float amount,  bool isFromCard)
+    public BlockEvent(UnitInstance source, UnitInstance target, int amount,  bool isFromCard)
     {
         Source = source;
         Target = target;

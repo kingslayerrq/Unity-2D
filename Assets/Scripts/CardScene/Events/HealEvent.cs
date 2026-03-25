@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class HealEvent
 {
-    public Unit Source { get; }
-    public Unit Target { get; }
+    public UnitInstance Source { get; }
+    public UnitInstance Target { get; }
     public int Amount { get; set; }
     
-    public HealEvent(Unit source, Unit target, int amount)
+    public HealEvent(UnitInstance source, UnitInstance target, int amount)
     {
         Source = source;
         Target = target;

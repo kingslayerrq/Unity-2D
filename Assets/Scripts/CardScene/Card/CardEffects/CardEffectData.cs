@@ -1,14 +1,19 @@
+using System;
 using UnityEngine;
 
-public abstract class CardEffectData : ScriptableObject
+[Serializable]
+public class CardEffectData
 {
-    /**
-     * base execute check for nulls and return
-     * override to add behavior
-     */
-    public virtual void Execute(CardContext context)
+    [SerializeReference] private BaseCardEffect cardEffect;
+
+    [SerializeReference] private BaseCardEffectConfig cardEffectConfig;
+    
+    public BaseCardEffect CardEffect => cardEffect;
+    public BaseCardEffectConfig CardEffectConfig => cardEffectConfig;
+
+    public void SetConfig(BaseCardEffectConfig config)
     {
-        if (context == null || context.CombatSystem == null) return;
-        if (context.Source == null || context.Target == null) return;
+        this.cardEffectConfig = config;
     }
+
 }
