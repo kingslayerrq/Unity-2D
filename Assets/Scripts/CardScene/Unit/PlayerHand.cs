@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class PlayerHand
 {
-    private readonly List<CardInstance> cards = new List<CardInstance>();
+    [SerializeField] private List<CardInstance> cards = new List<CardInstance>();
     private readonly int maxHandSize = 10;
     public IReadOnlyList<CardInstance> Cards => cards;
     

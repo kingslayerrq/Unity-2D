@@ -5,38 +5,41 @@ using UnityEngine;
 
 public class CombatActionQueue 
 {
-    private readonly Queue<ICombatAction> combatActionQueue = new Queue<ICombatAction>();
+    private class QueuedAction {
+        public ICombatAction Action;
+        public Action Callback;
+    }
+    private readonly Queue<QueuedAction> combatActionQueue = new Queue<QueuedAction>();
     
     public bool IsResolvingAction { get; private set; }
     public int Count => combatActionQueue.Count;
     
-    public void Enqueue(ICombatAction action)
+    public void Enqueue(ICombatAction action, Action onComplete)
     {
         if (action == null) return;
-        combatActionQueue.Enqueue(action);
+        combatActionQueue.Enqueue(new QueuedAction { Action = action, Callback = onComplete });
+        if (!IsResolvingAction)
+        {
+            CoroutineRunner.Instance.StartCoroutine(ResolveCoroutine());
+        }
     }
 
     public void Clear()
     {
         combatActionQueue.Clear();
     }
+    
 
-    public void StartResolveAll(Action onComplete = null)
-    {
-        if (IsResolvingAction) return;
-        CoroutineRunner.Instance.StartCoroutine(ResolveCoroutine(onComplete));
-    }
-
-    public IEnumerator ResolveCoroutine(Action onComplete)
+    public IEnumerator ResolveCoroutine()
     {
         IsResolvingAction = true;
         while (combatActionQueue.Count > 0)
         {
-            Debug.Log("Resolving");
-            ICombatAction action = combatActionQueue.Dequeue();
-            yield return action.ExecuteAction();
+            QueuedAction current = combatActionQueue.Dequeue();
+            yield return current.Action.ExecuteAction();
+            Debug.Log("Resolved" + current.Action.GetActionDetails());
+            current.Callback?.Invoke();
         }
         IsResolvingAction = false;
-        onComplete?.Invoke();
     }
 }

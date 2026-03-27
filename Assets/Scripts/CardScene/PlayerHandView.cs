@@ -22,7 +22,7 @@ public class PlayerHandView : MonoBehaviour
     /// The ordered collection of runtime card instances that should currently appear in the player's hand.
     /// If <c>null</c>, all active hand views are released back to the pool.
     /// </param>
-    public void ShowHand(IReadOnlyList<CardInstance> hand)
+    public void RefreshHand(IReadOnlyList<CardInstance> hand)
     {
         if (hand == null)
         {
@@ -78,7 +78,7 @@ public class PlayerHandView : MonoBehaviour
     /// This should be used when the same cards remain in hand but one or more displayed values
     /// have changed, such as cost, name, description, or artwork.
     /// </summary>
-    public void RefreshHand()
+    public void UpdateHand()
     {
         foreach (CardView view in activeCardViews)
         {

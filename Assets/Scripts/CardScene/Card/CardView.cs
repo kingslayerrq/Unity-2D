@@ -23,12 +23,15 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     
     [Header("Interaction State")]
     [Tooltip("A global flag so NO other cards react while one is being moved")] 
-    private static bool isInteractingWithAnyCard = false; 
+    private static bool isInteractingWithAnyCard = false;
+
+    private ICardDropReceiver _currentReceiver = null;
     
     // Local flags to track HOW this specific card is being moved
     private bool isSelected = false; 
     private bool isDragging = false; 
-    [Tooltip("Prevents instant-dropping on the same frame as a click")] private bool frameDelay = false; 
+    [Tooltip("Prevents instant-dropping on the same frame as a click")] 
+    private bool frameDelay = false; 
     
     [Header("Drag & Drop")]
     [SerializeField] private int origSiblingIndex;
@@ -69,8 +72,9 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 frameDelay = false;
                 return;
             }
+            UpdateReceivers(Input.mousePosition);
         }
-
+        
         if ((isSelected || isDragging) && Input.GetMouseButtonDown(1))
         {
             isSelected = false;
@@ -118,6 +122,8 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     
     public void ResetForReuse()
     {
+        ClearHoveredReceiver();
+        
         isInteractingWithAnyCard = false;
         isSelected = false;
         isDragging = false;
@@ -167,9 +173,68 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         _canvasGroup.blocksRaycasts = false;
     }
 
+    // <summary>
+    // If the current receiver can receive card
+    // Then enqueue SpendEnergyAction & PlayCardAction to queue
+    // <summary>
+    private bool TryPlayCard()
+    {
+        if (_currentReceiver == null) return false;
+        if (_currentReceiver.CanReceiveCard(CardInstance.CurrentOwner, CardInstance))
+        {
+            // CardInstance.CurrentOwner.CombatManager.ActionQueue.Enqueue(
+            //     new SpendEnergyAction(CardInstance.CurrentOwner.CombatManager.CombatSystem, 
+            //         CardInstance.CurrentOwner, 
+            //         new List<UnitInstance>{CardInstance.CurrentOwner}, 
+            //         CardInstance.CurrentCost), null);
+            // CardInstance.CurrentOwner.CombatManager.ActionQueue.Enqueue(
+            //     new PlayCardAction(CardInstance.CurrentOwner.CombatManager.CombatSystem,
+            //      CardInstance.CurrentOwner, 
+            //      _currentReceiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance),
+            //       CardInstance), null);
+            CardInstance.CurrentOwner.CombatManager.PlayCard(CardInstance, 
+                _currentReceiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance));
+            return true;
+        }
+        return false;
+    }
+    
+    // <summary>
+    // Release the card to play, If receiver is null, it will fail
+    // <summary>
+    private void ReleaseCard(Vector2 screenPos)
+    {
+        
+        UpdateReceivers(screenPos);
+
+        bool isPlayed = TryPlayCard();
+        
+        ClearHoveredReceiver();
+
+        if (isPlayed)
+        {
+            FinishSuccessfulPlay();
+        }
+        else
+        {
+            DropCard();
+        }
+
+    }
+
+    private void FinishSuccessfulPlay()
+    {
+        ResetForReuse();
+    }
+    
     private void DropCard()
     {
+        ClearHoveredReceiver();
+        
         isInteractingWithAnyCard = false;
+        isSelected = false;
+        isDragging = false;
+        frameDelay = false;
         _canvasGroup.blocksRaycasts = true;
 
         Destroy(placeholder);
@@ -287,7 +352,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (isDragging)
         {
             isDragging = false;
-            DropCard();
+            ReleaseCard(eventData.position);
         }
     }
 
@@ -296,6 +361,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (isDragging)
         {
             transform.position = eventData.position;
+            UpdateReceivers(eventData.position);
         }
     }
 
@@ -311,6 +377,86 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             isSelected = true;
             frameDelay = true;
             PickUpCard();
+        }
+    }
+
+    private ICardDropReceiver FindReceiver(Vector2 screenPos)
+    {
+        // 1. Set up the Pointer Event Data at the mouse position
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = screenPos;
+
+        // 2. Create a list to store the results
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        // 3. Raycast using the UI System's raycaster
+        EventSystem.current.RaycastAll(eventData, results);
+        ICardDropReceiver bestReceiver = null;
+        int bestPriority = int.MinValue;
+        bool hitPlayCardArea = false;
+        ICardDropReceiver playCardArea = null;
+        foreach (RaycastResult result in results)
+        {
+            // Search the hit object for the interface
+            ICardDropReceiver receiver = result.gameObject.GetComponentInParent<ICardDropReceiver>();
+            if (!hitPlayCardArea && receiver is PlayCardArea)
+            {
+                hitPlayCardArea = true;
+                playCardArea = receiver;
+            }
+            if (receiver == null) continue;
+
+            if (!receiver.CanReceiveCard(CardInstance.CurrentOwner, CardInstance))
+                continue;
+
+            if (bestReceiver == null || receiver.Priority > bestPriority)
+            {
+                bestReceiver = receiver;
+                bestPriority = receiver.Priority;
+            }
+        }
+
+        if (bestReceiver == null && playCardArea != null) return playCardArea;
+        return bestReceiver;
+    }
+
+    private void UpdateReceivers(Vector2 screenPos)
+    {
+        ICardDropReceiver newReceiver = FindReceiver(screenPos);
+
+        if (ReferenceEquals(newReceiver, _currentReceiver))
+        {
+            return;
+        }
+
+        if (_currentReceiver != null)
+        {
+            _currentReceiver.OnHoverExit(CardInstance.CurrentOwner, CardInstance);
+        }
+
+        _currentReceiver = newReceiver;
+        
+
+        if (_currentReceiver != null)
+        {
+            // Snaps the card back to hand if we can't play this
+            if (!CardInstance.CanBePlayed )
+            {
+                DropCard();
+                _currentReceiver =  null;
+                return;
+            }
+            _currentReceiver.OnHoverEnter(CardInstance.CurrentOwner, CardInstance);
+        }
+        
+    }
+    
+    private void ClearHoveredReceiver()
+    {
+        if (_currentReceiver != null)
+        {
+            _currentReceiver.OnHoverExit(CardInstance.CurrentOwner, CardInstance);
+            _currentReceiver = null;
         }
     }
 }

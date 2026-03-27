@@ -1,27 +1,34 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BlockAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
     private readonly UnitInstance _source;
-    private readonly UnitInstance _target;
+    private readonly List<UnitInstance> _targets;
     private readonly bool _isFromCard;
     private readonly int _amount;
 
-    public BlockAction(CombatSystem combatSystem, UnitInstance source, UnitInstance target, int amount, bool isFromCard)
+    public BlockAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> targets, int amount, bool isFromCard)
     {
         _combatSystem = combatSystem;
         _source = source;
-        _target = target;
+        _targets = targets;
         _amount = amount;
         _isFromCard = isFromCard;
     }
     
     public IEnumerator ExecuteAction()
     {
-        _combatSystem.ResolveBlocks(_source, _target, _amount,  _isFromCard);
+        _combatSystem.ResolveBlocks(_source, _targets, _amount,  _isFromCard);
         
         yield return null;
+    }
+
+    public string GetActionDetails()
+    {
+        return $"BlockAction: Source-{_source} | Targets-{string.Join(", ", _targets)} | " +
+               $"Amount-{_amount}  | IsFromCard-{_isFromCard}";
     }
 }

@@ -3,139 +3,173 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
-    public void PlayCard(UnitInstance source, UnitInstance target, CardInstance cardInstance)
+    public void ResolvePlayCard(UnitInstance source, List<UnitInstance> target, CardInstance cardInstance)
     {
         if (source == null || cardInstance == null) return;
         if (cardInstance.RequireTarget && target == null) return;
         
-        
         CardContext context = new CardContext(source, target, cardInstance, this);
-
+        
         foreach (CardEffectData effect in cardInstance.Data.CardEffects)
         {
             if (effect == null) continue;
-            // TODO: ???
             Debug.Log($"Executing {cardInstance.Data.CardName}");
             effect.CardEffect.Execute(context, effect);
         }
         
         // Trigger on card played
-        target.BuffManager.OnCardPlayed(target, cardInstance, this);
+        source.BuffManager.OnCardPlayed(source, cardInstance, this);
         
         // TODO: move to discard
+        if (source.Hand.RemoveCard(cardInstance))
+        {
+            source.CardPileManager.DiscardPile.AddCardToPile(cardInstance);
+        }
+        else
+        {
+            Debug.LogWarning($"Card {cardInstance.Data.CardName} failed to move to discard pile!");
+        }
+        
+        // refresh hand ui
+        source.UnitUIManager.PlayerHandView.RefreshHand(source.Hand.Cards);
         
     }
 
-    public void ResolveSpendEnergy(UnitInstance source, UnitInstance target, int amount)
+    public void ResolveSpendEnergy(UnitInstance source, List<UnitInstance> targets, int amount)
     {
-        if (source == null || target == null) return;
+        if (source == null || targets == null) return;
 
-        if (target.CurrentEnergy < amount)
+        foreach (var t in targets)
         {
-            Debug.LogWarning($"Dont have enough energy! Current-{target.CurrentEnergy}: " +
-                             $"Required-{amount}");
-            return;
+            if (t.CurrentEnergy < amount)
+            {
+                Debug.LogWarning($"Dont have enough energy! Current-{t.CurrentEnergy}: " +
+                                 $"Required-{amount}");
+                return;
+            }
+        
+            t.SpendEnergy(amount);
+        
+            for (int i = 0; i < amount; i++)
+            {
+                t.BuffManager.OnEnergySpent(t, this);
+            }
         }
         
-        target.SpendEnergy(amount);
-        
-        for (int i = 0; i <  amount; i++)
-        {
-            target.BuffManager.OnEnergySpent(target, this);
-        }
     }
 
-    public void ResolveBlockReset(UnitInstance source, UnitInstance target, BlockResetSource resetSource)
+    public void ResolveBlockReset(UnitInstance source, List<UnitInstance> targets, BlockResetSource resetSource)
     {
-        if (source == null || target == null) return;
+        if (source == null || targets == null) return;
+
+        foreach (var t in targets)
+        {
+            ResetBlockEvent resetEvent = new ResetBlockEvent(source, t, resetSource);
         
-        ResetBlockEvent resetEvent = new ResetBlockEvent(source, target, resetSource);
+            t.BuffManager.OnBeforeBlockReset(t, resetEvent, this);
         
-        target.BuffManager.OnBeforeBlockReset(target, resetEvent, this);
+            t.ResetBlock(resetEvent);
         
-        target.ResetBlock(resetEvent);
+            t.BuffManager.OnAfterBlockReset(t, resetEvent, this);
+        }
         
-        target.BuffManager.OnAfterBlockReset(target, resetEvent, this);
     }
     
-    public void ResolveDrawCards(UnitInstance source, UnitInstance target, int amount)
+    public void ResolveDrawCards(UnitInstance source, List<UnitInstance> targets, int amount)
     {
-        if (source == null || target == null) return;
+        if (source == null || targets == null) return;
 
-        for (int i = 0; i < amount; i++)
+        foreach (var t in targets)
         {
-            if (!target.TryDrawToHand(out CardInstance cardInstance)) break;
+            for (int i = 0; i < amount; i++)
+            {
+                if (!t.TryDrawToHand(out CardInstance cardInstance)) break;
             
-            // Trigger on card drawn
-            target.BuffManager.OnCardDrawn(target, cardInstance, this);
+                // Trigger on card drawn
+                t.BuffManager.OnCardDrawn(t, cardInstance, this);
 
+            }
         }
     }
 
-    public void ResolveDiscard(UnitInstance source, UnitInstance target, List<CardInstance> cards)
+    public void ResolveDiscard(UnitInstance source, List<UnitInstance> targets, List<CardInstance> cards)
     {
-        if (source == null || target == null) return;
-        
-        var amount = cards.Count;
-        for (int i = 0; i < amount; i++)
+        if (source == null || targets == null) return;
+
+        foreach (var t in targets)
         {
-            target.DiscardCard(cards[i]);
+            var amount = cards.Count;
+            for (int i = 0; i < amount; i++)
+            {
+                t.DiscardCard(cards[i]);
             
-            // Trigger on card discarded
-            target.BuffManager.OnCardDiscarded(target, cards[i], this);
+                // Trigger on card discarded
+                t.BuffManager.OnCardDiscarded(t, cards[i], this);
+            }
         }
     }
 
-    public void ResolveDamage(UnitInstance source, UnitInstance target, int amount, CardType cardType)
+    public void ResolveDamage(UnitInstance source, List<UnitInstance> targets, int amount, CardType cardType)
     {
-        if (source == null || target == null) return;
-        DamageEvent damageEvent = new DamageEvent(source, target, amount, cardType);
+        if (source == null || targets == null) return;
+
+        foreach (var t in targets)
+        {
+            DamageEvent damageEvent = new DamageEvent(source, t, amount, cardType);
         
-        source.BuffManager.OnBeforeDealDamage(source, damageEvent, this);
-        target.BuffManager.OnBeforeTakeDamage(target, damageEvent, this);
+            source.BuffManager.OnBeforeDealDamage(source, damageEvent, this);
+            t.BuffManager.OnBeforeTakeDamage(t, damageEvent, this);
         
-        target.TakeDamage(damageEvent.Amount);
+            t.TakeDamage(damageEvent.Amount);
         
-        source.BuffManager.OnAfterDealDamage(source, damageEvent, this);
-        target.BuffManager.OnAfterTakeDamage(target, damageEvent, this);
-        
+            source.BuffManager.OnAfterDealDamage(source, damageEvent, this);
+            t.BuffManager.OnAfterTakeDamage(t, damageEvent, this);
+        }
     }
 
-    public void ResolveHeal(UnitInstance source, UnitInstance target, int amount)
+    public void ResolveHeal(UnitInstance source, List<UnitInstance> targets, int amount)
     {
-        if (source == null || target == null) return;
-        HealEvent healEvent = new HealEvent(source, target, amount);
+        if (source == null || targets == null) return;
 
-        source.BuffManager.OnApplyHeal(source, healEvent, this);
-        
-        target.Heal(healEvent.Amount);
-        
-        target.BuffManager.OnReceiveHeal(target, healEvent, this);
+        foreach (var t in targets)
+        {
+            HealEvent healEvent = new HealEvent(source, t, amount);
 
+            source.BuffManager.OnApplyHeal(source, healEvent, this);
+        
+            t.Heal(healEvent.Amount);
+        
+            t.BuffManager.OnReceiveHeal(t, healEvent, this);
+        }
     }
     
-    public void ResolveBlocks(UnitInstance source, UnitInstance target, int amount, bool isFromCard)
+    public void ResolveBlocks(UnitInstance source, List<UnitInstance> targets, int amount, bool isFromCard)
     {
-        if (source == null || target == null) return;
-        BlockEvent blockEvent = new BlockEvent(source, target, amount, isFromCard);
+        if (source == null || targets == null) return;
 
-        source.BuffManager.OnApplyBlock(source, blockEvent, this);
+        foreach (var t in targets)
+        {
+            BlockEvent blockEvent = new BlockEvent(source, t, amount, isFromCard);
 
-        target.Block(blockEvent.Amount);
+            source.BuffManager.OnApplyBlock(source, blockEvent, this);
+
+            t.Block(blockEvent.Amount);
         
-        target.BuffManager.OnReceiveBlock(target, blockEvent, this);
+            t.BuffManager.OnReceiveBlock(t, blockEvent, this);
+        }
     }
     
-    public void ResolveBuffs(UnitInstance source, UnitInstance target, BuffData buffData, int stacks)
+    public void ResolveBuffs(UnitInstance source, List<UnitInstance> targets, BuffData buffData, int stacks)
     {
-        if (source == null || target == null) return;
+        if (source == null || targets == null) return;
+
+        foreach (var t in targets)
+        {
+            source.BuffManager.OnApplyBuff(source, buffData, stacks, this);
         
-        source.BuffManager.OnApplyBuff(source, buffData, stacks, this);
+            t.ReceiveBuff(buffData, stacks);
         
-        target.ReceiveBuff(buffData, stacks);
-        
-        target.BuffManager.OnReceiveBuff(target, buffData, stacks, this);
+            t.BuffManager.OnReceiveBuff(t, buffData, stacks, this);
+        }
     }
-    
-    
 }

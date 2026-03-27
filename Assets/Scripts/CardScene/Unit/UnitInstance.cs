@@ -2,38 +2,47 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(UIManager))]
+
+[RequireComponent(typeof(UnitUIManager))]
 [RequireComponent(typeof(BuffManager))]
 [RequireComponent(typeof(CardPileManager))]
 public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
 {
     [SerializeField] private DeckData startingDeckData;
+    [SerializeField] private PlayerHand hand;
     public Deck DeckInstance {get; private set;}
-    public PlayerHand Hand { get; private set; }
     public CardPileManager CardPileManager { get; private set; }
     public BuffManager BuffManager { get; private set; }
-    public UIManager UIManager { get; private set; }
+    public UnitUIManager UnitUIManager { get; private set; }
     
     [SerializeField] private CombatManager combatManager;
+    
+    [Header("Instance stats")]
+    [SerializeField] private UnitType unitType;
     [SerializeField] private int currentDrawAmount;
     [SerializeField] private int currentEnergy;
     [SerializeField] private int currentMaxEnergy;
     [SerializeField] private int currentHealth;
     [SerializeField] private int currentMaxHealth;
     [SerializeField] private int currentBlock;
+
+    #region getters
+        public CombatManager CombatManager => combatManager;
+        public PlayerHand Hand => hand;
+        public UnitType UnitType => unitType;
+        public int CurrentDrawAmount => currentDrawAmount;
+        public int CurrentEnergy => currentEnergy;
+        public int CurrentMaxEnergy => currentMaxEnergy;
+        public int CurrentHealth => currentHealth;
+        public int CurrentMaxHealth => currentMaxHealth;
+        public int CurrentBlock => currentBlock;
+    #endregion
     
-    public CombatManager CombatManager => combatManager;
-    public int CurrentDrawAmount => currentDrawAmount;
-    public int CurrentEnergy => currentEnergy;
-    public int CurrentMaxEnergy => currentMaxEnergy;
-    public int CurrentHealth => currentHealth;
-    public int CurrentMaxHealth => currentMaxHealth;
-    public int CurrentBlock => currentBlock;
 
     private void Awake()
     {
         if (BuffManager == null) BuffManager = GetComponent<BuffManager>();
-        if (UIManager ==  null) UIManager = GetComponent<UIManager>();
+        if (UnitUIManager ==  null) UnitUIManager = GetComponent<UnitUIManager>();
         if (CardPileManager == null) CardPileManager = GetComponent<CardPileManager>();
     }
 
@@ -53,11 +62,11 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
             return;
         }
 
-        Hand = new PlayerHand();
+        hand = new PlayerHand();
         
         // TODO: separate deck init
         DeckInstance = new Deck(startingDeckData);
-        DeckInstance.InstantiateDeck();
+        DeckInstance.InstantiateDeck(this);
         
         CardPileManager.InitCardPiles(new List<CardInstance>(DeckInstance.CardInstances));
         
@@ -105,7 +114,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
             Debug.LogWarning("CardPileManager is null");
             return false;
         }
-        if (DeckInstance == null || Hand == null || CardPileManager.DiscardPile == null 
+        if (DeckInstance == null || hand == null || CardPileManager.DiscardPile == null 
             || CardPileManager.DrawPile == null)
             return false;
 
@@ -115,7 +124,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
             return false;
 
         // when add to hand fails
-        if (!Hand.AddCard(drawnCard))
+        if (!hand.AddCard(drawnCard))
         {
             CardPileManager.DiscardPile.AddCardToPile(drawnCard);
             Debug.Log($"{name}'s hand is full. Sent drawn card to discard pile.");
@@ -128,7 +137,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
     {
         if (discardedCard == null) return false;
 
-        if (Hand.RemoveCard(discardedCard))
+        if (hand.RemoveCard(discardedCard))
         {
             CardPileManager.DiscardPile.AddCardToPile(discardedCard);
             return true;
@@ -175,5 +184,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
         BuffManager.ApplyBuff(buffData, stacks);
     }
     
+    public UnitInstance Target => this;
+
     #endregion
 }

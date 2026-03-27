@@ -18,7 +18,7 @@ public class Deck
         this.startingDeckData = startingDeckData;
     }
 
-    public void InstantiateDeck()
+    public void InstantiateDeck(UnitInstance owner)
     {
         if (startingDeckData == null)
         {
@@ -28,7 +28,8 @@ public class Deck
         cardInstances.Clear();
         foreach (CardData cd in startingDeckData.CardDataList)
         {
-            cardInstances.Add(new CardInstance(cd));
+            cardInstances.Add(new CardInstance(cd, owner));
+            
         }
         Debug.Log("Instantiated deck");
     }

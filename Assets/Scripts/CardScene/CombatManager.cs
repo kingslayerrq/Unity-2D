@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CombatManager : MonoBehaviour
@@ -7,10 +8,11 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private UnitInstance player;
     [SerializeField] private UnitInstance enemy;
     [SerializeField] private CombatActionQueue actionQueue = new CombatActionQueue();
+    private List<UnitInstance> _players = new List<UnitInstance>();
     
     public int CurrentTurn { get; private set; } = 0;
     public CombatState currentCombatState { get; private set; } =  CombatState.None;
-    
+    public CombatActionQueue ActionQueue => actionQueue;
     public CombatSystem CombatSystem => combatSystem;
 
     private void Awake()
@@ -21,12 +23,15 @@ public class CombatManager : MonoBehaviour
             return;
         }
     }
-    
+
     public void StartBattle()
     {
         SetState(CombatState.BattleStart);
         player.Initialize();
         enemy.Initialize();
+        
+        _players.Clear();
+        _players.Add(player);
         
         // TODO: UI setup
         
@@ -40,16 +45,17 @@ public class CombatManager : MonoBehaviour
         player.ResetEnergy();
         player.BuffManager.OnTurnStart(player, combatSystem);
         
-        actionQueue.Enqueue(new ResetBlockAction(combatSystem, player, player, BlockResetSource.TurnStart));
-        actionQueue.Enqueue(new DrawAction(combatSystem, player, player, player.CurrentDrawAmount));
-        actionQueue.StartResolveAll(OnPlayerTurnStartResolved);
+        actionQueue.Enqueue(new ResetBlockAction(combatSystem, player, _players, BlockResetSource.TurnStart), null);
+        actionQueue.Enqueue(new DrawAction(combatSystem, player, _players, player.CurrentDrawAmount),
+            OnPlayerTurnStartResolved);
         
     }
 
     private void OnPlayerTurnStartResolved()
     {
-        player.UIManager.PlayerHandView.RefreshHand();
-        player.UIManager.PlayerHandView.ShowHand(player.Hand.Cards);
+        Debug.Log("Player Turn Start Resolved");
+        player.UnitUIManager.PlayerHandView.UpdateHand();
+        player.UnitUIManager.PlayerHandView.RefreshHand(player.Hand.Cards);
         EnterPlayerAction();
     }
 
@@ -58,8 +64,13 @@ public class CombatManager : MonoBehaviour
         SetState(CombatState.PlayerAction);
         
     }
-    public void TryPlayCard(CardInstance card) { }
-    public void TrySelectTarget(UnitInstance target) { }
+
+    // Spends Energy and Play the card
+    public void PlayCard(CardInstance card, List<UnitInstance> targets)
+    {
+        actionQueue.Enqueue(new SpendEnergyAction(combatSystem, player, new List<UnitInstance>{player}, card.CurrentCost), null);
+        actionQueue.Enqueue(new PlayCardAction(combatSystem, player, targets, card), null);
+    }
     public void EndPlayerTurn() { }
 
     private void ResolvePlayerCard(CardInstance card, UnitInstance target) { }
