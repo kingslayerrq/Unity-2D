@@ -19,14 +19,14 @@ public class PlayCardAction : ICombatAction
     }
     public IEnumerator ExecuteAction()
     {
-        
+        _source.UnitUIManager.PlayerHandView.TryBeginAnimateOut(_card, out CardView view);
         _combatSystem.ResolvePlayCard(_source, _targets, _card);
         
-        _source.UnitUIManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
+        
         yield return _source.UnitUIManager.PlayerHandView.PlayToDiscardAnimation(_card);
         _source.UnitUIManager.PlayerHandView.CompleteAnimateOut(_card);
 
-
+        _source.UnitUIManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
     }
 
     public string GetActionDetails()

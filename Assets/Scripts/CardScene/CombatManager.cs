@@ -7,11 +7,14 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private CombatSystem combatSystem;
     [SerializeField] private UnitInstance player;
     [SerializeField] private UnitInstance enemy;
-    [SerializeField] private CombatActionQueue actionQueue = new CombatActionQueue();
+    [SerializeField] private int currentTurn;
+    [SerializeField] private CombatState currentCombatState = CombatState.None;
+    private CombatActionQueue actionQueue = new CombatActionQueue();
     private List<UnitInstance> _players = new List<UnitInstance>();
+
     
-    public int CurrentTurn { get; private set; } = 0;
-    public CombatState currentCombatState { get; private set; } =  CombatState.None;
+    public int CurrentTurn => currentTurn;
+    public CombatState CurrentCombatState => currentCombatState;
     public CombatActionQueue ActionQueue => actionQueue;
     public CombatSystem CombatSystem => combatSystem;
 
@@ -53,7 +56,6 @@ public class CombatManager : MonoBehaviour
 
     private void OnPlayerTurnStartResolved()
     {
-        Debug.Log("Player Turn Start Resolved");
         player.UnitUIManager.PlayerHandView.UpdateHand();
         player.UnitUIManager.PlayerHandView.RefreshHand(player.Hand.Cards);
         EnterPlayerAction();
@@ -74,15 +76,36 @@ public class CombatManager : MonoBehaviour
 
     public void EndPlayerTurn()
     {
-        // remove the card from player's hand
-        //actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards);
+        if (currentCombatState == CombatState.PlayerAction)
+        {
+            SetState(CombatState.PlayerTurnEnd);
+            // remove the card from player's hand
+            actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards), null);
+            Debug.Log("Player Turn End");
+            EnterEnemyTurnStart();
+        }
+        
+    }
+    
+
+    private void EnterEnemyTurnStart()
+    {
+        SetState(CombatState.EnemyTurnStart);
+        RunEnemyTurn();
     }
 
-    private void ResolvePlayerCard(CardInstance card, UnitInstance target) { }
-    private void EnterEnemyTurnStart() { }
-    private void RunEnemyTurn() { }
+    private void RunEnemyTurn()
+    {
+        SetState(CombatState.EnemyAction);
+        Debug.Log("Enemy Turn Action");
+        EnterPlayerTurnStart();
+    }
     private void CheckBattleEnd() { }
-    private void SetState(CombatState newState) { }
+
+    private void SetState(CombatState newState)
+    {
+        currentCombatState = newState;
+    }
 
     
     public enum CombatState

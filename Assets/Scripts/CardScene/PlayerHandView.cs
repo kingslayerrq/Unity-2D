@@ -59,15 +59,6 @@ public class PlayerHandView : MonoBehaviour
 
         animatingCards.Remove(card);
     }
-    public void MarkCardAnimating(CardInstance card)
-    {
-        animatingCards.Add(card);
-    }
-
-    public void UnMarkCardAnimating(CardInstance card)
-    {
-        animatingCards.Remove(card);
-    }
 
     /// <summary>
     /// Synchronizes the hand UI with the supplied runtime hand data.
@@ -204,6 +195,8 @@ public class PlayerHandView : MonoBehaviour
     {
         return viewsByCard.TryGetValue(card, out view);
     }
+    
+    // play card animation
     public IEnumerator PlayToDiscardAnimation(CardInstance card)
     {
         if (!TryGetView(card, out CardView view) || view == null)
@@ -221,6 +214,7 @@ public class PlayerHandView : MonoBehaviour
         }
     }
     
+    // batch discard animation (for turn end, etc)
     public IEnumerator DiscardCardsAnimation(IReadOnlyList<CardInstance> cards)
     {
         if (cards == null || cards.Count == 0)
@@ -237,7 +231,7 @@ public class PlayerHandView : MonoBehaviour
             if (view == null || view.CardAnimation == null)
                 continue;
 
-            Sequence seq = view.CardAnimation.DiscardAnimation(rootCanvas, discardPileIcon, batchIndex);
+            Sequence seq = view.CardAnimation.DiscardAnimationSelf(rootCanvas, discardPileIcon, batchIndex);
 
             if (seq != null)
             {

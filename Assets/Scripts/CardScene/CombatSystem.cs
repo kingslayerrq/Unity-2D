@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
@@ -92,19 +93,19 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveDiscard(UnitInstance source, List<UnitInstance> targets, List<CardInstance> cards)
+    public void ResolveDiscard(UnitInstance source, List<UnitInstance> targets, IReadOnlyList<CardInstance> cards)
     {
         if (source == null || targets == null) return;
 
+        var cardsToDiscard = cards.ToList();
         foreach (var t in targets)
         {
-            var amount = cards.Count;
-            for (int i = 0; i < amount; i++)
+            foreach (var card in cardsToDiscard)
             {
-                t.DiscardCard(cards[i]);
-            
+                t.DiscardCard(card);
+                Debug.Log("Discard Card: " + card.CurrentName);
                 // Trigger on card discarded
-                t.BuffManager.OnCardDiscarded(t, cards[i], this);
+                t.BuffManager.OnCardDiscarded(t, card, this);
             }
         }
     }

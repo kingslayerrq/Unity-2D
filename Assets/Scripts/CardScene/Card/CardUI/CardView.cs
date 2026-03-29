@@ -21,7 +21,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] private KeywordPopupView cardKeywordPopupPrefab;
     private readonly List<KeywordPopupView> _cardKeywordPopups =  new List<KeywordPopupView>();
 
-    private PlayerHandView _playerHandView;
+    
     private CardAnimation _cardAnimation;
     public CardAnimation CardAnimation => _cardAnimation;
     
@@ -32,6 +32,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private ICardDropReceiver _currentReceiver = null;
     
     // Local flags to track HOW this specific card is being moved
+    private bool isReleasedToPlay = false;
     private bool isSelected = false; 
     private bool isDragging = false; 
     [Tooltip("Prevents instant-dropping on the same frame as a click")] 
@@ -63,7 +64,6 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         _origScale = transform.localScale;
         _canvasGroup = GetComponent<CanvasGroup>();
-        _playerHandView = GetComponentInParent<PlayerHandView>();
         _cardAnimation = GetComponent<CardAnimation>();
     }
 
@@ -156,12 +156,41 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     public void ResetForPool()
     {
+        // 1. Run your standard interaction reset (kills tweens, resets scale)
         ResetInteractionState();
 
-        if (cardCanvas != null)
-            cardCanvas.sortingOrder = 1;
+        // 2. Restore CanvasGroup interactability
+        // (blocksRaycasts is already reset in ResetInteractionState, but we need interactable too)
+        if (_canvasGroup != null)
+        {
+            _canvasGroup.interactable = true;
+            _canvasGroup.alpha = 1f; // Just in case you add fade animations later
+        }
 
-        // anything else you want only when returning to pool
+        // 3. Re-enable Layout Group control
+        // The animation set ignoreLayout = true so it could fly freely. We must turn it off.
+        LayoutElement layoutElement = GetComponent<LayoutElement>();
+        if (layoutElement != null)
+        {
+            layoutElement.ignoreLayout = false;
+        }
+
+        // 4. Reset Canvas sorting
+        // The animation forced overrideSorting = true to bring it to the front.
+        Canvas canvas = GetComponent<Canvas>(); 
+        if (canvas != null)
+        {
+            canvas.overrideSorting = false;
+            canvas.sortingOrder = 1; // Or whatever your default base sorting order is
+        }
+
+        // 5. Reset physical rotation and position
+        // DOTween spins the card and moves it. The layout group handles position, 
+        // but the rotation needs to be explicitly zeroed out.
+        transform.localRotation = Quaternion.identity;
+        transform.localPosition = Vector3.zero;
+
+        isReleasedToPlay = false;
     }
 
     private void PickUpCard()
@@ -196,11 +225,12 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (_currentReceiver == null) return false;
         if (_currentReceiver.CanReceiveCard(CardInstance.CurrentOwner, CardInstance))
         {
-            var receiver = _currentReceiver;
+            // Cache
+            var targets = _currentReceiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance);
+            // Clear 
             ResetInteractionState();
             
-            CardInstance.CurrentOwner.CombatManager.PlayCard(CardInstance, 
-                receiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance));
+            CardInstance.CurrentOwner.CombatManager.PlayCard(CardInstance, targets);
             return true;
         }
         return false;
@@ -213,37 +243,25 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         
         UpdateReceivers(screenPos);
-
+        
+        isReleasedToPlay = true;
+        
         // Play the Card (removes the card from hand data)
         bool isPlayed = TryPlayCard();
         
         ClearHoveredReceiver();
 
-        if (isPlayed)
-        {
-            // FinishSuccessfulPlay();
-            // discard
-            
-        }
-        else
-        {
-            DropCard();
-        }
+        if (!isPlayed) DropCard();
 
     }
     
-    
-
-    private void FinishSuccessfulPlay()
-    {
-        ResetInteractionState();
-    }
     
     private void DropCard()
     {
         ClearHoveredReceiver();
         
         isInteractingWithAnyCard = false;
+        isReleasedToPlay = false;
         isSelected = false;
         isDragging = false;
         frameDelay = false;
@@ -322,7 +340,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (isInteractingWithAnyCard) return;
+        if (isInteractingWithAnyCard || isReleasedToPlay) return;
         
         cardCanvas.sortingOrder = 100;
 
@@ -335,7 +353,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if  (isInteractingWithAnyCard) return;
+        if  (isInteractingWithAnyCard || isReleasedToPlay) return;
         
         cardCanvas.sortingOrder = 1;
         
