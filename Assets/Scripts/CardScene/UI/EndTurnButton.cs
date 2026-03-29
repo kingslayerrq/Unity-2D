@@ -18,7 +18,32 @@ public class EndTurnButton : MonoBehaviour
             _endTurnButton.onClick.AddListener(_unitInstance.CombatManager.EndPlayerTurn);
         }
     }
-    
-    
-    
+
+    private void Start()
+    {
+        if (_unitInstance != null)
+        {
+            _unitInstance.CombatManager.OnStateChange += HandlePlayerActionStateChange;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_unitInstance != null)
+        {
+            _unitInstance.CombatManager.OnStateChange -= HandlePlayerActionStateChange;
+        }
+    }
+
+    private void HandlePlayerActionStateChange(CombatManager.CombatState combatState)
+    {
+        if (combatState == CombatManager.CombatState.PlayerAction)
+        {
+            _endTurnButton.interactable = true;
+        }
+        else
+        {
+            _endTurnButton.interactable = false;
+        }
+    }
 }

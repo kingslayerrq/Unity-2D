@@ -12,6 +12,7 @@ public class CombatManager : MonoBehaviour
     private CombatActionQueue actionQueue = new CombatActionQueue();
     private List<UnitInstance> _players = new List<UnitInstance>();
 
+    public event Action<CombatState> OnStateChange;
     
     public int CurrentTurn => currentTurn;
     public CombatState CurrentCombatState => currentCombatState;
@@ -30,6 +31,7 @@ public class CombatManager : MonoBehaviour
     public void StartBattle()
     {
         SetState(CombatState.BattleStart);
+        
         player.Initialize();
         enemy.Initialize();
         
@@ -65,9 +67,10 @@ public class CombatManager : MonoBehaviour
     {
         SetState(CombatState.PlayerAction);
         
+        
     }
 
-    // Spends Energy and Play the card
+    // Spends Energy and Play the card wrapper
     public void PlayCard(CardInstance card, List<UnitInstance> targets)
     {
         actionQueue.Enqueue(new SpendEnergyAction(combatSystem, player, new List<UnitInstance>{player}, card.CurrentCost), null);
@@ -76,14 +79,11 @@ public class CombatManager : MonoBehaviour
 
     public void EndPlayerTurn()
     {
-        if (currentCombatState == CombatState.PlayerAction)
-        {
-            SetState(CombatState.PlayerTurnEnd);
-            // remove the card from player's hand
-            actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards), null);
-            Debug.Log("Player Turn End");
-            EnterEnemyTurnStart();
-        }
+        SetState(CombatState.PlayerTurnEnd);
+        // remove the card from player's hand
+        actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards), null);
+        Debug.Log("Player Turn End");
+        EnterEnemyTurnStart();
         
     }
     
@@ -105,6 +105,7 @@ public class CombatManager : MonoBehaviour
     private void SetState(CombatState newState)
     {
         currentCombatState = newState;
+        OnStateChange?.Invoke(currentCombatState);
     }
 
     

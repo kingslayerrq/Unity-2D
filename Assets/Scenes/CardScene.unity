@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 26439235}
   - component: {fileID: 26439234}
   - component: {fileID: 26439233}
+  - component: {fileID: 26439236}
   m_Layer: 5
   m_Name: EndTurnButton
   m_TagString: Untagged
@@ -145,17 +146,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 26439231}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 280166463}
-  m_Father: {fileID: 390486744}
+  m_Father: {fileID: 1584204371}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 830, y: -339}
+  m_AnchoredPosition: {x: 1430, y: -449}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &26439233
@@ -201,19 +202,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 26439234}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1482415652}
-        m_TargetAssemblyTypeName: CombatManager, Assembly-CSharp
-        m_MethodName: EndPlayerTurn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &26439234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +241,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 26439231}
   m_CullTransparentMesh: 1
+--- !u!114 &26439236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26439231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e6a05b952622c4da8f2ef478c87d54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EndTurnButton
 --- !u!1 &56201391
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,7 +689,6 @@ RectTransform:
   - {fileID: 1597267181}
   - {fileID: 2028723104}
   - {fileID: 1732057686}
-  - {fileID: 26439232}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1731,6 +1731,8 @@ MonoBehaviour:
   combatSystem: {fileID: 1485235002}
   player: {fileID: 1584204372}
   enemy: {fileID: 934399821}
+  currentTurn: 0
+  currentCombatState: 0
 --- !u!4 &1482415653
 Transform:
   m_ObjectHideFlags: 0
@@ -1984,6 +1986,7 @@ RectTransform:
   - {fileID: 233611322}
   - {fileID: 1130550960}
   - {fileID: 1791547418}
+  - {fileID: 26439232}
   m_Father: {fileID: 390486744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
