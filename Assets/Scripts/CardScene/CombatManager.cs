@@ -71,7 +71,12 @@ public class CombatManager : MonoBehaviour
         actionQueue.Enqueue(new SpendEnergyAction(combatSystem, player, new List<UnitInstance>{player}, card.CurrentCost), null);
         actionQueue.Enqueue(new PlayCardAction(combatSystem, player, targets, card), null);
     }
-    public void EndPlayerTurn() { }
+
+    public void EndPlayerTurn()
+    {
+        // remove the card from player's hand
+        //actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards);
+    }
 
     private void ResolvePlayerCard(CardInstance card, UnitInstance target) { }
     private void EnterEnemyTurnStart() { }

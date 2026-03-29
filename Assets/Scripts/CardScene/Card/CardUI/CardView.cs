@@ -20,6 +20,10 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] private Transform cardKeywordPopupParent;
     [SerializeField] private KeywordPopupView cardKeywordPopupPrefab;
     private readonly List<KeywordPopupView> _cardKeywordPopups =  new List<KeywordPopupView>();
+
+    private PlayerHandView _playerHandView;
+    private CardAnimation _cardAnimation;
+    public CardAnimation CardAnimation => _cardAnimation;
     
     [Header("Interaction State")]
     [Tooltip("A global flag so NO other cards react while one is being moved")] 
@@ -59,6 +63,8 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         _origScale = transform.localScale;
         _canvasGroup = GetComponent<CanvasGroup>();
+        _playerHandView = GetComponentInParent<PlayerHandView>();
+        _cardAnimation = GetComponent<CardAnimation>();
     }
 
     private void Update()
@@ -110,6 +116,9 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         Refresh();
     }
 
+    // <summary>
+    // Refresh the view based on CardInstance data
+    // <summary>
     public void Refresh()
     {
         if (CardInstance == null) return;
@@ -119,11 +128,10 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         cardCost.text = CardInstance.CurrentCost.ToString();
         cardSprite.sprite = CardInstance.CurrentSprite;
     }
-    
-    public void ResetForReuse()
+    public void ResetInteractionState()
     {
         ClearHoveredReceiver();
-        
+
         isInteractingWithAnyCard = false;
         isSelected = false;
         isDragging = false;
@@ -141,13 +149,19 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (_canvasGroup != null)
             _canvasGroup.blocksRaycasts = true;
 
-        if (cardCanvas != null)
-            cardCanvas.sortingOrder = 1;
-
         transform.DOKill();
         transform.localScale = _origScale;
 
         HideAllPopups();
+    }
+    public void ResetForPool()
+    {
+        ResetInteractionState();
+
+        if (cardCanvas != null)
+            cardCanvas.sortingOrder = 1;
+
+        // anything else you want only when returning to pool
     }
 
     private void PickUpCard()
@@ -182,18 +196,11 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (_currentReceiver == null) return false;
         if (_currentReceiver.CanReceiveCard(CardInstance.CurrentOwner, CardInstance))
         {
-            // CardInstance.CurrentOwner.CombatManager.ActionQueue.Enqueue(
-            //     new SpendEnergyAction(CardInstance.CurrentOwner.CombatManager.CombatSystem, 
-            //         CardInstance.CurrentOwner, 
-            //         new List<UnitInstance>{CardInstance.CurrentOwner}, 
-            //         CardInstance.CurrentCost), null);
-            // CardInstance.CurrentOwner.CombatManager.ActionQueue.Enqueue(
-            //     new PlayCardAction(CardInstance.CurrentOwner.CombatManager.CombatSystem,
-            //      CardInstance.CurrentOwner, 
-            //      _currentReceiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance),
-            //       CardInstance), null);
+            var receiver = _currentReceiver;
+            ResetInteractionState();
+            
             CardInstance.CurrentOwner.CombatManager.PlayCard(CardInstance, 
-                _currentReceiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance));
+                receiver.GetReceiverUnitInstance(CardInstance.CurrentOwner, CardInstance));
             return true;
         }
         return false;
@@ -207,13 +214,16 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         
         UpdateReceivers(screenPos);
 
+        // Play the Card (removes the card from hand data)
         bool isPlayed = TryPlayCard();
         
         ClearHoveredReceiver();
 
         if (isPlayed)
         {
-            FinishSuccessfulPlay();
+            // FinishSuccessfulPlay();
+            // discard
+            
         }
         else
         {
@@ -221,10 +231,12 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
 
     }
+    
+    
 
     private void FinishSuccessfulPlay()
     {
-        ResetForReuse();
+        ResetInteractionState();
     }
     
     private void DropCard()

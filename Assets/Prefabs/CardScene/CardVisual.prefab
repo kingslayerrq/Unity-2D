@@ -981,6 +981,8 @@ GameObject:
   - component: {fileID: 8681283226415385861}
   - component: {fileID: 1847748108909837314}
   - component: {fileID: 969672603233804627}
+  - component: {fileID: 7272438812236801091}
+  - component: {fileID: 1707885620080605391}
   m_Layer: 5
   m_Name: CardVisual
   m_TagString: Untagged
@@ -1024,18 +1026,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61c366c94b73a5949a83dcafa7a72e57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardView
+  cardCanvas: {fileID: 1847748108909837314}
   cardSprite: {fileID: 4467448285438147007}
   cardName: {fileID: 4926572652553889676}
   cardDescription: {fileID: 4604647612730105358}
   cardCost: {fileID: 8599246948124919844}
   cardKeywordPopupParent: {fileID: 8821980415425464115}
   cardKeywordPopupPrefab: {fileID: 2984549489705582878, guid: f57cc122f9bc988489675126eeff33ef, type: 3}
+  origSiblingIndex: 0
   popupParentRect: {fileID: 8821980415425464115}
   popupSpacing: 4
   playerHandRect: {fileID: 7576119566931832752, guid: 79a0f4e901837f343849067527901765, type: 3}
   cellWidth: 230
   gridSpacingX: 2
-  cardCanvas: {fileID: 1847748108909837314}
   hoverScaleAmount: 1.2
   animDuration: 0.1
 --- !u!223 &1847748108909837314
@@ -1078,3 +1081,36 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &7272438812236801091
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8953105618615959308}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1707885620080605391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8953105618615959308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6637479f0a4a1ce46a69f21a230b77ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardAnimation
+  flyToCenterDuration: 0.2
+  centerPauseDuration: 0.8
+  flyToDiscardDuration: 0.3
+  centerScale: 1.2
+  discardScale: 0.15
+  discardRotateAmount: 720
+  burstWindow: 2
+  burstIndentX: 24
+  maxBurstIndentSteps: 4

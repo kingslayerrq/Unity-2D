@@ -26,6 +26,8 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
     [SerializeField] private int currentMaxHealth;
     [SerializeField] private int currentBlock;
 
+    public event Action<int, int> OnHealthChanged;
+
     #region getters
         public CombatManager CombatManager => combatManager;
         public PlayerHand Hand => hand;
@@ -70,6 +72,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
         
         CardPileManager.InitCardPiles(new List<CardInstance>(DeckInstance.CardInstances));
         
+        InitHealth();
     }
 
 
@@ -146,13 +149,18 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
     }
     
     #endregion
-    
-    
+
+    private void InitHealth()
+    {
+        currentHealth =  currentMaxHealth;
+        OnHealthChanged?.Invoke(currentHealth, currentMaxHealth);
+    }
     
     #region ICardTargetImplementation
 
     public void TakeDamage(int amount)
     {
+        Debug.Log($"{name} taking damage {amount}");
         int remainingDamage = amount;
         if (currentBlock > 0)
         {
@@ -161,6 +169,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
             remainingDamage -= blocked;
         }
         currentHealth -= remainingDamage;
+        OnHealthChanged?.Invoke(currentHealth, currentMaxHealth);
         if (currentHealth <= 0)
         {
             // TODO: die

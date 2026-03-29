@@ -21,7 +21,7 @@ public class DiscardAction : ICombatAction
     {
         _combatSystem.ResolveDiscard(_source, _targets,  _cards);
         
-        yield return null;
+        yield return _source.UnitUIManager.PlayerHandView.DiscardCardsAnimation(_cards);
     }
 
     public string GetActionDetails()

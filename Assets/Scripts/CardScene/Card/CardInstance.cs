@@ -15,6 +15,7 @@ public class CardInstance
     [SerializeField] private int currentLevel;
     [SerializeField] private Sprite currentSprite;
     [SerializeField] private TargetType currentTargetType;
+    
 
     #region getters
     public CardData Data => data;

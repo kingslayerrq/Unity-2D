@@ -11,16 +11,24 @@ public class CardPile
     
     public int Count => cards.Count;
     public bool IsEmpty => Count == 0;
+    
+    public event Action<int> OnCardPileCountChanged;
 
     public CardPile(List<CardInstance> newCards)
     {
         cards = newCards;
     }
 
+    public void Refresh()
+    {
+        OnCardPileCountChanged?.Invoke(cards.Count);
+    }
+
     public void AddCardToPile(CardInstance card)
     {
         if (card == null) return;
         cards.Add(card);
+        OnCardPileCountChanged?.Invoke(cards.Count);
     }
 
     public void AddCardsToPile(IEnumerable<CardInstance> newCards)
@@ -28,8 +36,9 @@ public class CardPile
         if (newCards == null) return;
         foreach (CardInstance card in newCards)
         {
-            AddCardToPile(card);
+            cards.Add(card);
         }
+        OnCardPileCountChanged?.Invoke(cards.Count);
     }
 
     [CanBeNull]
@@ -39,6 +48,7 @@ public class CardPile
 
         CardInstance card = cards[0];
         cards.RemoveAt(0);
+        OnCardPileCountChanged?.Invoke(cards.Count);
         return card;
     }
 
@@ -50,6 +60,7 @@ public class CardPile
     {
         var allCards = new List<CardInstance>(cards);
         cards.Clear();
+        OnCardPileCountChanged?.Invoke(cards.Count);
         return allCards;
     }
 

@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
+    
     public void ResolvePlayCard(UnitInstance source, List<UnitInstance> target, CardInstance cardInstance)
     {
         if (source == null || cardInstance == null) return;
@@ -20,7 +22,8 @@ public class CombatSystem : MonoBehaviour
         // Trigger on card played
         source.BuffManager.OnCardPlayed(source, cardInstance, this);
         
-        // TODO: move to discard
+        
+        
         if (source.Hand.RemoveCard(cardInstance))
         {
             source.CardPileManager.DiscardPile.AddCardToPile(cardInstance);
@@ -29,9 +32,6 @@ public class CombatSystem : MonoBehaviour
         {
             Debug.LogWarning($"Card {cardInstance.Data.CardName} failed to move to discard pile!");
         }
-        
-        // refresh hand ui
-        source.UnitUIManager.PlayerHandView.RefreshHand(source.Hand.Cards);
         
     }
 

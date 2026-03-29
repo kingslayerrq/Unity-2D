@@ -1,17 +1,74 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class PlayerHandView : MonoBehaviour
 {
     [SerializeField] private Transform cardContainer;
     [SerializeField] private CardView cardViewPrefab;
+    [SerializeField] private RectTransform discardPileIcon;
+    [SerializeField] private Canvas rootCanvas;
 
     private readonly Dictionary<CardInstance, CardView> viewsByCard = new Dictionary<CardInstance, CardView>();
     private readonly List<CardView> activeCardViews = new List<CardView>();
     private readonly Stack<CardView> pooledViews = new Stack<CardView>();
-
-    public IReadOnlyList<CardView> ActiveCardViews => activeCardViews;
     
+    public IReadOnlyList<CardView> ActiveCardViews => activeCardViews;
+    public RectTransform DiscardPileIcon => discardPileIcon;
+    
+    public Canvas RootCanvas => rootCanvas;
+    
+    private readonly HashSet<CardInstance> animatingCards = new HashSet<CardInstance>();
+
+    public bool TryBeginAnimateOut(CardInstance card, out CardView view)
+    {
+        view = null;
+
+        if (card == null)
+            return false;
+
+        if (!viewsByCard.TryGetValue(card, out view) || view == null)
+            return false;
+
+        animatingCards.Add(card);
+        activeCardViews.Remove(view);
+
+        return true;
+    }
+
+    public void CompleteAnimateOut(CardInstance card)
+    {
+        if (card == null)
+            return;
+
+        animatingCards.Remove(card);
+
+        if (viewsByCard.TryGetValue(card, out CardView view) && view != null)
+        {
+            viewsByCard.Remove(card);
+            ReturnToPool(view);
+        }
+    }
+
+    public void CancelAnimateOut(CardInstance card)
+    {
+        if (card == null)
+            return;
+
+        animatingCards.Remove(card);
+    }
+    public void MarkCardAnimating(CardInstance card)
+    {
+        animatingCards.Add(card);
+    }
+
+    public void UnMarkCardAnimating(CardInstance card)
+    {
+        animatingCards.Remove(card);
+    }
+
     /// <summary>
     /// Synchronizes the hand UI with the supplied runtime hand data.
     /// Reuses existing <see cref="CardView"/> instances for cards that are still present,
@@ -28,16 +85,17 @@ public class PlayerHandView : MonoBehaviour
         {
             Debug.LogWarning("ShowHand: hand is null");
             ReleaseAllToPool();
+            animatingCards.Clear();
             return;
         }
 
         HashSet<CardInstance> cardsInHand = new HashSet<CardInstance>(hand);
 
-        // Return removed cards to pool
+        // Return removed cards to pool, skip the ones animating
         List<CardInstance> toRemove = new List<CardInstance>();
         foreach (KeyValuePair<CardInstance, CardView> pair in viewsByCard)
         {
-            if (!cardsInHand.Contains(pair.Key))
+            if (!cardsInHand.Contains(pair.Key) && !animatingCards.Contains(pair.Key))
                 toRemove.Add(pair.Key);
         }
 
@@ -136,9 +194,72 @@ public class PlayerHandView : MonoBehaviour
     {
         if (view == null) return;
 
-        view.ResetForReuse();
+        view.ResetForPool();
         view.gameObject.SetActive(false);
         view.transform.SetParent(cardContainer, false);
         pooledViews.Push(view);
+    }
+
+    public bool TryGetView(CardInstance card, out CardView view)
+    {
+        return viewsByCard.TryGetValue(card, out view);
+    }
+    public IEnumerator PlayToDiscardAnimation(CardInstance card)
+    {
+        if (!TryGetView(card, out CardView view) || view == null)
+            yield break;
+
+        if (view.CardAnimation == null)
+            yield break;
+
+        Sequence seq = view.CardAnimation.PlayToDiscardAnimationSelf(rootCanvas, discardPileIcon);
+        
+        
+        if (seq != null)
+        {
+            yield return seq.WaitForCompletion();
+        }
+    }
+    
+    public IEnumerator DiscardCardsAnimation(IReadOnlyList<CardInstance> cards)
+    {
+        if (cards == null || cards.Count == 0)
+            yield break;
+
+        List<Sequence> sequences = new List<Sequence>();
+        int batchIndex = 0;
+
+        foreach (CardInstance card in cards)
+        {
+            if (!TryGetView(card, out CardView view))
+                continue;
+
+            if (view == null || view.CardAnimation == null)
+                continue;
+
+            Sequence seq = view.CardAnimation.DiscardAnimation(rootCanvas, discardPileIcon, batchIndex);
+
+            if (seq != null)
+            {
+                sequences.Add(seq);
+                batchIndex++;
+            }
+        }
+
+        if (sequences.Count == 0)
+            yield break;
+
+        yield return new WaitUntil(() =>
+        {
+            for (int i = 0; i < sequences.Count; i++)
+            {
+                Sequence seq = sequences[i];
+
+                if (seq != null && seq.IsActive() && !seq.IsComplete())
+                    return false;
+            }
+
+            return true;
+        });
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -6,9 +7,9 @@ public class CardPileManager : MonoBehaviour
 {
     public CardPile DrawPile { get; private set; } 
     public CardPile DiscardPile { get; private set;}
-    public CardPile ExhaustPile { get; private set;} 
+    public CardPile ExhaustPile { get; private set;}
 
-
+    public event Action OnCardPilesInitialized;
     /**
      * Initialize draw pile with deck(List<CardInstance>)
      * Initialize discard/exhaust pile
@@ -23,6 +24,7 @@ public class CardPileManager : MonoBehaviour
         DrawPile = new CardPile(deck);
         ExhaustPile = new CardPile(new List<CardInstance>());
         DiscardPile = new CardPile(new List<CardInstance>());
+        OnCardPilesInitialized?.Invoke();
         
         DrawPile.Shuffle();
     }
