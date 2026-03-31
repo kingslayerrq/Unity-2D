@@ -11,8 +11,11 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private CombatState currentCombatState = CombatState.None;
     private CombatActionQueue actionQueue = new CombatActionQueue();
     private List<UnitInstance> _players = new List<UnitInstance>();
+    private List<UnitInstance> _enemies = new List<UnitInstance>();
+    private List<UnitInstance> _allUnits = new List<UnitInstance>();
 
     public event Action<CombatState> OnStateChange;
+    public event Action<int> OnPlayerNewTurnStart;
     
     public int CurrentTurn => currentTurn;
     public CombatState CurrentCombatState => currentCombatState;
@@ -38,6 +41,13 @@ public class CombatManager : MonoBehaviour
         _players.Clear();
         _players.Add(player);
         
+        _enemies.Clear();
+        _enemies.Add(enemy);
+        
+        _allUnits.Clear();
+        _allUnits.AddRange(_players);
+        _allUnits.AddRange(_enemies);
+        
         // TODO: UI setup
         
         EnterPlayerTurnStart();
@@ -46,6 +56,9 @@ public class CombatManager : MonoBehaviour
     public void EnterPlayerTurnStart()
     {
         SetState(CombatState.PlayerTurnStart);
+        
+        currentTurn++;
+        OnPlayerNewTurnStart?.Invoke(currentTurn);
         
         player.ResetEnergy();
         player.BuffManager.OnTurnStart(player, combatSystem);
@@ -80,11 +93,13 @@ public class CombatManager : MonoBehaviour
     public void EndPlayerTurn()
     {
         SetState(CombatState.PlayerTurnEnd);
+        
         // remove the card from player's hand
         actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards), null);
-        Debug.Log("Player Turn End");
-        EnterEnemyTurnStart();
         
+        actionQueue.Enqueue(new EndTurnAction(combatSystem, player, _allUnits), null);
+        
+        EnterEnemyTurnStart();
     }
     
 

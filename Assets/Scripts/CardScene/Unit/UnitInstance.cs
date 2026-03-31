@@ -132,7 +132,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
             CardPileManager.DiscardPile.AddCardToPile(drawnCard);
             Debug.Log($"{name}'s hand is full. Sent drawn card to discard pile.");
         }
-
+        
         return true;
     }
 

@@ -45,6 +45,7 @@ public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
     {
         if (Data.ExpiresAtEndOfTurn)
         {
+            Debug.Log(BuffDescription);
             RemoveStacks(1);
         }
     }

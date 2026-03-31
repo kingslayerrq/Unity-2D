@@ -180,7 +180,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         Canvas canvas = GetComponent<Canvas>(); 
         if (canvas != null)
         {
-            canvas.overrideSorting = false;
+            canvas.overrideSorting = true;
             canvas.sortingOrder = 1; // Or whatever your default base sorting order is
         }
 
@@ -365,6 +365,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (CardInstance is not { CurrentCardState: CardState.InHand }) return;
         if (eventData.button != PointerEventData.InputButton.Left) return;
         
         // If it's already attached to the mouse via click, don't start a drag
@@ -397,6 +398,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (CardInstance is not { CurrentCardState: CardState.InHand }) return;
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
         // If we just finished a drag, don't accidentally register it as a click

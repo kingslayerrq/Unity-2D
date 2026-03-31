@@ -18,7 +18,7 @@ public class CardAnimation : MonoBehaviour
     [SerializeField] private float burstIndentY = -8f;
     [SerializeField] private int maxBurstIndentSteps = 4;
     
-    private const int GhostSortingStart = 10000;
+    [SerializeField] private const int GhostSortingStart = 1500;
     private static int nextGhostSortingOrder = GhostSortingStart;
     
     private static float lastGhostSpawnTime = -999f;
@@ -27,7 +27,7 @@ public class CardAnimation : MonoBehaviour
     private static int GetNextGhostSortingOrder()
     {
         // earlier spawned card stays on top
-        if (nextGhostSortingOrder < 9000)
+        if (nextGhostSortingOrder < 1000)
         {
             nextGhostSortingOrder = GhostSortingStart;
         }

@@ -173,4 +173,15 @@ public class CombatSystem : MonoBehaviour
             t.BuffManager.OnReceiveBuff(t, buffData, stacks, this);
         }
     }
+
+    public void ResolveEndTurn(UnitInstance source, List<UnitInstance> allUnits)
+    {
+        if (source == null || allUnits == null || allUnits.Count == 0) return;
+
+        foreach (var u in allUnits)
+        {
+            u.BuffManager?.OnTurnEnd(u, this);
+        }
+        
+    }
 }

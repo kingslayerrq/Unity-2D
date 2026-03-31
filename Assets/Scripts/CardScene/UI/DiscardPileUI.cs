@@ -10,9 +10,26 @@ public class DiscardPileUI : CardPileUI
         _cardPileManager.DiscardPile.Refresh();
     }
 
-    protected override void OnDestroy()
+    protected override void DisplayCardsInPile()
     {
-        base.OnDestroy();
-        _cardPileManager.DiscardPile.OnCardPileCountChanged -= UpdateCardPileUI;
+        if (_cardPileManager.DiscardPile == null ||  _cardPileManager.DiscardPile.Count == 0) return;
+        
+        base.DisplayCardsInPile();
+        
+        Debug.Log($"Rendering discard pile, count: {_cardPileManager.DiscardPile.Count}");
+        RenderCardViews(_cardPileManager.DiscardPile.Cards);
+        
+        Canvas.ForceUpdateCanvases();
+        _cardPileScrollRect.normalizedPosition = new Vector2(0, 1);
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        if (_cardPileManager.DiscardPile != null)
+        {
+            _cardPileManager.DiscardPile.OnCardPileCountChanged -= UpdateCardPileUI;
+        }
+       
     }
 }

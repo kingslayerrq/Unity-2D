@@ -18,6 +18,7 @@ public class PlayerHand
         if (card == null) return false;
         if (IsFull) return false;
         cards.Add(card);
+        card.CurrentCardState = CardState.InHand;
         return true;
     }
     public bool RemoveCard(CardInstance card)

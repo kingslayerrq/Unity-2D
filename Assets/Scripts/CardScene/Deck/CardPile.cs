@@ -9,8 +9,11 @@ public class CardPile
     private readonly List<CardInstance> cards;
     private readonly Random rng = new();
     
+    protected CardPileType _cardPileType;
+    
     public int Count => cards.Count;
     public bool IsEmpty => Count == 0;
+    public IReadOnlyList<CardInstance> Cards => cards;
     
     public event Action<int> OnCardPileCountChanged;
 
@@ -28,6 +31,20 @@ public class CardPile
     {
         if (card == null) return;
         cards.Add(card);
+        switch (_cardPileType)
+        {
+            case CardPileType.Discard:
+                card.CurrentCardState = CardState.InDiscard;
+                break;
+            case CardPileType.Draw:
+                card.CurrentCardState = CardState.InDraw;
+                break;
+            case CardPileType.Exhaust:
+                card.CurrentCardState = CardState.InExhaust;
+                break;
+            default:
+                break;
+        }
         OnCardPileCountChanged?.Invoke(cards.Count);
     }
 
@@ -37,6 +54,20 @@ public class CardPile
         foreach (CardInstance card in newCards)
         {
             cards.Add(card);
+            switch (_cardPileType)
+            {
+                case CardPileType.Discard:
+                    card.CurrentCardState = CardState.InDiscard;
+                    break;
+                case CardPileType.Draw:
+                    card.CurrentCardState = CardState.InDraw;
+                    break;
+                case CardPileType.Exhaust:
+                    card.CurrentCardState = CardState.InExhaust;
+                    break;
+                default:
+                    break;
+            }
         }
         OnCardPileCountChanged?.Invoke(cards.Count);
     }
@@ -72,4 +103,11 @@ public class CardPile
             (cards[i], cards[j]) = (cards[j], cards[i]);
         }
     }
+}
+
+public enum CardPileType
+{
+    Discard,
+    Draw,
+    Exhaust
 }

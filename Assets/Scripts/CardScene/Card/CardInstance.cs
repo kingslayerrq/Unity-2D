@@ -19,6 +19,7 @@ public class CardInstance
 
     #region getters
     public CardData Data => data;
+    public CardState CurrentCardState { get; set; }
     public UnitInstance CurrentOwner => currentOwner;
     public int CurrentCost => currentCost;
     public string CurrentName => currentName;
@@ -37,6 +38,7 @@ public class CardInstance
         // ref to base card data
         this.data = data;
         // instance stats
+        this.CurrentCardState = CardState.Init;
         this.currentOwner = owner;
         this.currentCost = data.CardCost;
         this.currentName = data.CardName;
@@ -77,4 +79,14 @@ public class CardInstance
 
         return currentOwner.CurrentEnergy >= currentCost;
     }
+}
+
+public enum CardState
+{
+    NotInit,
+    Init,
+    InHand,
+    InDiscard,
+    InDraw,
+    InExhaust
 }
