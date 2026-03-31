@@ -6,12 +6,12 @@ using UnityEngine;
 public class CombatSystem : MonoBehaviour
 {
     
-    public void ResolvePlayCard(UnitInstance source, List<UnitInstance> target, CardInstance cardInstance)
+    public void ResolvePlayCard(BasePlayerUnitInstance source, List<BaseUnitInstance> target, CardInstance cardInstance)
     {
         if (source == null || cardInstance == null) return;
         if (cardInstance.RequireTarget && target == null) return;
         
-        CardContext context = new CardContext(source, target, cardInstance, this);
+        CardContext context = new CardContext(source, target, cardInstance, source.CombatManager);
         
         foreach (CardEffectData effect in cardInstance.Data.CardEffects)
         {
@@ -22,8 +22,6 @@ public class CombatSystem : MonoBehaviour
         
         // Trigger on card played
         source.BuffManager.OnCardPlayed(source, cardInstance, this);
-        
-        
         
         if (source.Hand.RemoveCard(cardInstance))
         {
@@ -36,7 +34,7 @@ public class CombatSystem : MonoBehaviour
         
     }
 
-    public void ResolveSpendEnergy(UnitInstance source, List<UnitInstance> targets, int amount)
+    public void ResolveSpendEnergy(BaseUnitInstance source, List<BasePlayerUnitInstance> targets, int amount)
     {
         if (source == null || targets == null) return;
 
@@ -59,7 +57,7 @@ public class CombatSystem : MonoBehaviour
         
     }
 
-    public void ResolveBlockReset(UnitInstance source, List<UnitInstance> targets, BlockResetSource resetSource)
+    public void ResolveBlockReset(BaseUnitInstance source, List<BaseUnitInstance> targets, BlockResetSource resetSource)
     {
         if (source == null || targets == null) return;
 
@@ -76,7 +74,7 @@ public class CombatSystem : MonoBehaviour
         
     }
     
-    public void ResolveDrawCards(UnitInstance source, List<UnitInstance> targets, int amount)
+    public void ResolveDrawCards(BaseUnitInstance source, List<BasePlayerUnitInstance> targets, int amount)
     {
         if (source == null || targets == null) return;
 
@@ -93,7 +91,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveDiscard(UnitInstance source, List<UnitInstance> targets, IReadOnlyList<CardInstance> cards)
+    public void ResolveDiscard(BaseUnitInstance source, List<BasePlayerUnitInstance> targets, IReadOnlyList<CardInstance> cards)
     {
         if (source == null || targets == null) return;
 
@@ -110,7 +108,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveDamage(UnitInstance source, List<UnitInstance> targets, int amount, CardType cardType)
+    public void ResolveDamage(BaseUnitInstance source, List<BaseUnitInstance> targets, int amount, CardType cardType)
     {
         if (source == null || targets == null) return;
 
@@ -128,7 +126,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveHeal(UnitInstance source, List<UnitInstance> targets, int amount)
+    public void ResolveHeal(BaseUnitInstance source, List<BaseUnitInstance> targets, int amount)
     {
         if (source == null || targets == null) return;
 
@@ -144,7 +142,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
     
-    public void ResolveBlocks(UnitInstance source, List<UnitInstance> targets, int amount, bool isFromCard)
+    public void ResolveBlocks(BaseUnitInstance source, List<BaseUnitInstance> targets, int amount, bool isFromCard)
     {
         if (source == null || targets == null) return;
 
@@ -160,7 +158,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
     
-    public void ResolveBuffs(UnitInstance source, List<UnitInstance> targets, BuffData buffData, int stacks)
+    public void ResolveBuffs(BaseUnitInstance source, List<BaseUnitInstance> targets, BuffData buffData, int stacks)
     {
         if (source == null || targets == null) return;
 
@@ -174,7 +172,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveEndTurn(UnitInstance source, List<UnitInstance> allUnits)
+    public void ResolveEndTurn(BaseUnitInstance source, List<BaseUnitInstance> allUnits)
     {
         if (source == null || allUnits == null || allUnits.Count == 0) return;
 
@@ -184,4 +182,5 @@ public class CombatSystem : MonoBehaviour
         }
         
     }
+    
 }

@@ -5,11 +5,11 @@ using UnityEngine;
 public class DrawAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
-    private readonly UnitInstance _source;
-    private readonly List<UnitInstance> _targets;
+    private readonly BaseUnitInstance _source;
+    private readonly List<BasePlayerUnitInstance> _targets;
     private readonly int _amount;
 
-    public DrawAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> targets, int amount)
+    public DrawAction(CombatSystem combatSystem, BaseUnitInstance source, List<BasePlayerUnitInstance> targets, int amount)
     {
         _combatSystem = combatSystem;
         _source = source;

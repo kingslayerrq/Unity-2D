@@ -14,7 +14,7 @@ public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerE
     protected Vector3 _cardPileIconOrigScale;
     protected Button _cardPileButton;
     protected Button _backButton;
-    protected ScrollRect _cardPileScrollRect;
+    [SerializeField] protected ScrollRect _cardPileScrollRect;
     [SerializeField] private CardView cardViewPrefab;
     [SerializeField] private Transform cardPileViewContainer;
     [SerializeField] protected Transform _cardPileImageTransform;
@@ -33,7 +33,6 @@ public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerE
         _cardPileCardCount = GetComponentInChildren<TMP_Text>();
         _cardPileIconImage = GetComponentInChildren<Image>();
         _cardPileButton = GetComponentInChildren<Button>();
-        _cardPileScrollRect = GetComponentInChildren<ScrollRect>();
         
 
         if (_cardPileIconImage != null)

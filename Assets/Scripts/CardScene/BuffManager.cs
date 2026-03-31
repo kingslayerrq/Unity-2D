@@ -92,7 +92,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called after a card is played, so buffs that react to card play can respond.
     /// </summary>
-    public void OnCardPlayed(UnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
+    public void OnCardPlayed(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
     {
         Dispatch<IOnCardPlayed>(handler => handler.OnCardPlayed(owner, cardInstance, combatSystem));
         CleanUpExpiredBuffs();
@@ -101,7 +101,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called before resetting a unit's block
     /// </summary>
-    public void OnBeforeBlockReset(UnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem)
+    public void OnBeforeBlockReset(BaseUnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnBeforeBlockReset>(handler => handler.OnBeforeBlockReset(owner, blockEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -110,7 +110,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called after resetting a unit's block
     /// </summary>
-    public void OnAfterBlockReset(UnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem)
+    public void OnAfterBlockReset(BaseUnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnAfterBlockReset>(handler => handler.OnAfterBlockReset(owner, blockEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -119,7 +119,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called after One energy is spent
     /// </summary>
-    public void OnEnergySpent(UnitInstance owner, CombatSystem combatSystem)
+    public void OnEnergySpent(BaseUnitInstance owner, CombatSystem combatSystem)
     {
         Dispatch<IOnEnergySpent>(handler => handler.OnEnergySpent(owner, combatSystem ));
         CleanUpExpiredBuffs();
@@ -128,7 +128,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called after a card is drawn
     /// </summary>
-    public void OnCardDrawn(UnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
+    public void OnCardDrawn(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
     {
         Dispatch<IOnCardDrawn>(handler => handler.OnCardDrawn(owner, cardInstance, combatSystem));
         CleanUpExpiredBuffs();
@@ -137,7 +137,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called after a card is discarded
     /// </summary>
-    public void OnCardDiscarded(UnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
+    public void OnCardDiscarded(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
     {
         Dispatch<IOnCardDiscarded>(handler => handler.OnCardDiscarded(owner, cardInstance, combatSystem));
         CleanUpExpiredBuffs();
@@ -147,7 +147,7 @@ public class BuffManager : MonoBehaviour
     /// Called at the start of the owner's turn.
     /// Buffs like regen, poison ticks, or start-of-turn resets may react here.
     /// </summary>
-    public void OnTurnStart(UnitInstance owner, CombatSystem combatSystem)
+    public void OnTurnStart(BaseUnitInstance owner, CombatSystem combatSystem)
     {
         Dispatch<IOnTurnStart>(handler => handler.OnTurnStart(owner, combatSystem));
         CleanUpExpiredBuffs();
@@ -157,7 +157,7 @@ public class BuffManager : MonoBehaviour
     /// Called at the end of the owner's turn.
     /// Buffs like Weak/Vulnerable duration reduction often react here.
     /// </summary>
-    public void OnTurnEnd(UnitInstance owner, CombatSystem combatSystem)
+    public void OnTurnEnd(BaseUnitInstance owner, CombatSystem combatSystem)
     {
         Dispatch<IOnTurnEnd>(handler => handler.OnTurnEnd(owner, combatSystem));
         CleanUpExpiredBuffs();
@@ -167,7 +167,7 @@ public class BuffManager : MonoBehaviour
     /// Called before this unit deals damage.
     /// Buffs like Strength or Weak can modify outgoing damage here.
     /// </summary>
-    public void OnBeforeDealDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
+    public void OnBeforeDealDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnBeforeDealDamage>(handler => handler.OnBeforeDealDamage(owner, damageEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -177,7 +177,7 @@ public class BuffManager : MonoBehaviour
     /// Called after this unit has dealt damage.
     /// Buffs like lifesteal, combo tracking, or on-hit triggers can react here.
     /// </summary>
-    public void OnAfterDealDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
+    public void OnAfterDealDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnAfterDealDamage>(handler => handler.OnAfterDealDamage(owner, damageEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -187,7 +187,7 @@ public class BuffManager : MonoBehaviour
     /// Called before this unit takes damage.
     /// Buffs like Vulnerable, shield modifiers, or damage reduction can react here.
     /// </summary>
-    public void OnBeforeTakeDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
+    public void OnBeforeTakeDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnBeforeTakeDamage>(handler => handler.OnBeforeTakeDamage(owner, damageEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -197,7 +197,7 @@ public class BuffManager : MonoBehaviour
     /// Called after this unit has taken damage.
     /// Buffs like Thorns retaliation, enrage, or reactive effects can respond here.
     /// </summary>
-    public void OnAfterTakeDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
+    public void OnAfterTakeDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnAfterTakeDamage>(handler => handler.OnAfterTakeDamage(owner, damageEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -206,7 +206,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called when this unit gives block.
     /// </summary>
-    public void OnApplyBlock(UnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem)
+    public void OnApplyBlock(BaseUnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnApplyBlock>(handler => handler.OnApplyBlock(owner, blockEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -216,7 +216,7 @@ public class BuffManager : MonoBehaviour
     /// Called after this unit gains block.
     /// Buffs that react to successful block gain can respond here.
     /// </summary>
-    public void OnReceiveBlock(UnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem)
+    public void OnReceiveBlock(BaseUnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnReceiveBlock>(handler => handler.OnReceiveBlock(owner, blockEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -226,7 +226,7 @@ public class BuffManager : MonoBehaviour
     /// Called when this unit heals something.
     /// Buffs can modify the amount of heal or stats
     /// </summary>
-    public void OnApplyHeal(UnitInstance owner, HealEvent healEvent, CombatSystem combatSystem)
+    public void OnApplyHeal(BaseUnitInstance owner, HealEvent healEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnApplyHeal>(handler => handler.OnApplyHeal(owner, healEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -235,7 +235,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called when this unit is healed.
     /// </summary>
-    public void OnReceiveHeal(UnitInstance owner, HealEvent healEvent, CombatSystem combatSystem)
+    public void OnReceiveHeal(BaseUnitInstance owner, HealEvent healEvent, CombatSystem combatSystem)
     {
         Dispatch<IOnReceiveHeal>(handler => handler.OnReceiveHeal(owner, healEvent, combatSystem));
         CleanUpExpiredBuffs();
@@ -244,7 +244,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called when this unit applies buff to someone.
     /// </summary>
-    public void OnApplyBuff(UnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem)
+    public void OnApplyBuff(BaseUnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem)
     {
         Dispatch<IOnApplyBuff>(handler => handler.OnApplyBuff(owner, buffData, stacks, combatSystem));
         CleanUpExpiredBuffs();
@@ -253,7 +253,7 @@ public class BuffManager : MonoBehaviour
     /// <summary>
     /// Called when this unit receives a buff.
     /// </summary>
-    public void OnReceiveBuff(UnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem)
+    public void OnReceiveBuff(BaseUnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem)
     {
         Dispatch<IOnReceiveBuff>(handler => handler.OnReceiveBuff(owner, buffData, stacks, combatSystem));
         CleanUpExpiredBuffs();

@@ -9,7 +9,7 @@ public class BuffCardEffect : BaseCardEffect
 
     public override void Execute(CardContext context, CardEffectData effectData)
     {
-        if (context == null || context.CombatSystem == null || context.CardInstance == null) return;
+        if (context == null || context.CombatManager == null || context.CardInstance == null) return;
         if (context.Source == null || context.Target == null) return;
 
         if (effectData.CardEffectConfig is not BuffCardEffectConfig buffConfig)
@@ -25,6 +25,12 @@ public class BuffCardEffect : BaseCardEffect
             return;
         }
         
-        context.CombatSystem.ResolveBuffs(context.Source, context.Target, buffConfig.BuffData, buffConfig.Stacks);
+        // context.CombatSystem.ResolveBuffs(context.Source, context.Target, buffConfig.BuffData, buffConfig.Stacks);
+
+        ApplyBuffAction applyBuffAction = new ApplyBuffAction(context.CombatManager.CombatSystem,
+            context.Source, context.Target, buffConfig.BuffData, buffConfig.Stacks);
+        
+        context.CombatManager.ActionQueue.Enqueue(applyBuffAction, null);
+
     }
 }

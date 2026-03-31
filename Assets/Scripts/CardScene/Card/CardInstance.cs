@@ -7,7 +7,7 @@ public class CardInstance
     
     public bool CanBePlayed => CheckForPlayability();
     [SerializeField] private CardData data;
-    [SerializeField] private UnitInstance currentOwner;
+    [SerializeField] private BasePlayerUnitInstance currentOwner;
     [SerializeField] private int currentCost;
     [SerializeField] private string currentName;
     [SerializeField] private string currentDescription;
@@ -20,7 +20,7 @@ public class CardInstance
     #region getters
     public CardData Data => data;
     public CardState CurrentCardState { get; set; }
-    public UnitInstance CurrentOwner => currentOwner;
+    public BaseUnitInstance CurrentOwner => currentOwner;
     public int CurrentCost => currentCost;
     public string CurrentName => currentName;
     public string CurrentDescription => currentDescription;
@@ -33,7 +33,7 @@ public class CardInstance
     #endregion
     
 
-    public CardInstance(CardData data, UnitInstance owner)
+    public CardInstance(CardData data, BasePlayerUnitInstance owner)
     {
         // ref to base card data
         this.data = data;

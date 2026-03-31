@@ -6,12 +6,9 @@ using UnityEngine;
 [RequireComponent(typeof(UnitUIManager))]
 [RequireComponent(typeof(BuffManager))]
 [RequireComponent(typeof(CardPileManager))]
-public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
+public abstract class BaseUnitInstance : MonoBehaviour, ICardTarget
 {
-    [SerializeField] private DeckData startingDeckData;
-    [SerializeField] private PlayerHand hand;
-    public Deck DeckInstance {get; private set;}
-    public CardPileManager CardPileManager { get; private set; }
+    
     public BuffManager BuffManager { get; private set; }
     public UnitUIManager UnitUIManager { get; private set; }
     
@@ -19,9 +16,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
     
     [Header("Instance stats")]
     [SerializeField] private UnitType unitType;
-    [SerializeField] private int currentDrawAmount;
-    [SerializeField] private int currentEnergy;
-    [SerializeField] private int currentMaxEnergy;
+    
     [SerializeField] private int currentHealth;
     [SerializeField] private int currentMaxHealth;
     [SerializeField] private int currentBlock;
@@ -30,61 +25,36 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
 
     #region getters
         public CombatManager CombatManager => combatManager;
-        public PlayerHand Hand => hand;
+        
         public UnitType UnitType => unitType;
-        public int CurrentDrawAmount => currentDrawAmount;
-        public int CurrentEnergy => currentEnergy;
-        public int CurrentMaxEnergy => currentMaxEnergy;
+    
         public int CurrentHealth => currentHealth;
         public int CurrentMaxHealth => currentMaxHealth;
         public int CurrentBlock => currentBlock;
     #endregion
     
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (BuffManager == null) BuffManager = GetComponent<BuffManager>();
         if (UnitUIManager ==  null) UnitUIManager = GetComponent<UnitUIManager>();
-        if (CardPileManager == null) CardPileManager = GetComponent<CardPileManager>();
     }
 
     
 
-    public void Initialize()
+    public virtual void Initialize()
     {
         Debug.Log($"{name} initialize");
-        if (CardPileManager == null)
-        {
-            Debug.LogWarning("CardPileManager is null");
-            return;
-        }
+        
         if (BuffManager == null)
         {
             Debug.LogWarning("BuffManager is null");
             return;
         }
-
-        hand = new PlayerHand();
-        
-        // TODO: separate deck init
-        DeckInstance = new Deck(startingDeckData);
-        DeckInstance.InstantiateDeck(this);
-        
-        CardPileManager.InitCardPiles(new List<CardInstance>(DeckInstance.CardInstances));
         
         InitHealth();
     }
-
-
-    public void ResetEnergy()
-    {
-        currentEnergy = currentMaxEnergy;
-    }
-
-    public void SpendEnergy(int amount)
-    {
-        currentEnergy -= amount;
-    }
+    
 
     public void ResetBlock(ResetBlockEvent resetEvent)
     {
@@ -107,48 +77,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
         }
     }
 
-    #region Draw Cards Healper
     
-    public bool TryDrawToHand(out CardInstance drawnCard)
-    {
-        drawnCard = null;
-        if (CardPileManager == null)
-        {
-            Debug.LogWarning("CardPileManager is null");
-            return false;
-        }
-        if (DeckInstance == null || hand == null || CardPileManager.DiscardPile == null 
-            || CardPileManager.DrawPile == null)
-            return false;
-
-        drawnCard = CardPileManager.DrawOneCard();
-
-        if (drawnCard == null)
-            return false;
-
-        // when add to hand fails
-        if (!hand.AddCard(drawnCard))
-        {
-            CardPileManager.DiscardPile.AddCardToPile(drawnCard);
-            Debug.Log($"{name}'s hand is full. Sent drawn card to discard pile.");
-        }
-        
-        return true;
-    }
-
-    public bool DiscardCard(CardInstance discardedCard)
-    {
-        if (discardedCard == null) return false;
-
-        if (hand.RemoveCard(discardedCard))
-        {
-            CardPileManager.DiscardPile.AddCardToPile(discardedCard);
-            return true;
-        }
-        return false;
-    }
-    
-    #endregion
 
     private void InitHealth()
     {
@@ -193,7 +122,7 @@ public class UnitInstance : MonoBehaviour, ICardUser, ICardTarget
         BuffManager.ApplyBuff(buffData, stacks);
     }
     
-    public UnitInstance Target => this;
+    public BaseUnitInstance Target => this;
 
     #endregion
 }

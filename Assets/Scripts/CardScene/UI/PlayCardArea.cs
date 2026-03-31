@@ -7,25 +7,25 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class PlayCardArea : MonoBehaviour, ICardDropReceiver
 {
-    [SerializeField] private List<UnitInstance> playerTargets;
-    [SerializeField] private List<UnitInstance> enemiesTargets;
+    [SerializeField] private List<BaseUnitInstance> playerTargets;
+    [SerializeField] private List<BaseUnitInstance> enemiesTargets;
     
     private List<ICardTarget> highlightedTargets;
 
     public int Priority { get; private set; } = CONSTANTS.PLAY_AREA_TARGET_PRIORITY;
     
 
-    public List<UnitInstance> GetReceiverUnitInstance(UnitInstance source, CardInstance cardInstance)
+    public List<BaseUnitInstance> GetReceiverUnitInstance(BaseUnitInstance source, CardInstance cardInstance)
     {
         return highlightedTargets.Select(target => target.Target).ToList();
     }
 
-    public bool CanReceiveCard(UnitInstance source, CardInstance cardInstance)
+    public bool CanReceiveCard(BaseUnitInstance source, CardInstance cardInstance)
     {
         return ValidateCardTargets(source, cardInstance).Count != 0;
     }
 
-    public List<ICardTarget> ValidateCardTargets(UnitInstance source, CardInstance cardInstance)
+    public List<ICardTarget> ValidateCardTargets(BaseUnitInstance source, CardInstance cardInstance)
     {
         List<ICardTarget> targets = new List<ICardTarget>();
         switch (cardInstance.CurrentTargetType)
@@ -51,7 +51,7 @@ public class PlayCardArea : MonoBehaviour, ICardDropReceiver
         return targets;
     }
 
-    public void OnHoverEnter(UnitInstance source, CardInstance cardInstance)
+    public void OnHoverEnter(BaseUnitInstance source, CardInstance cardInstance)
     {
         var targets = ValidateCardTargets(source, cardInstance);
         highlightedTargets = targets;
@@ -61,7 +61,7 @@ public class PlayCardArea : MonoBehaviour, ICardDropReceiver
         }
     }
 
-    public void OnHoverExit(UnitInstance source, CardInstance cardInstance)
+    public void OnHoverExit(BaseUnitInstance source, CardInstance cardInstance)
     {
         if (highlightedTargets == null) return;
         foreach (var target in highlightedTargets)

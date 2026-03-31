@@ -68,7 +68,8 @@ public enum CardType
     Power,
     Status,
     Curse,
-    Quest
+    Quest,
+    None
 }
 
 public enum CardRarity

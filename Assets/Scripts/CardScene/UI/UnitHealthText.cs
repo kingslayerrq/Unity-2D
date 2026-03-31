@@ -5,11 +5,11 @@ using UnityEngine;
 public class UnitHealthText : MonoBehaviour
 {
     private TMP_Text _text;
-    private UnitInstance _unitInstance;
+    private BaseUnitInstance _unitInstance;
     private void Awake()
     {
         _text = GetComponent<TMP_Text>();
-        _unitInstance = GetComponentInParent<UnitInstance>();
+        _unitInstance = GetComponentInParent<BaseUnitInstance>();
     }
 
     private void Start()

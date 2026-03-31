@@ -8,7 +8,7 @@ public class HealCardEffect : BaseCardEffect
 
     public override void Execute(CardContext context, CardEffectData effectData)
     {
-        if (context == null || context.CombatSystem == null || context.CardInstance == null) return;
+        if (context == null || context.CombatManager == null || context.CardInstance == null) return;
         if (context.Source == null || context.Target == null) return;
 
         if (effectData.CardEffectConfig is not HealCardEffectConfig healConfig)
@@ -18,8 +18,11 @@ public class HealCardEffect : BaseCardEffect
             return;
         }
         
-        context.CombatSystem.ResolveHeal(context.Source, context.Target, healConfig.Amount);
+        // context.CombatSystem.ResolveHeal(context.Source, context.Target, healConfig.Amount);
 
-
+        HealAction healAction = new HealAction(context.CombatManager.CombatSystem,
+                context.Source, context.Target, healConfig.Amount);
+        
+        context.CombatManager.ActionQueue.Enqueue(healAction, null);
     }
 }

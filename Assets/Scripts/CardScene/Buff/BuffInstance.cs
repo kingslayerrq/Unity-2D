@@ -33,7 +33,7 @@ public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
         }
     }
 
-    public virtual void OnTurnStart(UnitInstance owner, CombatSystem combatSystem)
+    public virtual void OnTurnStart(BaseUnitInstance owner, CombatSystem combatSystem)
     {
         throw new System.NotImplementedException();
     }
@@ -41,7 +41,7 @@ public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
     /**
      * base OnTurnEnd removes decrease the stack by 1
      */
-    public virtual void OnTurnEnd(UnitInstance owner, CombatSystem combatSystem)
+    public virtual void OnTurnEnd(BaseUnitInstance owner, CombatSystem combatSystem)
     {
         if (Data.ExpiresAtEndOfTurn)
         {

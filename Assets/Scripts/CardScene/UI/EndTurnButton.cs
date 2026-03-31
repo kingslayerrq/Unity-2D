@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class EndTurnButton : MonoBehaviour
 {
-    private UnitInstance _unitInstance;
+    private BasePlayerUnitInstance _playerUnitInstance;
     private Button _endTurnButton;
     private TMP_Text _endTurnButtonText;
     [SerializeField] private Image _endTurnButtonBackground;
@@ -14,14 +14,14 @@ public class EndTurnButton : MonoBehaviour
     private Color _buttonBackgroundOrigColor;
     private void Awake()
     {
-        _unitInstance = GetComponentInParent<UnitInstance>();
+        _playerUnitInstance = GetComponentInParent<BasePlayerUnitInstance>();
         _endTurnButton = GetComponent<Button>();
         _endTurnButtonBackground = GetComponentInChildren<Image>();
         _endTurnButtonText = _endTurnButton.GetComponentInChildren<TMP_Text>();
 
         if (_endTurnButton != null)
         {
-            _endTurnButton.onClick.AddListener(_unitInstance.CombatManager.EndPlayerTurn);
+            _endTurnButton.onClick.AddListener(_playerUnitInstance.CombatManager.EndPlayerTurn);
         }
 
         if (_endTurnButtonBackground != null)
@@ -32,19 +32,19 @@ public class EndTurnButton : MonoBehaviour
 
     private void Start()
     {
-        if (_unitInstance != null)
+        if (_playerUnitInstance != null)
         {
-            _unitInstance.CombatManager.OnStateChange += HandlePlayerActionStateChange;
-            _unitInstance.CombatManager.OnPlayerNewTurnStart += HandlePlayerNewTurnStart;
+            _playerUnitInstance.CombatManager.OnStateChange += HandlePlayerActionStateChange;
+            _playerUnitInstance.CombatManager.OnPlayerNewTurnStart += HandlePlayerNewTurnStart;
         }
     }
 
     private void OnDestroy()
     {
-        if (_unitInstance != null)
+        if (_playerUnitInstance != null)
         {
-            _unitInstance.CombatManager.OnStateChange -= HandlePlayerActionStateChange;
-            _unitInstance.CombatManager.OnPlayerNewTurnStart -= HandlePlayerNewTurnStart;
+            _playerUnitInstance.CombatManager.OnStateChange -= HandlePlayerActionStateChange;
+            _playerUnitInstance.CombatManager.OnPlayerNewTurnStart -= HandlePlayerNewTurnStart;
         }
     }
 

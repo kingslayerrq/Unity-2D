@@ -3,11 +3,11 @@ using UnityEngine;
 public class ResetBlockEvent
 {
 
-    public UnitInstance Source { get; }
-    public UnitInstance Target { get; }
+    public BaseUnitInstance Source { get; }
+    public BaseUnitInstance Target { get; }
     public BlockResetSource ResetSource { get; }
 
-    public ResetBlockEvent(UnitInstance source, UnitInstance target, BlockResetSource resetSource)
+    public ResetBlockEvent(BaseUnitInstance source, BaseUnitInstance target, BlockResetSource resetSource)
     {
         Source = source;
         Target = target;

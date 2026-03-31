@@ -8,7 +8,7 @@ public class BlockCardEffect : BaseCardEffect
 
     public override void Execute(CardContext context, CardEffectData effectData)
     {
-        if (context == null || context.CombatSystem == null || context.CardInstance == null) return;
+        if (context == null || context.CombatManager == null || context.CardInstance == null) return;
         if (context.Source == null || context.Target == null) return;
 
         if (effectData.CardEffectConfig is not BlockCardEffectConfig blockConfig)
@@ -18,6 +18,10 @@ public class BlockCardEffect : BaseCardEffect
             return;
         }
         
-        context.CombatSystem.ResolveBlocks(context.Source, context.Target, blockConfig.Amount, true);
+        // context.CombatSystem.ResolveBlocks(context.Source, context.Target, blockConfig.Amount, true);
+        BlockAction blockAction = new BlockAction(context.Source.CombatManager.CombatSystem,
+            context.Source, context.Target, blockConfig.Amount, true);
+        
+        context.Source.CombatManager.ActionQueue.Enqueue(blockAction, null);
     }
 }

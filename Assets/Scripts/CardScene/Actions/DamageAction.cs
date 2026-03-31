@@ -5,12 +5,12 @@ using UnityEngine;
 public class DamageAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
-    private readonly UnitInstance _source;
-    private readonly List<UnitInstance> _targets;
+    private readonly BaseUnitInstance _source;
+    private readonly List<BaseUnitInstance> _targets;
     private readonly CardType _cardType;
     private readonly int _amount;
 
-    public DamageAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> targets, int amount, CardType cardType)
+    public DamageAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, int amount, CardType cardType)
     {
         _combatSystem = combatSystem;
         _source = source;

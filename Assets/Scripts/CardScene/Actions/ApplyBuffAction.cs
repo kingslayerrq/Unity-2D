@@ -5,12 +5,12 @@ using UnityEngine;
 public class ApplyBuffAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
-    private readonly UnitInstance _source;
-    private readonly List<UnitInstance> _targets;
+    private readonly BaseUnitInstance _source;
+    private readonly List<BaseUnitInstance> _targets;
     private readonly BuffData _buffData;
     private readonly int _stacks;
 
-    public ApplyBuffAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> targets, BuffData buffData,
+    public ApplyBuffAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, BuffData buffData,
         int stacks)
     {
         _combatSystem = combatSystem;

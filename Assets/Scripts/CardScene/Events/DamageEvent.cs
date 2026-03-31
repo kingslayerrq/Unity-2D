@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class DamageEvent 
 {
-    public UnitInstance Source { get; }
-    public UnitInstance Target { get; }
+    public BaseUnitInstance Source { get; }
+    public BaseUnitInstance Target { get; }
     public int Amount { get; set; }
     public CardType CardType { get; }
 
-    public DamageEvent(UnitInstance source, UnitInstance target, int amount, CardType cardType)
+    public DamageEvent(BaseUnitInstance source, BaseUnitInstance target, int amount, CardType cardType)
     {
         Source = source;
         Target = target;

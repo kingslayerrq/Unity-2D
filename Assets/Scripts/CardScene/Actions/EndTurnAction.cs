@@ -5,10 +5,10 @@ using UnityEngine;
 public class EndTurnAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
-    private readonly UnitInstance _source;
-    private readonly List<UnitInstance> _allUnits;
+    private readonly BaseUnitInstance _source;
+    private readonly List<BaseUnitInstance> _allUnits;
 
-    public EndTurnAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> allUnits)
+    public EndTurnAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> allUnits)
     {
         _combatSystem = combatSystem;
         _source = source;

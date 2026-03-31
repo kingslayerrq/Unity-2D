@@ -5,11 +5,11 @@ using UnityEngine;
 public class ResetBlockAction: ICombatAction
 {
     private readonly CombatSystem _combatSystem;
-    private readonly UnitInstance _source;
-    private readonly List<UnitInstance> _targets;
+    private readonly BaseUnitInstance _source;
+    private readonly List<BaseUnitInstance> _targets;
     private readonly BlockResetSource _resetSource;
 
-    public ResetBlockAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> targets, BlockResetSource resetSource)
+    public ResetBlockAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, BlockResetSource resetSource)
     {
         _combatSystem = combatSystem;
         _source = source;

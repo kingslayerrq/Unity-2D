@@ -8,7 +8,7 @@ using TMPro;
 public class UnitHealthbar : MonoBehaviour
 {
     private Image _image;
-    private UnitInstance _unitInstance;
+    private BaseUnitInstance _unitInstance;
     
     [Header("Animation Settings")]
     [SerializeField] private float drainDuration = 0.5f; 
@@ -17,7 +17,7 @@ public class UnitHealthbar : MonoBehaviour
     private void Awake()
     {
         _image = GetComponent<Image>();
-        _unitInstance = GetComponentInParent<UnitInstance>();
+        _unitInstance = GetComponentInParent<BaseUnitInstance>();
     }
 
     private void Start()

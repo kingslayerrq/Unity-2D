@@ -3,17 +3,17 @@ using UnityEngine;
 
 public class CardContext
 {
-    public UnitInstance Source { get; private set; }
-    public List<UnitInstance> Target { get; private set; }
+    public BaseUnitInstance Source { get; private set; }
+    public List<BaseUnitInstance> Target { get; private set; }
     public CardInstance CardInstance { get; private set; }
-    public CombatSystem CombatSystem { get; private set; }
+    public CombatManager CombatManager { get; private set; }
 
-    public CardContext(UnitInstance source, List<UnitInstance> target, CardInstance cardInstance, CombatSystem combatSystem)
+    public CardContext(BaseUnitInstance source, List<BaseUnitInstance> target, CardInstance cardInstance, CombatManager combatManager)
     {
         Source = source;
         Target = target;
         CardInstance = cardInstance;
-        CombatSystem = combatSystem;
+        CombatManager = combatManager;
     }
 }
 

@@ -9,5 +9,5 @@ public interface ICardTarget
     /// <summary>
     /// get the UnitInstance 
     /// </summary>
-    UnitInstance Target { get; }
+    BaseUnitInstance Target { get; }
 }

@@ -6,11 +6,11 @@ using UnityEngine;
 public class DiscardAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
-    private readonly UnitInstance _source;
-    private readonly List<UnitInstance> _targets;
+    private readonly BasePlayerUnitInstance _source;
+    private readonly List<BasePlayerUnitInstance> _targets;
     private readonly IReadOnlyList<CardInstance> _cards;
 
-    public DiscardAction(CombatSystem combatSystem, UnitInstance source, List<UnitInstance> targets, IReadOnlyList<CardInstance> cards)
+    public DiscardAction(CombatSystem combatSystem, BasePlayerUnitInstance source, List<BasePlayerUnitInstance> targets, IReadOnlyList<CardInstance> cards)
     {
         _combatSystem = combatSystem;
         _source = source;

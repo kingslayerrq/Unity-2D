@@ -18,7 +18,7 @@ public class Deck
         this.startingDeckData = startingDeckData;
     }
 
-    public void InstantiateDeck(UnitInstance owner)
+    public void InstantiateDeck(BasePlayerUnitInstance owner)
     {
         if (startingDeckData == null)
         {

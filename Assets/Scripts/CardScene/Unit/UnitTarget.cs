@@ -4,25 +4,25 @@ using UnityEngine;
 
 public class UnitTarget : MonoBehaviour, ICardDropReceiver
 {
-    private UnitInstance _unitInstance;
+    private BaseUnitInstance _unitInstance;
     public int Priority { get; private set; } = CONSTANTS.UNIT_TARGET_PRIORITY;
     private void Awake()
     {
-        _unitInstance = GetComponent<UnitInstance>();
+        _unitInstance = GetComponent<BaseUnitInstance>();
     }
 
-    public List<UnitInstance> GetReceiverUnitInstance(UnitInstance source, CardInstance cardInstance)
+    public List<BaseUnitInstance> GetReceiverUnitInstance(BaseUnitInstance source, CardInstance cardInstance)
     {
-        var instances = new List<UnitInstance> { _unitInstance };
+        var instances = new List<BaseUnitInstance> { _unitInstance };
         return instances;
     }
 
-    public bool CanReceiveCard(UnitInstance source, CardInstance cardInstance)
+    public bool CanReceiveCard(BaseUnitInstance source, CardInstance cardInstance)
     {
         return ValidateCardTargets(source, cardInstance).Count != 0;
     }
 
-    public List<ICardTarget> ValidateCardTargets(UnitInstance source, CardInstance cardInstance)
+    public List<ICardTarget> ValidateCardTargets(BaseUnitInstance source, CardInstance cardInstance)
     {
         List<ICardTarget> targets = new List<ICardTarget>();
         switch (cardInstance.CurrentTargetType)
@@ -53,13 +53,13 @@ public class UnitTarget : MonoBehaviour, ICardDropReceiver
         return targets;
     }
 
-    public void OnHoverEnter(UnitInstance source, CardInstance cardInstance)
+    public void OnHoverEnter(BaseUnitInstance source, CardInstance cardInstance)
     {
         // highlight validate targets
         if (CanReceiveCard(source, cardInstance)) _unitInstance.UnitUIManager.UnitHighlight.HighlightUnit();
     }
 
-    public void OnHoverExit(UnitInstance source, CardInstance cardInstance)
+    public void OnHoverExit(BaseUnitInstance source, CardInstance cardInstance)
     {
         if (_unitInstance.UnitUIManager.UnitHighlight.IsHighlighted)
         {

@@ -9,7 +9,7 @@ public class VulnerableBuffInstance : BuffInstance, IOnBeforeTakeDamage
     }
 
 
-    public void OnBeforeTakeDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
+    public void OnBeforeTakeDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem)
     {
         if (owner == null) return;
         var type = damageEvent.CardType;

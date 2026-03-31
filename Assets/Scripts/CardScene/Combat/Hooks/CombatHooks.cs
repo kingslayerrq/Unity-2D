@@ -2,91 +2,91 @@ namespace CardScene.Combat.Hooks
 {
     public interface IOnTurnStart
     {
-        void OnTurnStart(UnitInstance owner, CombatSystem combatSystem);
+        void OnTurnStart(BaseUnitInstance owner, CombatSystem combatSystem);
     }
     
     public interface IOnTurnEnd
     {
-        void OnTurnEnd(UnitInstance owner, CombatSystem combatSystem);
+        void OnTurnEnd(BaseUnitInstance owner, CombatSystem combatSystem);
     }
 
     public interface IOnEnergySpent
     {
-        void OnEnergySpent(UnitInstance owner, CombatSystem combatSystem);
+        void OnEnergySpent(BaseUnitInstance owner, CombatSystem combatSystem);
     }
 
     public interface IOnBeforeBlockReset
     {
-        void OnBeforeBlockReset(UnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem);
+        void OnBeforeBlockReset(BaseUnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem);
     }
 
     public interface IOnAfterBlockReset
     {
-        void OnAfterBlockReset(UnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem);
+        void OnAfterBlockReset(BaseUnitInstance owner, ResetBlockEvent blockEvent, CombatSystem combatSystem);
     }
     public interface IOnCardPlayed
     {
-        void OnCardPlayed(UnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
+        void OnCardPlayed(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
     }
 
     public interface IOnCardDrawn
     {
-        void OnCardDrawn(UnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
+        void OnCardDrawn(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
     }
 
     public interface IOnCardDiscarded
     {
-        void OnCardDiscarded(UnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
+        void OnCardDiscarded(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
     }
     
     public interface IOnBeforeDealDamage
     {
-        void OnBeforeDealDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
+        void OnBeforeDealDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
     }
 
     public interface IOnBeforeTakeDamage
     {
-        void OnBeforeTakeDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
+        void OnBeforeTakeDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
     }
 
     public interface IOnAfterDealDamage
     {
-        void OnAfterDealDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
+        void OnAfterDealDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
     }
 
     public interface IOnAfterTakeDamage
     {
-        void OnAfterTakeDamage(UnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
+        void OnAfterTakeDamage(BaseUnitInstance owner, DamageEvent damageEvent, CombatSystem combatSystem);
     }
 
     public interface IOnApplyBlock
     {
-        void OnApplyBlock(UnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem);
+        void OnApplyBlock(BaseUnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem);
     }
 
     public interface IOnReceiveBlock
     {
-        void OnReceiveBlock(UnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem);
+        void OnReceiveBlock(BaseUnitInstance owner, BlockEvent blockEvent, CombatSystem combatSystem);
     }
 
     public interface IOnApplyHeal
     {
-        void OnApplyHeal(UnitInstance owner, HealEvent healEvent, CombatSystem combatSystem);
+        void OnApplyHeal(BaseUnitInstance owner, HealEvent healEvent, CombatSystem combatSystem);
     }
 
     public interface IOnReceiveHeal
     {
-        void OnReceiveHeal(UnitInstance owner, HealEvent healEvent, CombatSystem combatSystem);
+        void OnReceiveHeal(BaseUnitInstance owner, HealEvent healEvent, CombatSystem combatSystem);
     }
 
     public interface IOnApplyBuff
     {
-        void OnApplyBuff(UnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem);
+        void OnApplyBuff(BaseUnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem);
     }
 
     public interface IOnReceiveBuff
     {
-        void OnReceiveBuff(UnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem);
+        void OnReceiveBuff(BaseUnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem);
     }
     
 }
