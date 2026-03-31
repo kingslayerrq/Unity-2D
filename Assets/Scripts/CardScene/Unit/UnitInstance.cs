@@ -9,28 +9,37 @@ using UnityEngine;
 public abstract class BaseUnitInstance : MonoBehaviour, ICardTarget
 {
     
-    public BuffManager BuffManager { get; private set; }
-    public UnitUIManager UnitUIManager { get; private set; }
+    public BuffManager BuffManager { get; protected set; }
+    public UnitUIManager UnitUIManager { get; protected set; }
     
-    [SerializeField] private CombatManager combatManager;
+    [SerializeField] protected CombatManager combatManager;
+
+    [SerializeField] protected string currentName;
+    [SerializeField] protected string currentDescription;
+    [SerializeField] protected Sprite currentSprite;
     
     [Header("Instance stats")]
-    [SerializeField] private UnitType unitType;
-    
-    [SerializeField] private int currentHealth;
-    [SerializeField] private int currentMaxHealth;
-    [SerializeField] private int currentBlock;
+    [SerializeField] protected UnitType unitType;
+    [SerializeField] protected int currentHealth;
+    [SerializeField] protected int currentMaxHealth;
+    [SerializeField] protected int currentBlock;
+
+    protected bool isInitialized = false;
 
     public event Action<int, int> OnHealthChanged;
 
     #region getters
         public CombatManager CombatManager => combatManager;
-        
-        public UnitType UnitType => unitType;
     
+        public string CurrentName => currentName;
+        public string CurrentDescription => currentDescription;
+        public Sprite CurrentSprite => currentSprite;
+    
+        public UnitType UnitType => unitType;
         public int CurrentHealth => currentHealth;
         public int CurrentMaxHealth => currentMaxHealth;
         public int CurrentBlock => currentBlock;
+        public bool IsInitialized => isInitialized;
     #endregion
     
 
@@ -40,21 +49,10 @@ public abstract class BaseUnitInstance : MonoBehaviour, ICardTarget
         if (UnitUIManager ==  null) UnitUIManager = GetComponent<UnitUIManager>();
     }
 
-    
 
-    public virtual void Initialize()
-    {
-        Debug.Log($"{name} initialize");
-        
-        if (BuffManager == null)
-        {
-            Debug.LogWarning("BuffManager is null");
-            return;
-        }
-        
-        InitHealth();
-    }
-    
+    public abstract void Initialize();
+
+    public abstract void OnBattleStart();
 
     public void ResetBlock(ResetBlockEvent resetEvent)
     {
@@ -79,11 +77,16 @@ public abstract class BaseUnitInstance : MonoBehaviour, ICardTarget
 
     
 
-    private void InitHealth()
+    // <summary>
+    // Set currentHealth to currentMaxHealth
+    // Use on battle start
+    // <summary>
+    protected void InitHealth()
     {
-        currentHealth =  currentMaxHealth;
+        currentHealth = isInitialized ? currentHealth : currentMaxHealth;
         OnHealthChanged?.Invoke(currentHealth, currentMaxHealth);
     }
+    
     
     #region ICardTargetImplementation
 

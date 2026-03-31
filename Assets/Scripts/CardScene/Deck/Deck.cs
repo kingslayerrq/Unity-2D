@@ -29,7 +29,6 @@ public class Deck
         foreach (CardData cd in startingDeckData.CardDataList)
         {
             cardInstances.Add(new CardInstance(cd, owner));
-            
         }
         Debug.Log("Instantiated deck");
     }

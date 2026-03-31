@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 
-public class EnemyDMGActionConfig : BaseEnemyActionConfig
+[Serializable]
+public class EnemyDmgActionConfig : BaseEnemyActionConfig
 {
     [SerializeField] private int amount;
     [SerializeField] private int numberOfAttacks;

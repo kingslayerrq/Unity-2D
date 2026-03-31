@@ -26,6 +26,10 @@ public class DmgCardEffect : BaseCardEffect
             dmgConfig.Amount, 
             context.CardInstance.Data.CardType
         );
-        context.CombatManager.ActionQueue.Enqueue(damageAction, null);
+        
+        for (int i = 0; i < dmgConfig.NumberOfAttacks; i++)
+        {
+            context.CombatManager.ActionQueue.Enqueue(damageAction, null);
+        }
     }
 }

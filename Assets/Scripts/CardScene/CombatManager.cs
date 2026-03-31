@@ -6,7 +6,6 @@ public class CombatManager : MonoBehaviour
 {
     [SerializeField] private CombatSystem combatSystem;
     [SerializeField] private BasePlayerUnitInstance player;
-    [SerializeField] private BaseEnemyUnitInstance enemy;
     [SerializeField] private int currentTurn;
     [SerializeField] private CombatState currentCombatState = CombatState.None;
     private CombatActionQueue actionQueue = new CombatActionQueue();
@@ -35,14 +34,14 @@ public class CombatManager : MonoBehaviour
     {
         SetState(CombatState.BattleStart);
         
-        player.Initialize();
-        enemy.Initialize();
+        if (!player.IsInitialized) player.Initialize();
+        foreach (var enemy in _enemies)
+        {
+            if (!enemy.IsInitialized) enemy.Initialize();
+        }
         
         _players.Clear();
         _players.Add(player);
-        
-        _enemies.Clear();
-        _enemies.Add(enemy);
         
         _allUnits.Clear();
         _allUnits.AddRange(_players);
@@ -86,17 +85,8 @@ public class CombatManager : MonoBehaviour
     // Spends Energy and Play the card wrapper
     public void PlayCard(CardInstance card, List<BaseUnitInstance> targets)
     {
-        if (combatSystem == null)
-        {
-            bool isPrefab = gameObject.scene.name == null;
-            Debug.LogError($"CombatSystem is NULL during PlayCard! " +
-                           $"Am I a prefab? {isPrefab}. " +
-                           $"My GameObject name is: {gameObject.name}");
-            return; 
-        }
         actionQueue.Enqueue(new SpendEnergyAction(combatSystem, player, new List<BasePlayerUnitInstance>{player}, card.CurrentCost), null);
         actionQueue.Enqueue(new PlayCardAction(combatSystem, player, targets, card), null);
-        // actionQueue.Enqueue(new PlayToDiscardAction(combatSystem, player, targets, card), null);
     }
 
     public void EndPlayerTurn()

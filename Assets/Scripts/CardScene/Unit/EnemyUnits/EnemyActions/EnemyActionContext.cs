@@ -7,15 +7,15 @@ public class EnemyActionContext
     public List<BaseUnitInstance> Targets { get; private set; }
     public List<CardInstance> Cards { get; private set; }
     public BaseEnemyAction Action { get; private set; }
-    public CombatSystem CombatSystem { get; private set; }
+    public CombatManager CombatManager { get; private set; }
 
     public EnemyActionContext(BaseEnemyUnitInstance source, List<BaseUnitInstance> targets, List<CardInstance> cards,
-        BaseEnemyAction action, CombatSystem combatSystem)
+        BaseEnemyAction action, CombatManager combatManager)
     {
         Source = source;
         Targets = targets;
         Cards = cards;
         Action = action;
-        CombatSystem = combatSystem;
+        CombatManager = combatManager;
     }
 }
