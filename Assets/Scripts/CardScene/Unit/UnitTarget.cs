@@ -6,11 +6,12 @@ public class UnitTarget : MonoBehaviour, ICardDropReceiver
 {
     private BaseUnitInstance _unitInstance;
     public int Priority { get; private set; } = CONSTANTS.UNIT_TARGET_PRIORITY;
-    private void Awake()
-    {
-        _unitInstance = GetComponent<BaseUnitInstance>();
-    }
 
+    public void Initialize(BaseUnitInstance unitInstance)
+    {
+        _unitInstance = unitInstance;
+    }
+    
     public List<BaseUnitInstance> GetReceiverUnitInstance(BaseUnitInstance source, CardInstance cardInstance)
     {
         var instances = new List<BaseUnitInstance> { _unitInstance };
@@ -56,14 +57,11 @@ public class UnitTarget : MonoBehaviour, ICardDropReceiver
     public void OnHoverEnter(BaseUnitInstance source, CardInstance cardInstance)
     {
         // highlight validate targets
-        if (CanReceiveCard(source, cardInstance)) _unitInstance.UnitUIManager.UnitHighlight.HighlightUnit();
+        if (CanReceiveCard(source, cardInstance)) _unitInstance.TriggerHighlight(true);
     }
 
     public void OnHoverExit(BaseUnitInstance source, CardInstance cardInstance)
     {
-        if (_unitInstance.UnitUIManager.UnitHighlight.IsHighlighted)
-        {
-            _unitInstance.UnitUIManager.UnitHighlight.HideHighlight();
-        }
+        _unitInstance.TriggerHighlight(false);
     }
 }

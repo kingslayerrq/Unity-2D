@@ -13,22 +13,32 @@ public class UnitHealthbar : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float drainDuration = 0.5f; 
     [SerializeField] private Ease drainEase = Ease.OutCubic;
-    private Tweener healthTween;
+    private Tweener _healthTween;
+    
     private void Awake()
     {
         _image = GetComponent<Image>();
-        _unitInstance = GetComponentInParent<BaseUnitInstance>();
     }
 
-    private void Start()
+    /// <summary>
+    /// Called by UnitView when the prefab is spawned and linked
+    /// </summary>
+    /// <param name="unitInstance"></param>
+    public void Initialize(BaseUnitInstance unitInstance)
     {
-        if (_unitInstance == null)
+        if (_unitInstance != null)
         {
-            Debug.LogWarning("UnitHealthbar: Unit Instance is null");
-            return;
+            _unitInstance.OnHealthChanged -= UpdateHealthBar;
         }
-        _unitInstance.OnHealthChanged += UpdateHealthBar;
+        _unitInstance = unitInstance;
+
+        if (_unitInstance != null)
+        {
+            _unitInstance.OnHealthChanged += UpdateHealthBar;
+            UpdateHealthBar(_unitInstance.CurrentHealth, _unitInstance.CurrentMaxHealth);
+        }
     }
+    
 
     private void UpdateHealthBar(int currentHealth, int maxHealth)
     {
@@ -36,13 +46,13 @@ public class UnitHealthbar : MonoBehaviour
         float targetFill = (float)currentHealth / maxHealth;
 
         // Check if the animation is currently running
-        if (healthTween != null && healthTween.IsActive() && healthTween.IsPlaying())
+        if (_healthTween != null && _healthTween.IsActive() && _healthTween.IsPlaying())
         {
-            healthTween.ChangeEndValue(targetFill, drainDuration, true);
+            _healthTween.ChangeEndValue(targetFill, drainDuration, true);
         }
         else
         {
-            healthTween = _image.DOFillAmount(targetFill, drainDuration).SetEase(drainEase);
+            _healthTween = _image.DOFillAmount(targetFill, drainDuration).SetEase(drainEase);
         }
     }
 

@@ -24,18 +24,18 @@ public class DiscardAction : ICombatAction
 
         foreach (var card in _cards)
         {
-            _source.UnitUIManager.PlayerHandView.TryBeginAnimateOut(card, out var view);
+            _source.CombatManager.PlayerHandView.TryBeginAnimateOut(card, out var view);
         }
         
         _combatSystem.ResolveDiscard(_source, _targets,  _cards);
         
-        yield return _source.UnitUIManager.PlayerHandView.DiscardCardsAnimation(_cards);
+        yield return _source.CombatManager.PlayerHandView.DiscardCardsAnimation(_cards);
 
         foreach (var card in _cards)
         {
-            _source.UnitUIManager.PlayerHandView.CompleteAnimateOut(card);
+            _source.CombatManager.PlayerHandView.CompleteAnimateOut(card);
         }
-        _source.UnitUIManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
+        _source.CombatManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
     }
 
     public string GetActionDetails()

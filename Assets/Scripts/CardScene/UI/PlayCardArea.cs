@@ -7,8 +7,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class PlayCardArea : MonoBehaviour, ICardDropReceiver
 {
-    [SerializeField] private List<BaseUnitInstance> playerTargets;
-    [SerializeField] private List<BaseUnitInstance> enemiesTargets;
+    [SerializeField] private CombatManager combatManager;
+    
     
     private List<ICardTarget> highlightedTargets;
 
@@ -31,16 +31,15 @@ public class PlayCardArea : MonoBehaviour, ICardDropReceiver
         switch (cardInstance.CurrentTargetType)
         {
             case TargetType.AllAlly:
-                targets.AddRange(playerTargets);
+                targets.AddRange(combatManager.Players);
                 break;
             case TargetType.AllEnemy:
-                targets.AddRange(enemiesTargets);
+                targets.AddRange(combatManager.Enemies);
                 break;
             case TargetType.None:
                 break;
             case TargetType.Any:
-                targets.AddRange(playerTargets);
-                targets.AddRange(enemiesTargets);
+                targets.AddRange(combatManager.AllUnits);
                 break;
             case TargetType.Self:
                 targets.Add(source);
@@ -57,7 +56,7 @@ public class PlayCardArea : MonoBehaviour, ICardDropReceiver
         highlightedTargets = targets;
         foreach (var target in targets)
         {
-            target.Target.UnitUIManager.UnitHighlight.HighlightUnit();
+            target.Target.TriggerHighlight(true);
         }
     }
 
@@ -66,7 +65,7 @@ public class PlayCardArea : MonoBehaviour, ICardDropReceiver
         if (highlightedTargets == null) return;
         foreach (var target in highlightedTargets)
         {
-            target.Target.UnitUIManager.UnitHighlight.HideHighlight();
+            target.Target.TriggerHighlight(false);
         }
 
         highlightedTargets = null;

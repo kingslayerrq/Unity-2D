@@ -6,34 +6,35 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public abstract class CardPileUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     protected CardPileManager _cardPileManager;
+    
     protected TMP_Text _cardPileCardCount;
     protected Image _cardPileIconImage;
     protected Vector3 _cardPileIconOrigScale;
     protected Button _cardPileButton;
     protected Button _backButton;
+    
     [SerializeField] protected ScrollRect _cardPileScrollRect;
     [SerializeField] private CardView cardViewPrefab;
     [SerializeField] private Transform cardPileViewContainer;
     [SerializeField] protected Transform _cardPileImageTransform;
     [SerializeField] protected CanvasGroup _cardPileCanvasGroup;
-    [SerializeField] protected float _cardPileIconScale;
-    [SerializeField] protected float _hoverAnimationTime;
-    [SerializeField] protected float _cardPileCanvasFadeTime;
     
-    // Pooling
+    [SerializeField] protected float _cardPileIconScale = 1.2f;
+    [SerializeField] protected float _hoverAnimationTime = 0.2f;
+    [SerializeField] protected float _cardPileCanvasFadeTime = 0.3f;
+    
+    // Kept static to share memory across all pile viewers
     protected static readonly Stack<CardView> _pooledViews = new Stack<CardView>();
     protected static readonly List<CardView> _activeViews = new List<CardView>();
 
-    protected void Awake()
+    protected virtual void Awake()
     {
-        _cardPileManager = GetComponentInParent<CardPileManager>();
         _cardPileCardCount = GetComponentInChildren<TMP_Text>();
         _cardPileIconImage = GetComponentInChildren<Image>();
         _cardPileButton = GetComponentInChildren<Button>();
-        
 
         if (_cardPileIconImage != null)
         {
@@ -43,37 +44,49 @@ public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerE
         if (_cardPileCanvasGroup != null)
         {
             _backButton = _cardPileCanvasGroup.GetComponentInChildren<Button>();
-            Debug.Log("Canvas active");
             if (_backButton != null)
             {
-                Debug.Log("button active");
                 _backButton.onClick.AddListener(HideCardsInPile);
             }
+            
+            // Ensure the canvas is hidden on awake
+            _cardPileCanvasGroup.alpha = 0f;
+            _cardPileCanvasGroup.interactable = false;
+            _cardPileCanvasGroup.blocksRaycasts = false;
         }
-        
     }
 
-    protected void Start()
+    // Call this from CardPileManager to pass the dependency down
+    public virtual void Initialize(CardPileManager cardPileManager)
     {
-        if (_cardPileManager == null)
+        // Cleanup in case of re-initialization
+        if (_cardPileManager != null)
         {
-            Debug.LogError("CardPileManager not found");
-            return;
+            _cardPileManager.OnCardPilesInitialized -= InitializeCardPileUI;
         }
-        _cardPileManager.OnCardPilesInitialized += InitializeCardPileUI;
-        _cardPileButton.onClick.AddListener(DisplayCardsInPile);
+
+        _cardPileManager = cardPileManager;
+
+        if (_cardPileManager != null)
+        {
+            _cardPileManager.OnCardPilesInitialized += InitializeCardPileUI;
+        }
+
+        if (_cardPileButton != null)
+        {
+            _cardPileButton.onClick.RemoveAllListeners();
+            _cardPileButton.onClick.AddListener(DisplayCardsInPile);
+        }
     }
 
     protected abstract void InitializeCardPileUI();
 
     protected virtual void UpdateCardPileUI(int count)
     {
-        if (_cardPileCardCount == null)
+        if (_cardPileCardCount != null)
         {
-            Debug.LogError("CardPileCardCount not found");
-            return;
+            _cardPileCardCount.text = count.ToString();
         }
-        _cardPileCardCount.text = count.ToString();
     }
 
     protected virtual void DisplayCardsInPile()
@@ -81,7 +94,6 @@ public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerE
         if (_cardPileCanvasGroup == null) return;
         
         _cardPileCanvasGroup.DOFade(1f, _cardPileCanvasFadeTime);
-        
         _cardPileCanvasGroup.interactable = true;
         _cardPileCanvasGroup.blocksRaycasts = true;
     }
@@ -93,7 +105,11 @@ public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerE
         _cardPileCanvasGroup.interactable = false;
         _cardPileCanvasGroup.blocksRaycasts = false;
         
-        _cardPileCanvasGroup.DOFade(0f, _cardPileCanvasFadeTime);
+        _cardPileCanvasGroup.DOFade(0f, _cardPileCanvasFadeTime).OnComplete(() => 
+        {
+            // Optional: Pool the views when the fade out finishes so they don't sit active invisibly
+            ClearAndPoolActiveViews();
+        });
     }
 
     protected void RenderCardViews(IReadOnlyList<CardInstance> cards)
@@ -153,11 +169,22 @@ public abstract class CardPileUI: MonoBehaviour, IPointerEnterHandler, IPointerE
         _pooledViews.Push(cardView);
     }
     
-    protected virtual void OnDisable()
+    protected virtual void OnDestroy()
     {
-        if (_cardPileManager == null)  return;
-        _cardPileManager.OnCardPilesInitialized -= InitializeCardPileUI;
-        _cardPileButton.onClick.RemoveAllListeners();
+        if (_cardPileManager != null)
+        {
+            _cardPileManager.OnCardPilesInitialized -= InitializeCardPileUI;
+        }
+        
+        if (_cardPileButton != null)
+        {
+            _cardPileButton.onClick.RemoveListener(DisplayCardsInPile);
+        }
+
+        if (_backButton != null)
+        {
+            _backButton.onClick.RemoveListener(HideCardsInPile);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)

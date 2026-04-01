@@ -19,10 +19,10 @@ public class PlayToDiscardAction : ICombatAction
     }
     public IEnumerator ExecuteAction()
     {
-        yield return _source.UnitUIManager.PlayerHandView.PlayToDiscardAnimation(_card);
+        yield return _source.CombatManager.PlayerHandView.PlayToDiscardAnimation(_card);
         
-        _source.UnitUIManager.PlayerHandView.CompleteAnimateOut(_card);
-        _source.UnitUIManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
+        _source.CombatManager.PlayerHandView.CompleteAnimateOut(_card);
+        _source.CombatManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
     }
 
     public string GetActionDetails()

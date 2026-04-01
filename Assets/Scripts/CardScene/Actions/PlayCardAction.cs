@@ -20,7 +20,7 @@ public class PlayCardAction : ICombatAction
     public IEnumerator ExecuteAction()
     {
         // lock, pull the card out of hand
-        _source.UnitUIManager.PlayerHandView.TryBeginAnimateOut(_card, out CardView view);
+        _source.CombatManager.PlayerHandView.TryBeginAnimateOut(_card, out CardView view);
         
         _combatSystem.ResolvePlayCard(_source, _targets, _card);
         

@@ -23,13 +23,13 @@ public class DiscardPileUI : CardPileUI
         _cardPileScrollRect.normalizedPosition = new Vector2(0, 1);
     }
 
-    protected override void OnDisable()
+    protected override void OnDestroy()
     {
-        base.OnDisable();
+        base.OnDestroy();
+        
         if (_cardPileManager.DiscardPile != null)
         {
             _cardPileManager.DiscardPile.OnCardPileCountChanged -= UpdateCardPileUI;
         }
-       
     }
 }

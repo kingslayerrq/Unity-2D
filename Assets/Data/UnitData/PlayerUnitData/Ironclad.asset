@@ -18,5 +18,8 @@ MonoBehaviour:
     Crushes foes with sword
     and flame against his will. '
   unitType: 0
-  unitSprite: {fileID: 0}
-  maxHealth: 0
+  unitSprite: {fileID: -253164801965239119, guid: 9f2e15b9a9498ac4c89f8ced1b10b4e2, type: 3}
+  maxHealth: 90
+  startingDeckData: {fileID: 11400000, guid: 9bddc5a6675e656438f7da9fd4961f19, type: 2}
+  drawAmount: 5
+  maxEnergy: 3

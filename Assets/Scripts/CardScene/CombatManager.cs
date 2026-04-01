@@ -5,21 +5,33 @@ using UnityEngine;
 public class CombatManager : MonoBehaviour
 {
     [SerializeField] private CombatSystem combatSystem;
-    [SerializeField] private BasePlayerUnitInstance player;
+    [SerializeField] private UnitsManager unitsManager;
+    
+    public CombatNode currentCombatNode;
+
     [SerializeField] private int currentTurn;
     [SerializeField] private CombatState currentCombatState = CombatState.None;
+    
+    [Header("Canvas UI")]
+    [SerializeField] private PlayerHandView playerHandView;
+    [SerializeField] private EndTurnButton endTurnButton;
+    
     private CombatActionQueue actionQueue = new CombatActionQueue();
-    private List<BasePlayerUnitInstance> _players = new List<BasePlayerUnitInstance>();
-    private List<BaseEnemyUnitInstance> _enemies = new List<BaseEnemyUnitInstance>();
-    private List<BaseUnitInstance> _allUnits = new List<BaseUnitInstance>();
+
 
     public event Action<CombatState> OnStateChange;
     public event Action<int> OnPlayerNewTurnStart;
     
+    public PlayerHandView PlayerHandView => playerHandView;
     public int CurrentTurn => currentTurn;
     public CombatState CurrentCombatState => currentCombatState;
     public CombatActionQueue ActionQueue => actionQueue;
     public CombatSystem CombatSystem => combatSystem;
+    
+    public BasePlayerUnitInstance Player => unitsManager.ActivePlayerUnitInstance;
+    public List<BaseEnemyUnitInstance> Enemies => unitsManager.ActiveEnemyUnitInstances;
+    public List<BaseUnitInstance> AllUnits => unitsManager.AllActiveUnits;
+    public List<BasePlayerUnitInstance> Players => unitsManager.ActivePlayerUnitInstances;
 
     private void Awake()
     {
@@ -28,27 +40,27 @@ public class CombatManager : MonoBehaviour
             Debug.LogError("Combat system isn't set");
             return;
         }
-    }
-
-    public void StartBattle()
-    {
-        SetState(CombatState.BattleStart);
-        
-        if (!player.IsInitialized) player.Initialize();
-        foreach (var enemy in _enemies)
+        if (unitsManager == null)
         {
-            if (!enemy.IsInitialized) enemy.Initialize();
+            Debug.LogError("Units Manager isn't set");
+            return;
         }
         
-        _players.Clear();
-        _players.Add(player);
+    }
+
+    public void StartBattle(CombatNode combatNode)
+    {
+        SetState(CombatState.BattleSetup);
         
-        _allUnits.Clear();
-        _allUnits.AddRange(_players);
-        _allUnits.AddRange(_enemies);
+        unitsManager.SpawnAndBindPlayerView();
         
-        // TODO: UI setup
+        if (endTurnButton != null) endTurnButton.Initialize(Player);
+
+        List<EnemyUnitData> enemyUnitDatas = combatNode.EnemyUnitDatas;
+
+        unitsManager.CreateAndSpawnEnemyUnits(enemyUnitDatas);
         
+        SetState(CombatState.BattleStart);
         EnterPlayerTurnStart();
     }
 
@@ -59,19 +71,20 @@ public class CombatManager : MonoBehaviour
         currentTurn++;
         OnPlayerNewTurnStart?.Invoke(currentTurn);
         
-        player.ResetEnergy();
-        player.BuffManager.OnTurnStart(player, combatSystem);
+        Player.ResetEnergy();
+        Player.BuffManager.OnTurnStart(Player, combatSystem);
         
-        actionQueue.Enqueue(new ResetBlockAction(combatSystem, player, _allUnits, BlockResetSource.TurnStart), null);
-        actionQueue.Enqueue(new DrawAction(combatSystem, player, _players, player.CurrentDrawAmount),
+        actionQueue.Enqueue(new ResetBlockAction(combatSystem, Player, AllUnits, BlockResetSource.TurnStart), null);
+        actionQueue.Enqueue(new DrawAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, 
+                Player.CurrentDrawAmount),
             OnPlayerTurnStartResolved);
         
     }
 
     private void OnPlayerTurnStartResolved()
     {
-        player.UnitUIManager.PlayerHandView.UpdateHand();
-        player.UnitUIManager.PlayerHandView.RefreshHand(player.Hand.Cards);
+        playerHandView.UpdateHand();
+        playerHandView.RefreshHand(Player.Hand.Cards);
         EnterPlayerAction();
     }
 
@@ -85,8 +98,8 @@ public class CombatManager : MonoBehaviour
     // Spends Energy and Play the card wrapper
     public void PlayCard(CardInstance card, List<BaseUnitInstance> targets)
     {
-        actionQueue.Enqueue(new SpendEnergyAction(combatSystem, player, new List<BasePlayerUnitInstance>{player}, card.CurrentCost), null);
-        actionQueue.Enqueue(new PlayCardAction(combatSystem, player, targets, card), null);
+        actionQueue.Enqueue(new SpendEnergyAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, card.CurrentCost), null);
+        actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card), null);
     }
 
     public void EndPlayerTurn()
@@ -94,9 +107,9 @@ public class CombatManager : MonoBehaviour
         SetState(CombatState.PlayerTurnEnd);
         
         // remove the card from player's hand
-        actionQueue.Enqueue(new DiscardAction(combatSystem, player, _players, player.Hand.Cards), null);
+        actionQueue.Enqueue(new DiscardAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, Player.Hand.Cards), null);
         
-        actionQueue.Enqueue(new EndTurnAction(combatSystem, player, _allUnits), null);
+        actionQueue.Enqueue(new EndTurnAction(combatSystem, Player, AllUnits), null);
         
         EnterEnemyTurnStart();
     }
@@ -114,7 +127,6 @@ public class CombatManager : MonoBehaviour
         Debug.Log("Enemy Turn Action");
         EnterPlayerTurnStart();
     }
-    private void CheckBattleEnd() { }
 
     private void SetState(CombatState newState)
     {
@@ -130,13 +142,10 @@ public class CombatManager : MonoBehaviour
         BattleStart,
         PlayerTurnStart,
         PlayerAction,
-        PlayerTargeting,
-        ResolvingAction,
         PlayerTurnEnd,
         EnemyTurnStart,
         EnemyAction,
         EnemyTurnEnd,
-        CheckBattleEnd,
         Victory,
         Defeat
     }

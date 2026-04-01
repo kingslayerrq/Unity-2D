@@ -9,13 +9,23 @@ public class UnitHealthText : MonoBehaviour
     private void Awake()
     {
         _text = GetComponent<TMP_Text>();
-        _unitInstance = GetComponentInParent<BaseUnitInstance>();
+
     }
 
-    private void Start()
+    public void Initialize(BaseUnitInstance unitInstance)
     {
-        if (_unitInstance) _unitInstance.OnHealthChanged += UpdateHealthText;
+        if (_unitInstance != null)
+        {
+            _unitInstance.OnHealthChanged -= UpdateHealthText;
+        }
+        
+        _unitInstance = unitInstance;
 
+        if (_unitInstance != null)
+        {
+            _unitInstance.OnHealthChanged += UpdateHealthText;
+            UpdateHealthText(_unitInstance.CurrentHealth, unitInstance.CurrentMaxHealth);
+        }
     }
 
     private void UpdateHealthText(int currentHealth, int maxHealth)
@@ -25,6 +35,6 @@ public class UnitHealthText : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_unitInstance) _unitInstance.OnHealthChanged -= UpdateHealthText;
+        if (_unitInstance != null) _unitInstance.OnHealthChanged -= UpdateHealthText;
     }
 }

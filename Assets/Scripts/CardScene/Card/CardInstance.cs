@@ -7,7 +7,7 @@ public class CardInstance
     
     public bool CanBePlayed => CheckForPlayability();
     [SerializeField] private CardData data;
-    [SerializeField] private BasePlayerUnitInstance currentOwner;
+    [NonSerialized] private BasePlayerUnitInstance currentOwner;
     [SerializeField] private int currentCost;
     [SerializeField] private string currentName;
     [SerializeField] private string currentDescription;

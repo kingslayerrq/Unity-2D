@@ -22,6 +22,6 @@ public class EndTurnAction : ICombatAction
 
     public string GetActionDetails()
     {
-        return $"{_source.name} is ending turn.";
+        return $"{_source.CurrentName} is ending turn.";
     }
 }

@@ -5,11 +5,21 @@ using UnityEngine;
 
 public class CardPileManager : MonoBehaviour
 {
+    [Header("UI References")]
+    [SerializeField] private DrawPileUI drawPileUI;
+    [SerializeField] private DiscardPileUI discardPileUI;
     public CardPile DrawPile { get; private set; } 
     public CardPile DiscardPile { get; private set;}
     public CardPile ExhaustPile { get; private set;}
 
     public event Action OnCardPilesInitialized;
+
+    private void Awake()
+    {
+        if (drawPileUI != null) drawPileUI.Initialize(this);
+        if (discardPileUI != null) discardPileUI.Initialize(this);
+    }
+
     /**
      * Initialize draw pile with deck(List<CardInstance>)
      * Initialize discard/exhaust pile
@@ -24,9 +34,10 @@ public class CardPileManager : MonoBehaviour
         DrawPile = new CardPile(deck);
         ExhaustPile = new CardPile(new List<CardInstance>());
         DiscardPile = new CardPile(new List<CardInstance>());
-        OnCardPilesInitialized?.Invoke();
         
         DrawPile.Shuffle();
+        
+        OnCardPilesInitialized?.Invoke();
     }
 
  

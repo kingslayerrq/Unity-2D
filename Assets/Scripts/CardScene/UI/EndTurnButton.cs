@@ -9,20 +9,20 @@ public class EndTurnButton : MonoBehaviour
     private BasePlayerUnitInstance _playerUnitInstance;
     private Button _endTurnButton;
     private TMP_Text _endTurnButtonText;
+    
     [SerializeField] private Image _endTurnButtonBackground;
     [SerializeField] private Color disabledColor;
+    
     private Color _buttonBackgroundOrigColor;
+
     private void Awake()
     {
-        _playerUnitInstance = GetComponentInParent<BasePlayerUnitInstance>();
         _endTurnButton = GetComponent<Button>();
-        _endTurnButtonBackground = GetComponentInChildren<Image>();
         _endTurnButtonText = _endTurnButton.GetComponentInChildren<TMP_Text>();
 
-        if (_endTurnButton != null)
-        {
-            _endTurnButton.onClick.AddListener(_playerUnitInstance.CombatManager.EndPlayerTurn);
-        }
+        // Safely try to get the background image if not set in Inspector
+        if (_endTurnButtonBackground == null) 
+            _endTurnButtonBackground = GetComponent<Image>();
 
         if (_endTurnButtonBackground != null)
         {
@@ -30,10 +30,17 @@ public class EndTurnButton : MonoBehaviour
         }
     }
 
-    private void Start()
+    // Called by UnitView when the player spawns
+    public void Initialize(BasePlayerUnitInstance playerInstance)
     {
-        if (_playerUnitInstance != null)
+        // Clean up old listeners just in case this button gets recycled
+        Cleanup();
+
+        _playerUnitInstance = playerInstance;
+
+        if (_playerUnitInstance != null && _playerUnitInstance.CombatManager != null)
         {
+            _endTurnButton.onClick.AddListener(_playerUnitInstance.CombatManager.EndPlayerTurn);
             _playerUnitInstance.CombatManager.OnStateChange += HandlePlayerActionStateChange;
             _playerUnitInstance.CombatManager.OnPlayerNewTurnStart += HandlePlayerNewTurnStart;
         }
@@ -41,8 +48,14 @@ public class EndTurnButton : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_playerUnitInstance != null)
+        Cleanup();
+    }
+
+    private void Cleanup()
+    {
+        if (_playerUnitInstance != null && _playerUnitInstance.CombatManager != null)
         {
+            _endTurnButton.onClick.RemoveListener(_playerUnitInstance.CombatManager.EndPlayerTurn);
             _playerUnitInstance.CombatManager.OnStateChange -= HandlePlayerActionStateChange;
             _playerUnitInstance.CombatManager.OnPlayerNewTurnStart -= HandlePlayerNewTurnStart;
         }
@@ -50,7 +63,8 @@ public class EndTurnButton : MonoBehaviour
 
     private void HandlePlayerNewTurnStart(int turnNumber)
     {
-        _endTurnButtonText.text = turnNumber.ToString();
+        if (_endTurnButtonText != null)
+            _endTurnButtonText.text = turnNumber.ToString();
     }
 
     private void HandlePlayerActionStateChange(CombatManager.CombatState combatState)
@@ -58,12 +72,14 @@ public class EndTurnButton : MonoBehaviour
         if (combatState == CombatManager.CombatState.PlayerAction)
         {
             _endTurnButton.interactable = true;
-            _endTurnButtonBackground.color = _buttonBackgroundOrigColor;
+            if (_endTurnButtonBackground != null) 
+                _endTurnButtonBackground.color = _buttonBackgroundOrigColor;
         }
         else
         {
             _endTurnButton.interactable = false;
-            _endTurnButtonBackground.color = disabledColor;
+            if (_endTurnButtonBackground != null) 
+                _endTurnButtonBackground.color = disabledColor;
         }
     }
 }

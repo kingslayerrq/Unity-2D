@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
 {
     [SerializeField] private PlayerUnitData playerUnitData;
-    [SerializeField] private PlayerHand hand =  new PlayerHand();
+    [SerializeField] private PlayerHand hand;
     
     public Deck DeckInstance {get; private set;}
     public CardPileManager CardPileManager { get; private set; }
@@ -22,13 +23,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
     public int CurrentEnergy => currentEnergy;
     public int CurrentMaxEnergy => currentMaxEnergy;
     
-
-
-    protected override void Awake()
-    {
-        base.Awake();
-        if (CardPileManager == null) CardPileManager = GetComponent<CardPileManager>();
-    }
+    
 
     public BasePlayerUnitInstance(PlayerUnitData playerUnitData)
     {
@@ -37,7 +32,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         this.currentName = playerUnitData.UnitName;
         this.currentDescription = playerUnitData.UnitDescription;
         this.currentSprite = playerUnitData.UnitSprite;
-        this.unitType = playerUnitData.UnitType;
+        this.currentUnitType = playerUnitData.UnitType;
         this.currentStartingDeckData = playerUnitData.StartingDeckData;
         this.currentDrawAmount = playerUnitData.DrawAmount;
         this.currentMaxEnergy = playerUnitData.MaxEnergy;
@@ -45,27 +40,46 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         this.isInitialized = false;
     }
 
-    public override void Initialize()
+    public void Initialize(CombatManager combatManager, BuffManager buffManager, 
+        CardPileManager cardPileManager)
     {
+        base.Initialize(combatManager, buffManager);
+        
+        this.CardPileManager = cardPileManager;
         if (CardPileManager == null)
         {
             Debug.LogWarning("CardPileManager is null");
             return;
         }
-        
-        // TODO: separate deck init
-        DeckInstance = new Deck(currentStartingDeckData);
-        DeckInstance.InstantiateDeck(this);
+        if (DeckInstance == null)
+        {
+            DeckInstance = new Deck(currentStartingDeckData);
+            DeckInstance.InstantiateDeck(this);
+        }
         
         CardPileManager.InitCardPiles(new List<CardInstance>(DeckInstance.CardInstances));
-
-        isInitialized = true;
+        hand = new PlayerHand();
     }
 
-    public override void OnBattleStart()
+    protected override void OnBattleStart()
     {
         InitHealth();
         InitEnergy();
+    }
+
+    protected override void OnBattleSetup()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void OnVictory()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void OnDefeat()
+    {
+        throw new NotImplementedException();
     }
 
     protected void InitEnergy()
@@ -97,7 +111,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         if (!hand.AddCard(drawnCard))
         {
             CardPileManager.DiscardPile.AddCardToPile(drawnCard);
-            Debug.Log($"{name}'s hand is full. Sent drawn card to discard pile.");
+            Debug.Log($"{currentName}'s hand is full. Sent drawn card to discard pile.");
         }
         
         return true;
@@ -128,4 +142,5 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         currentEnergy -= amount;
     }
     #endregion
+    
 }

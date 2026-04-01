@@ -25,9 +25,10 @@ public class DrawPileUI : CardPileUI
 
     }
 
-    protected override void OnDisable()
+    protected override void OnDestroy()
     {
-        base.OnDisable();
+        base.OnDestroy();
+        
         if (_cardPileManager.DrawPile != null)
         {
             _cardPileManager.DrawPile.OnCardPileCountChanged -= UpdateCardPileUI;
