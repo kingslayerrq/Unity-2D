@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 public class EnemyUnitData : UnitData
 {
     [Header("Available actions")]
-    [SerializeField] protected List<EnemyActionData> availableActions;
+    [SerializeField] protected List<EnemyIntentData> availableActions;
     
-    public IReadOnlyList<EnemyActionData> AvailableActions => availableActions;
+    public IReadOnlyList<EnemyIntentData> AvailableActions => availableActions;
 }

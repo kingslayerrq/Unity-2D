@@ -23,6 +23,8 @@ public abstract class BaseUnitInstance :  ICardTarget
     [SerializeField] protected int currentBlock;
 
     protected bool isInitialized = false;
+    
+    public bool IsDead => currentHealth <= 0;
 
     public event Action<int, int> OnHealthChanged;
     public event Action<bool> OnHighlightTriggered;

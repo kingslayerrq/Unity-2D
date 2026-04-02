@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VulnerableBuffData
   buffName: Vulnerable
   buffDescription: Receives 50% more damage from Attacks for X turns
-  buffIcon: {fileID: 0}
+  buffIcon: {fileID: 21300000, guid: adeb2859f10b1514ba0661fa338b5ab3, type: 3}
   maxStacks: 99
   isStackable: 1
   isDebuff: 1

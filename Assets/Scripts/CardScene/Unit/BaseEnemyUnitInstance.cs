@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class BaseEnemyUnitInstance : BaseUnitInstance
 {
     [SerializeField] private EnemyUnitData enemyUnitData;
-    [SerializeField] private IReadOnlyList<EnemyActionData> currentAvailableActionDatas;
+    private IReadOnlyList<EnemyIntentData> currentAvailableActionDatas;
+    [SerializeField] private EnemyIntentData currentIntent;
     
-    public IReadOnlyList<EnemyActionData> CurrentAvailableActionDatas => currentAvailableActionDatas;
+    public IReadOnlyList<EnemyIntentData> CurrentAvailableActionDatas => currentAvailableActionDatas;
+    public EnemyIntentData CurrentIntent => currentIntent;
+
+    public event Action<EnemyIntentData> OnEnemyIntentDetermined;
 
     public override void Initialize(CombatManager combatManager, BuffManager buffManager)
     {
@@ -28,7 +33,27 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
         
         this.isInitialized = false;
     }
-    
+
+    public void DetermineIntent(CombatSnapshot snapshot)
+    {
+        if (currentAvailableActionDatas == null || currentAvailableActionDatas.Count == 0)
+        {
+            Debug.LogWarning($"{currentName} has no actions available!");
+            return;
+        }
+        // TODO: use snapshot to determine intent
+        int randomIndex = UnityEngine.Random.Range(0, currentAvailableActionDatas.Count);
+        currentIntent = currentAvailableActionDatas[randomIndex];
+        
+        // TODO: trigger ui updates
+        OnEnemyIntentDetermined?.Invoke(currentIntent);
+    }
+
+    public void ExecuteActionIntent()
+    {
+        if (IsDead || currentIntent == null) return;
+        
+    }
 
     protected override void OnBattleStart()
     {

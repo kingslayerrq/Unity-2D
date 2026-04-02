@@ -68,6 +68,9 @@ public class CombatManager : MonoBehaviour
     {
         SetState(CombatState.PlayerTurnStart);
         
+        // Determin enemy intent
+        
+        
         currentTurn++;
         OnPlayerNewTurnStart?.Invoke(currentTurn);
         
@@ -119,6 +122,17 @@ public class CombatManager : MonoBehaviour
     {
         SetState(CombatState.EnemyTurnStart);
         RunEnemyTurn();
+    }
+
+    private void DetermineEnemiesIntents()
+    {
+        foreach (var enemy in Enemies)
+        {
+            if (enemy.IsDead) continue;
+             CombatSnapshot snapshot = new CombatSnapshot(enemy, Enemies, Players, currentTurn);
+             
+             enemy.DetermineIntent(snapshot);
+        }
     }
 
     private void RunEnemyTurn()

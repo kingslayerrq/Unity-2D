@@ -5,6 +5,16 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
+    public void ResolveEnemyIntent(BaseEnemyUnitInstance source, List<BaseUnitInstance> targets,
+        List<CardInstance> cards)
+    {
+        if (source == null || source.IsDead || source.CurrentIntent == null) return;
+        EnemyIntentData intent = source.CurrentIntent;
+        EnemyIntentContext context =
+            new EnemyIntentContext(source, targets, cards, intent.EnemyIntent, source.CombatManager);
+        
+        
+    }
     
     public void ResolvePlayCard(BasePlayerUnitInstance source, List<BaseUnitInstance> target, CardInstance cardInstance)
     {
@@ -31,9 +41,14 @@ public class CombatSystem : MonoBehaviour
         {
             Debug.LogWarning($"Card {cardInstance.Data.CardName} failed to move to discard pile!");
         }
-        
     }
 
+    /// <summary>
+    /// Source makes targets spend their energy
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="targets"></param>
+    /// <param name="amount"></param>
     public void ResolveSpendEnergy(BaseUnitInstance source, List<BasePlayerUnitInstance> targets, int amount)
     {
         if (source == null || targets == null) return;
@@ -171,6 +186,7 @@ public class CombatSystem : MonoBehaviour
             t.BuffManager.OnReceiveBuff(t, buffData, stacks, this);
         }
     }
+    
 
     public void ResolveEndTurn(BaseUnitInstance source, List<BaseUnitInstance> allUnits)
     {
