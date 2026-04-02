@@ -25,4 +25,19 @@ public class EnemyHealIntent : BaseEnemyIntent
         context.CombatManager.ActionQueue.Enqueue(healAction, null);
         
     }
+
+    public override BasePlayerUnitInstance ChoosePlayerTarget(CombatSnapshot snapshot)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override BaseEnemyUnitInstance ChooseEnemyAlly(CombatSnapshot snapshot)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override BaseUnitInstance ChooseAnyTarget(CombatSnapshot snapshot)
+    {
+        throw new NotImplementedException();
+    }
 }

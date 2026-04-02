@@ -68,7 +68,8 @@ public class CombatManager : MonoBehaviour
     {
         SetState(CombatState.PlayerTurnStart);
         
-        // Determin enemy intent
+        // Determine enemy intent
+        DetermineEnemiesIntents();
         
         
         currentTurn++;
@@ -139,7 +140,14 @@ public class CombatManager : MonoBehaviour
     {
         SetState(CombatState.EnemyAction);
         Debug.Log("Enemy Turn Action");
-        EnterPlayerTurnStart();
+        for( int i = 0; i < Enemies.Count; i++)
+        {
+            if (i == Enemies.Count - 1)
+            {
+                actionQueue.Enqueue(new ExecuteEnemyIntentAction(combatSystem, Enemies[i], null), EnterPlayerTurnStart);
+            }
+            else actionQueue.Enqueue(new ExecuteEnemyIntentAction(combatSystem, Enemies[i], null), null);
+        }
     }
 
     private void SetState(CombatState newState)

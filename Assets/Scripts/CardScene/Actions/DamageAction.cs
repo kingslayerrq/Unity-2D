@@ -6,11 +6,11 @@ public class DamageAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
     private readonly BaseUnitInstance _source;
-    private readonly List<BaseUnitInstance> _targets;
+    private readonly IReadOnlyList<BaseUnitInstance> _targets;
     private readonly CardType _cardType;
     private readonly int _amount;
 
-    public DamageAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, int amount, CardType cardType)
+    public DamageAction(CombatSystem combatSystem, BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, int amount, CardType cardType)
     {
         _combatSystem = combatSystem;
         _source = source;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,6 +9,7 @@ public class EnemyIntentData
     [SerializeReference] private BaseEnemyIntent enemyIntent;
     [SerializeReference] private BaseEnemyIntentConfig enemyIntentConfig;
 
+
     public BaseEnemyIntent EnemyIntent => enemyIntent;
     public BaseEnemyIntentConfig EnemyIntentConfig => enemyIntentConfig;
 
@@ -15,4 +17,5 @@ public class EnemyIntentData
     {
         this.enemyIntentConfig =  config;
     }
+    
 }

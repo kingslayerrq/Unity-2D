@@ -6,10 +6,10 @@ public class HealAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
     private readonly BaseUnitInstance _source;
-    private readonly List<BaseUnitInstance> _targets;
+    private readonly IReadOnlyList<BaseUnitInstance> _targets;
     private readonly int _amount;
 
-    public HealAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, int amount)
+    public HealAction(CombatSystem combatSystem, BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, int amount)
     {
         _combatSystem = combatSystem;
         _source = source;

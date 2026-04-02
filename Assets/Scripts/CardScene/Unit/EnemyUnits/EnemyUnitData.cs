@@ -5,8 +5,9 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "New Enemy Data", menuName = "Units/Enemy Data")]
 public class EnemyUnitData : UnitData
 {
-    [Header("Available actions")]
-    [SerializeField] protected List<EnemyIntentData> availableActions;
+    [FormerlySerializedAs("availableActions")]
+    [Header("Available Intents")]
+    [SerializeField] protected List<EnemyIntentData> availableIntents;
     
-    public IReadOnlyList<EnemyIntentData> AvailableActions => availableActions;
+    public IReadOnlyList<EnemyIntentData> AvailableIntents => availableIntents;
 }

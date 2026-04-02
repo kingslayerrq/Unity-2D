@@ -17,30 +17,20 @@ MonoBehaviour:
   unitType: 1
   unitSprite: {fileID: 4051651269129495984, guid: 4b5d592ca55e91546ba100e2d975159d, type: 3}
   maxHealth: 90
-  availableActions:
-  - enemyAction:
-      rid: 7461714336352567369
-    enemyActionConfig:
-      rid: 7461714336352567370
-  - enemyAction:
-      rid: 7461714336352567371
-    enemyActionConfig:
-      rid: 7461714336352567372
+  availableIntents:
+  - enemyIntent:
+      rid: 864238191025324100
+    enemyIntentConfig:
+      rid: 864238191025324101
   references:
     version: 2
     RefIds:
-    - rid: 7461714336352567369
-      type: {class: EnemyDmgAction, ns: , asm: Assembly-CSharp}
+    - rid: 864238191025324100
+      type: {class: EnemyDmgIntent, ns: , asm: Assembly-CSharp}
       data: 
-    - rid: 7461714336352567370
-      type: {class: EnemyDmgActionConfig, ns: , asm: Assembly-CSharp}
+    - rid: 864238191025324101
+      type: {class: EnemyDmgIntentConfig, ns: , asm: Assembly-CSharp}
       data:
+        targetType: 2
         amount: 5
-        numberOfAttacks: 2
-    - rid: 7461714336352567371
-      type: {class: EnemyHealAction, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 7461714336352567372
-      type: {class: EnemyHealActionConfig, ns: , asm: Assembly-CSharp}
-      data:
-        amount: 10
+        numberOfAttacks: 4

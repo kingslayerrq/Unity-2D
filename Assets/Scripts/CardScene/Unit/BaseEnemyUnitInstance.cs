@@ -7,10 +7,10 @@ using UnityEngine.Serialization;
 public class BaseEnemyUnitInstance : BaseUnitInstance
 {
     [SerializeField] private EnemyUnitData enemyUnitData;
-    private IReadOnlyList<EnemyIntentData> currentAvailableActionDatas;
+    private IReadOnlyList<EnemyIntentData> currentAvailableIntentDatas;
     [SerializeField] private EnemyIntentData currentIntent;
     
-    public IReadOnlyList<EnemyIntentData> CurrentAvailableActionDatas => currentAvailableActionDatas;
+    public IReadOnlyList<EnemyIntentData> CurrentAvailableIntentDatas => currentAvailableIntentDatas;
     public EnemyIntentData CurrentIntent => currentIntent;
 
     public event Action<EnemyIntentData> OnEnemyIntentDetermined;
@@ -27,7 +27,7 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
         this.currentName = enemyUnitData.UnitName;
         this.currentDescription = enemyUnitData.UnitDescription;
         this.currentMaxHealth = enemyUnitData.MaxHealth;
-        this.currentAvailableActionDatas = enemyUnitData.AvailableActions;
+        this.currentAvailableIntentDatas = enemyUnitData.AvailableIntents;
         this.currentSprite = enemyUnitData.UnitSprite;
         this.currentUnitType = enemyUnitData.UnitType;
         
@@ -36,15 +36,15 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
 
     public void DetermineIntent(CombatSnapshot snapshot)
     {
-        if (currentAvailableActionDatas == null || currentAvailableActionDatas.Count == 0)
+        if (currentAvailableIntentDatas == null || currentAvailableIntentDatas.Count == 0)
         {
             Debug.LogWarning($"{currentName} has no actions available!");
             return;
         }
         // TODO: use snapshot to determine intent
-        int randomIndex = UnityEngine.Random.Range(0, currentAvailableActionDatas.Count);
-        currentIntent = currentAvailableActionDatas[randomIndex];
-        
+        int randomIndex = UnityEngine.Random.Range(0, currentAvailableIntentDatas.Count);
+        currentIntent = currentAvailableIntentDatas[randomIndex];
+        currentIntent.EnemyIntent.ChooseTargets(currentIntent, snapshot);
         // TODO: trigger ui updates
         OnEnemyIntentDetermined?.Invoke(currentIntent);
     }

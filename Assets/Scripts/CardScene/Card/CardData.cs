@@ -52,6 +52,9 @@ public class CardData: ScriptableObject
 public enum TargetType
 {
     Self,
+    /// <summary>
+    /// relative to who you are
+    /// </summary>
     Enemy,
     AllEnemy,
     Ally,

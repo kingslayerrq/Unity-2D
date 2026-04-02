@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
-    public void ResolveEnemyIntent(BaseEnemyUnitInstance source, List<BaseUnitInstance> targets,
-        List<CardInstance> cards)
+    public void ResolveEnemyIntent(BaseEnemyUnitInstance source, List<CardInstance> cards)
     {
         if (source == null || source.IsDead || source.CurrentIntent == null) return;
         EnemyIntentData intent = source.CurrentIntent;
         EnemyIntentContext context =
-            new EnemyIntentContext(source, targets, cards, intent.EnemyIntent, source.CombatManager);
+            new EnemyIntentContext(source, intent.EnemyIntent.IntentTargets, cards, intent.EnemyIntent, source.CombatManager);
         
         
+        intent.EnemyIntent.ExecuteIntent(context, intent);
     }
     
     public void ResolvePlayCard(BasePlayerUnitInstance source, List<BaseUnitInstance> target, CardInstance cardInstance)
@@ -123,7 +123,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveDamage(BaseUnitInstance source, List<BaseUnitInstance> targets, int amount, CardType cardType)
+    public void ResolveDamage(BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, int amount, CardType cardType)
     {
         if (source == null || targets == null) return;
 
@@ -141,7 +141,7 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveHeal(BaseUnitInstance source, List<BaseUnitInstance> targets, int amount)
+    public void ResolveHeal(BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, int amount)
     {
         if (source == null || targets == null) return;
 
