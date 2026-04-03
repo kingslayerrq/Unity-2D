@@ -6,11 +6,11 @@ public class BlockAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
     private readonly BaseUnitInstance _source;
-    private readonly List<BaseUnitInstance> _targets;
+    private readonly IReadOnlyList<BaseUnitInstance> _targets;
     private readonly bool _isFromCard;
     private readonly int _amount;
 
-    public BlockAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, int amount, bool isFromCard)
+    public BlockAction(CombatSystem combatSystem, BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, int amount, bool isFromCard)
     {
         _combatSystem = combatSystem;
         _source = source;

@@ -6,11 +6,11 @@ public class ApplyBuffAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
     private readonly BaseUnitInstance _source;
-    private readonly List<BaseUnitInstance> _targets;
+    private readonly IReadOnlyList<BaseUnitInstance> _targets;
     private readonly BuffData _buffData;
     private readonly int _stacks;
 
-    public ApplyBuffAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> targets, BuffData buffData,
+    public ApplyBuffAction(CombatSystem combatSystem, BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, BuffData buffData,
         int stacks)
     {
         _combatSystem = combatSystem;

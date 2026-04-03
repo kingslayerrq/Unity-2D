@@ -115,7 +115,6 @@ public abstract class BaseUnitInstance :  ICardTarget
     }
 
     
-
     /// <summary>
     /// Set the current health to max or current based on <value>isInitialized</value>
     /// Called on battle start (battle scene setup)
@@ -137,6 +136,17 @@ public abstract class BaseUnitInstance :  ICardTarget
     /// </summary>
     public virtual void Dispose() 
     {
+        if (this is BasePlayerUnitInstance playerUnitInstance)
+        {
+            CombatManager.UnitsManager.ActivePlayerUnitInstances.Remove(playerUnitInstance);
+            if (ReferenceEquals(playerUnitInstance, CombatManager.UnitsManager.ActivePlayerUnitInstance))
+                CombatManager.UnitsManager.SetActivePlayerUnitInstance(null);
+        }
+        else if (this is BaseEnemyUnitInstance enemyUnitInstance)
+        {
+            CombatManager.UnitsManager.ActiveEnemyUnitInstances.Remove(enemyUnitInstance);
+        }
+        
         if (CombatManager != null)
         {
             CombatManager.OnStateChange -= HandleCombatStateChange;
@@ -157,10 +167,7 @@ public abstract class BaseUnitInstance :  ICardTarget
         }
         currentHealth -= remainingDamage;
         OnHealthChanged?.Invoke(currentHealth, currentMaxHealth);
-        if (currentHealth <= 0)
-        {
-            // TODO: die
-        }
+        
     }
 
     public void Block(int amount)
@@ -182,6 +189,16 @@ public abstract class BaseUnitInstance :  ICardTarget
         BuffManager.ApplyBuff(buffData, stacks);
     }
     
+    public void OnDmgResolved()
+    {
+        Debug.Log($"{CurrentName} OnDmgResolved, final health: {currentHealth}");
+        if (IsDead)
+        {
+            // TODO: dispose
+            Dispose();
+        }
+    }
+
     public BaseUnitInstance Target => this;
 
     #endregion

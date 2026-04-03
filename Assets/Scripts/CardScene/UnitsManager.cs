@@ -11,8 +11,6 @@ public class UnitsManager : MonoBehaviour
 
     [Header("Prefabs")]
     [SerializeField] private UnitView playerPrefab;
-    // If enemies share a prefab, you can just use one. If they have specific prefabs, 
-    // you might want to put the prefab inside EnemyUnitData later.
     [SerializeField] private UnitView enemyPrefab; 
 
     [Header("Spawn Points")]
@@ -112,6 +110,11 @@ public class UnitsManager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void SetActivePlayerUnitInstance(BasePlayerUnitInstance unitInstance = null)
+    {
+        ActivePlayerUnitInstance = unitInstance;
     }
 
     private void OnDestroy()

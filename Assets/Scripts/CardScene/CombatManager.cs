@@ -27,6 +27,7 @@ public class CombatManager : MonoBehaviour
     public CombatState CurrentCombatState => currentCombatState;
     public CombatActionQueue ActionQueue => actionQueue;
     public CombatSystem CombatSystem => combatSystem;
+    public UnitsManager UnitsManager => unitsManager;
     
     public BasePlayerUnitInstance Player => unitsManager.ActivePlayerUnitInstance;
     public List<BaseEnemyUnitInstance> Enemies => unitsManager.ActiveEnemyUnitInstances;

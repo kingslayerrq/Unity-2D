@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -19,15 +20,21 @@ public class EnemyDmgIntent : BaseEnemyIntent
                            $" on {context.Intent}");
             return;
         }
-        Debug.Log($"Executing Enemy DMG intent");
-        DamageAction damageAction = new DamageAction(context.CombatManager.CombatSystem, context.Source,
-            context.Targets, dmgActionConfig.Amount, CardType.None);
-
+        
         for (int i = 0; i < dmgActionConfig.NumberOfAttacks; i++)
         {
-            context.CombatManager.ActionQueue.Enqueue(damageAction, null);
+            DamageAction damageAction = new DamageAction(context.CombatManager.CombatSystem, context.Source,
+                context.Targets, dmgActionConfig.Amount, CardType.None);
+            context.CombatManager.ActionQueue.Enqueue(damageAction, () => CheckTargetsHealth(context.Targets));
         }
         
+    }
+    private void CheckTargetsHealth(IReadOnlyList<BaseUnitInstance> targets)
+    {
+        foreach (var target in targets)
+        {
+            target.OnDmgResolved();
+        }
     }
 
     public override BasePlayerUnitInstance ChoosePlayerTarget(CombatSnapshot snapshot)

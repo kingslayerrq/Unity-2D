@@ -7,6 +7,10 @@ public interface ICardTarget
     void Block(int amount);
     void ReceiveBuff(BuffData buffData, int stacks);
     /// <summary>
+    /// After dmg taken -> Buffmanager executes -> check final health
+    /// </summary>
+    void OnDmgResolved();
+    /// <summary>
     /// get the UnitInstance 
     /// </summary>
     BaseUnitInstance Target { get; }

@@ -22,6 +22,10 @@ MonoBehaviour:
       rid: 864238191025324100
     enemyIntentConfig:
       rid: 864238191025324101
+  - enemyIntent:
+      rid: 864238214791561284
+    enemyIntentConfig:
+      rid: 864238214791561285
   references:
     version: 2
     RefIds:
@@ -34,3 +38,13 @@ MonoBehaviour:
         targetType: 2
         amount: 5
         numberOfAttacks: 4
+    - rid: 864238214791561284
+      type: {class: EnemyShuffleCardsIntent, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238214791561285
+      type: {class: EnemyShuffleCardsIntentConfig, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 2
+        cardDatas:
+        - {fileID: 11400000, guid: 6dcfb16785e61c74c9a4514fb0fc12cd, type: 2}
+        targetCardPiles: 4

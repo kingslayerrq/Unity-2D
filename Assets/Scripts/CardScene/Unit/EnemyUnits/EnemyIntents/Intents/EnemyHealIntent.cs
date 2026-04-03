@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -28,16 +29,25 @@ public class EnemyHealIntent : BaseEnemyIntent
 
     public override BasePlayerUnitInstance ChoosePlayerTarget(CombatSnapshot snapshot)
     {
-        throw new NotImplementedException();
+        return snapshot.AllPlayers[0] ?? null;
     }
 
     public override BaseEnemyUnitInstance ChooseEnemyAlly(CombatSnapshot snapshot)
     {
-        throw new NotImplementedException();
+        var validEnemies = snapshot.AllEnemies.Where(e => e != snapshot.Self).ToList();
+        
+        if (validEnemies.Count > 0)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, validEnemies.Count); 
+            var chosenEnemy = validEnemies[randomIndex];
+
+            return chosenEnemy;
+        }
+        return null;
     }
 
     public override BaseUnitInstance ChooseAnyTarget(CombatSnapshot snapshot)
     {
-        throw new NotImplementedException();
+        return snapshot.AllPlayers[0] ?? null;
     }
 }

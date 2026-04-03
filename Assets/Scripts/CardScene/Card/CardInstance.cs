@@ -24,6 +24,7 @@ public class CardInstance
     public int CurrentCost => currentCost;
     public string CurrentName => currentName;
     public string CurrentDescription => currentDescription;
+    public CardType CurrentCardType => data.CardType;
     public int CurrentPrice => currentPrice;
     public int CurrentLevel => currentLevel;
     public Sprite CurrentSprite => currentSprite;

@@ -105,9 +105,11 @@ public class CardPile
     }
 }
 
+[Flags]
 public enum CardPileType
 {
-    Discard,
-    Draw,
-    Exhaust
+    None = 1 << 0,
+    Discard = 1 << 1,
+    Draw =  1 << 2,
+    Exhaust =  1 << 3,
 }

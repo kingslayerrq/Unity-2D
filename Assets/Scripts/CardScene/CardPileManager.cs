@@ -40,6 +40,22 @@ public class CardPileManager : MonoBehaviour
         OnCardPilesInitialized?.Invoke();
     }
 
+    [CanBeNull]
+    public CardPile GetCardPile(CardPileType type)
+    {
+        switch (type)
+        {
+            case CardPileType.Discard:
+                return DiscardPile;
+            case CardPileType.Exhaust:
+                return ExhaustPile;
+            case CardPileType.Draw:
+                return DrawPile;
+            default:
+                return null;
+        }
+    }
+
  
 
     [CanBeNull]
