@@ -16,7 +16,7 @@ public class DiscardPileUI : CardPileUI
         
         base.DisplayCardsInPile();
         
-        Debug.Log($"Rendering discard pile, count: {_cardPileManager.DiscardPile.Count}");
+        // Debug.Log($"Rendering discard pile, count: {_cardPileManager.DiscardPile.Count}");
         RenderCardViews(_cardPileManager.DiscardPile.Cards);
         
         Canvas.ForceUpdateCanvases();
