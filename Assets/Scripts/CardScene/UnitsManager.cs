@@ -16,6 +16,9 @@ public class UnitsManager : MonoBehaviour
     [Header("Spawn Points")]
     [SerializeField] private Transform playerSpawnPoint;
     [SerializeField] private Transform[] enemySpawnPoints;
+    
+    public event Action OnAllEnemiesDefeated;
+    public event Action OnAllPlayersDefeated;
 
     public BasePlayerUnitInstance ActivePlayerUnitInstance { get; private set; } = null;
     public List<BasePlayerUnitInstance> ActivePlayerUnitInstances { get; private set; } = 
@@ -23,25 +26,56 @@ public class UnitsManager : MonoBehaviour
 
     public List<BaseEnemyUnitInstance> ActiveEnemyUnitInstances { get; private set; } =
         new List<BaseEnemyUnitInstance>();
-
-    public List<BaseUnitInstance> AllActiveUnits
+    private List<BaseUnitInstance> _allActiveUnits = new List<BaseUnitInstance>();
+    public IReadOnlyList<BaseUnitInstance> AllActiveUnits => _allActiveUnits;
+    
+    public void AddUnit(BaseUnitInstance unit)
     {
-        get
+        _allActiveUnits.Add(unit);
+        
+        if (unit is BaseEnemyUnitInstance enemy)
         {
-            List<BaseUnitInstance> allUnits = new List<BaseUnitInstance>();
-            if (ActivePlayerUnitInstance != null)
-            {
-                allUnits.AddRange(ActivePlayerUnitInstances);
-            }
-            allUnits.AddRange(ActiveEnemyUnitInstances);
-            return allUnits;
+            ActiveEnemyUnitInstances.Add(enemy);
+        }
+        else if (unit is BasePlayerUnitInstance player) 
+        {
+            ActivePlayerUnitInstances.Add(player);
         }
     }
+    public void RemoveUnit(BaseUnitInstance unit)
+    {
+        _allActiveUnits.Remove(unit);
+
+        if (unit is BaseEnemyUnitInstance enemy)
+        {
+            ActiveEnemyUnitInstances.Remove(enemy);
+        
+            // Check win condition
+            if (ActiveEnemyUnitInstances.Count == 0)
+            {
+                OnAllEnemiesDefeated?.Invoke();
+            }
+        }
+        else if (unit is BasePlayerUnitInstance player)
+        {
+            ActivePlayerUnitInstances.Remove(player);
+            if (ReferenceEquals(unit, ActivePlayerUnitInstance))
+            {
+                ActivePlayerUnitInstance = null;
+            }
+            // Check lose condition
+            if (ActivePlayerUnitInstances.Count == 0)
+            {
+                OnAllPlayersDefeated?.Invoke();
+            }
+        }
+    }
+    
 
     public void CreatePlayerUnitInstance(PlayerUnitData data)
     {
         ActivePlayerUnitInstance = new BasePlayerUnitInstance(data);
-        ActivePlayerUnitInstances.Add(ActivePlayerUnitInstance);
+        AddUnit(ActivePlayerUnitInstance);
     }
 
     public void SpawnAndBindPlayerView()
@@ -88,7 +122,7 @@ public class UnitsManager : MonoBehaviour
             enemyModel.Initialize(combatManager, buffManager);
             
             enemyView.Initialize(enemyModel);
-            ActiveEnemyUnitInstances.Add(enemyModel);
+            AddUnit(enemyModel);
         }
     }
 
@@ -111,6 +145,9 @@ public class UnitsManager : MonoBehaviour
                 break;
         }
     }
+    
+
+    
 
     public void SetActivePlayerUnitInstance(BasePlayerUnitInstance unitInstance = null)
     {

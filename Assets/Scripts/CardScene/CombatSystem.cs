@@ -182,7 +182,7 @@ public class CombatSystem : MonoBehaviour
             source.BuffManager.OnBeforeDealDamage(source, damageEvent, this);
             t.BuffManager.OnBeforeTakeDamage(t, damageEvent, this);
         
-            t.TakeDamage(damageEvent.Amount);
+            t.TakeDamage(damageEvent.Amount, damageEvent.Source);
         
             source.BuffManager.OnAfterDealDamage(source, damageEvent, this);
             t.BuffManager.OnAfterTakeDamage(t, damageEvent, this);
@@ -252,6 +252,13 @@ public class CombatSystem : MonoBehaviour
             
             u.BuffManager?.OnTurnEnd(u, this);
         }
+    }
+
+    public void ResolveDefeatUnit(BaseUnitInstance defeatedBy, BaseUnitInstance defeated)
+    {
+        if (defeatedBy == null || defeated == null) return;
+        
+        defeatedBy.BuffManager?.OnUnitDefeated(defeatedBy, defeated, this);
         
     }
     

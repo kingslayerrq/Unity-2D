@@ -31,7 +31,7 @@ public class CombatManager : MonoBehaviour
     
     public BasePlayerUnitInstance Player => unitsManager.ActivePlayerUnitInstance;
     public List<BaseEnemyUnitInstance> Enemies => unitsManager.ActiveEnemyUnitInstances;
-    public List<BaseUnitInstance> AllUnits => unitsManager.AllActiveUnits;
+    public IReadOnlyList<BaseUnitInstance> AllUnits => unitsManager.AllActiveUnits;
     public List<BasePlayerUnitInstance> Players => unitsManager.ActivePlayerUnitInstances;
 
     private void Awake()
@@ -46,7 +46,10 @@ public class CombatManager : MonoBehaviour
             Debug.LogError("Units Manager isn't set");
             return;
         }
-        
+
+        unitsManager.OnAllEnemiesDefeated += EnterWinState;
+        unitsManager.OnAllPlayersDefeated += EnterDefeatState;
+
     }
 
     public void StartBattle(CombatNode combatNode)
@@ -151,13 +154,40 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+    private void EnterWinState()
+    {
+        // if (actionQueue != null)
+        // {
+        //     actionQueue.Clear();
+        // }
+        SetState(CombatState.Victory);
+    }
+
+    private void EnterDefeatState()
+    {
+        // if (actionQueue != null)
+        // {
+        //     actionQueue.Clear();
+        // }
+        SetState(CombatState.Defeat);
+    }
+
     private void SetState(CombatState newState)
     {
         currentCombatState = newState;
         OnStateChange?.Invoke(currentCombatState);
     }
 
-    
+    private void OnDestroy()
+    {
+        if (unitsManager != null)
+        {
+            unitsManager.OnAllEnemiesDefeated -= EnterWinState;
+            unitsManager.OnAllPlayersDefeated -= EnterDefeatState;
+        }
+    }
+
+
     public enum CombatState
     {
         None,

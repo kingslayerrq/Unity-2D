@@ -6,9 +6,9 @@ public class EndTurnAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
     private readonly BaseUnitInstance _source;
-    private readonly List<BaseUnitInstance> _allUnits;
+    private readonly IReadOnlyList<BaseUnitInstance> _allUnits;
 
-    public EndTurnAction(CombatSystem combatSystem, BaseUnitInstance source, List<BaseUnitInstance> allUnits)
+    public EndTurnAction(CombatSystem combatSystem, BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> allUnits)
     {
         _combatSystem = combatSystem;
         _source = source;

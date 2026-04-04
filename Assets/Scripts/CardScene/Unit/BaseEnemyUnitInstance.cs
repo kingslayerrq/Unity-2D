@@ -48,10 +48,20 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
         // TODO: trigger ui updates
         OnEnemyIntentDetermined?.Invoke(currentIntent);
     }
+    
 
-    public void ExecuteActionIntent()
+    public override void Dispose()
     {
-        if (IsDead || currentIntent == null) return;
+        Debug.Log($"Enemy - {CurrentName} Disposed");
+        if (CombatManager != null)
+        {
+            CombatManager.OnStateChange -= HandleCombatStateChange;
+            if (CombatManager.UnitsManager != null)
+            {
+                CombatManager.UnitsManager.RemoveUnit(this);
+            }
+        }
+
         
     }
 
@@ -62,16 +72,13 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
 
     protected override void OnBattleSetup()
     {
-        throw new NotImplementedException();
     }
 
     protected override void OnVictory()
     {
-        throw new NotImplementedException();
     }
 
     protected override void OnDefeat()
     {
-        throw new NotImplementedException();
     }
 }

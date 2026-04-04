@@ -26,6 +26,10 @@ public class UnitTarget : MonoBehaviour, ICardDropReceiver
     public List<ICardTarget> ValidateCardTargets(BaseUnitInstance source, CardInstance cardInstance)
     {
         List<ICardTarget> targets = new List<ICardTarget>();
+        
+        // early return when dead
+        if (_unitInstance.IsDead) return targets;
+        
         switch (cardInstance.CurrentTargetType)
         {
             case TargetType.AllAlly:

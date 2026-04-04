@@ -16,7 +16,7 @@ MonoBehaviour:
   unitDescription: Snort...
   unitType: 1
   unitSprite: {fileID: 4051651269129495984, guid: 4b5d592ca55e91546ba100e2d975159d, type: 3}
-  maxHealth: 90
+  maxHealth: 20
   availableIntents:
   - enemyIntent:
       rid: 864238191025324100

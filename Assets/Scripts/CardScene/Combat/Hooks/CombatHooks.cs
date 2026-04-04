@@ -88,5 +88,10 @@ namespace CardScene.Combat.Hooks
     {
         void OnReceiveBuff(BaseUnitInstance owner, BuffData buffData, int stacks, CombatSystem combatSystem);
     }
+
+    public interface IOnUnitDefeated
+    {
+        void OnUnitDefeated(BaseUnitInstance owner, BaseUnitInstance defeatedUnit, CombatSystem combatSystem);
+    }
     
 }

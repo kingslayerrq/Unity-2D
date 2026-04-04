@@ -69,23 +69,36 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
 
     protected override void OnBattleSetup()
     {
-        throw new NotImplementedException();
     }
 
     protected override void OnVictory()
     {
-        throw new NotImplementedException();
+        Debug.Log($"Player - {CurrentName} Victory");
     }
 
     protected override void OnDefeat()
     {
-        throw new NotImplementedException();
+        Debug.Log($"Player - {CurrentName} Defeat");
     }
 
     protected void InitEnergy()
     {
         currentEnergy = currentMaxEnergy;
         OnEnergyChanged?.Invoke(currentEnergy, currentMaxEnergy);
+    }
+
+    public override void Dispose()
+    {
+        Debug.Log($"Player - {CurrentName} Disposed");
+        
+        if (CombatManager != null)
+        {
+            CombatManager.OnStateChange -= HandleCombatStateChange;
+            if (CombatManager.UnitsManager != null)
+            {
+                CombatManager.UnitsManager.RemoveUnit(this);
+            }
+        }
     }
 
     #region Draw Cards Healper

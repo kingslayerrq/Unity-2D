@@ -258,6 +258,15 @@ public class BuffManager : MonoBehaviour
         Dispatch<IOnReceiveBuff>(handler => handler.OnReceiveBuff(owner, buffData, stacks, combatSystem));
         CleanUpExpiredBuffs();
     }
+    
+    /// <summary>
+    /// Called when this unit receives a buff.
+    /// </summary>
+    public void OnUnitDefeated(BaseUnitInstance owner, BaseUnitInstance defeatedUnit, CombatSystem combatSystem)
+    {
+        Dispatch<IOnUnitDefeated>(handler => handler.OnUnitDefeated(owner, defeatedUnit, combatSystem));
+        CleanUpExpiredBuffs();
+    }
 
     #endregion
 

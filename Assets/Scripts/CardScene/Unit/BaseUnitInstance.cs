@@ -23,6 +23,8 @@ public abstract class BaseUnitInstance :  ICardTarget
     [SerializeField] protected int currentBlock;
 
     protected bool isInitialized = false;
+
+    protected BaseUnitInstance lastDamagedBy = null;
     
     public bool IsDead => currentHealth <= 0;
 
@@ -134,28 +136,11 @@ public abstract class BaseUnitInstance :  ICardTarget
     /// <summary>
     /// Call Dispose when defeated
     /// </summary>
-    public virtual void Dispose() 
-    {
-        if (this is BasePlayerUnitInstance playerUnitInstance)
-        {
-            CombatManager.UnitsManager.ActivePlayerUnitInstances.Remove(playerUnitInstance);
-            if (ReferenceEquals(playerUnitInstance, CombatManager.UnitsManager.ActivePlayerUnitInstance))
-                CombatManager.UnitsManager.SetActivePlayerUnitInstance(null);
-        }
-        else if (this is BaseEnemyUnitInstance enemyUnitInstance)
-        {
-            CombatManager.UnitsManager.ActiveEnemyUnitInstances.Remove(enemyUnitInstance);
-        }
-        
-        if (CombatManager != null)
-        {
-            CombatManager.OnStateChange -= HandleCombatStateChange;
-        }
-    }
+    public abstract void Dispose();
     
     #region ICardTargetImplementation
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, BaseUnitInstance source)
     {
         Debug.Log($"{CurrentName} taking damage {amount}");
         int remainingDamage = amount;
@@ -165,7 +150,8 @@ public abstract class BaseUnitInstance :  ICardTarget
             currentBlock -= blocked;
             remainingDamage -= blocked;
         }
-        currentHealth -= remainingDamage;
+        if (remainingDamage > 0) lastDamagedBy = source;
+        currentHealth = Mathf.Max(currentHealth - remainingDamage, 0);
         OnHealthChanged?.Invoke(currentHealth, currentMaxHealth);
         
     }
@@ -194,8 +180,15 @@ public abstract class BaseUnitInstance :  ICardTarget
         Debug.Log($"{CurrentName} OnDmgResolved, final health: {currentHealth}");
         if (IsDead)
         {
-            // TODO: dispose
-            Dispose();
+            if (lastDamagedBy != null && lastDamagedBy.CombatManager != null)
+            {
+                lastDamagedBy.CombatManager.ActionQueue.Enqueue(new DefeatUnitAction(lastDamagedBy.CombatManager.CombatSystem,
+                    lastDamagedBy, this), Dispose);
+            }
+            else
+            {
+                Dispose();
+            }
         }
     }
 
