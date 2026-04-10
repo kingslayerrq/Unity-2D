@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e80577a1725afce4b96069f34f13843c, type: 3}
-  m_Name: VulnerableBuff
+  m_Name: Vulnerable_Buff
   m_EditorClassIdentifier: Assembly-CSharp::VulnerableBuffData
   buffName: Vulnerable
   buffDescription: Receives 50% more damage from Attacks for X turns

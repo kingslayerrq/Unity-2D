@@ -17,10 +17,28 @@ public class BlockCardEffect : BaseCardEffect
                            $" on card {context.CardInstance?.Data?.CardName}");
             return;
         }
+
+        BlockAction blockAction;
+        if (blockConfig.SecondaryTarget != TargetType.None)
+        {
+            var secondaryTarget = context.CombatManager?.UnitsManager.GetUnitsByType(blockConfig.SecondaryTarget);
+            if (secondaryTarget != null)
+            {
+                blockAction = new BlockAction(context.Source.CombatManager.CombatSystem,
+                    context.Source, secondaryTarget, blockConfig.Amount, true);
+            }
+            else
+            {
+                Debug.LogError($"BlockCardEffectData secondary target {blockConfig.SecondaryTarget} not found");
+                return;
+            }
+        }
+        else
+        {
+            blockAction = new BlockAction(context.Source.CombatManager.CombatSystem,
+                context.Source, context.Targets, blockConfig.Amount, true);
+        }
         
-        BlockAction blockAction = new BlockAction(context.Source.CombatManager.CombatSystem,
-            context.Source, context.Targets, blockConfig.Amount, true);
-        
-        context.Source.CombatManager.ActionQueue.Enqueue(blockAction, null);
+        context.CombatManager.ActionQueue.Enqueue(blockAction, null);
     }
 }

@@ -25,8 +25,27 @@ public class BuffCardEffect : BaseCardEffect
             return;
         }
 
-        ApplyBuffAction applyBuffAction = new ApplyBuffAction(context.CombatManager.CombatSystem,
-            context.Source, context.Targets, buffConfig.BuffData, buffConfig.Stacks);
+        ApplyBuffAction applyBuffAction;
+        if (buffConfig.SecondaryTarget != TargetType.None)
+        {
+            var secondaryTarget = context.CombatManager?.UnitsManager.GetUnitsByType(buffConfig.SecondaryTarget);
+            if (secondaryTarget != null)
+            {
+                applyBuffAction = new ApplyBuffAction(context.CombatManager.CombatSystem, context.Source,
+                    secondaryTarget,
+                    buffConfig.BuffData, buffConfig.Stacks);
+            }
+            else
+            {
+                Debug.LogError($"BuffCardEffectData secondary target {buffConfig.SecondaryTarget} not found");
+                return;
+            }
+        }
+        else
+        {
+            applyBuffAction = new ApplyBuffAction(context.CombatManager.CombatSystem,
+                context.Source, context.Targets, buffConfig.BuffData, buffConfig.Stacks);
+        }
         
         context.CombatManager.ActionQueue.Enqueue(applyBuffAction, null);
 

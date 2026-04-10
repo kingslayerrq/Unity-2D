@@ -32,10 +32,10 @@ public class UnitTarget : MonoBehaviour, ICardDropReceiver
         
         switch (cardInstance.CurrentTargetType)
         {
-            case TargetType.AllAlly:
+            case TargetType.AllPlayer:
                 if (_unitInstance.UnitType == UnitType.Player) targets.Add(_unitInstance);
                 break;
-            case TargetType.Ally:
+            case TargetType.Player:
                 if (_unitInstance.UnitType == UnitType.Player) targets.Add(_unitInstance);
                 break;
             case TargetType.AllEnemy:

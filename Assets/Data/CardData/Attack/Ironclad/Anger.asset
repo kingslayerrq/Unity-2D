@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Anger
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: Anger
+  cardDescription: 'Deal 6 damage.
+
+    Add a copy of this card into your Discard
+    Pile. '
+  cardPrice: 0
+  cardCost: 0
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 0
+  cardSprite: {fileID: 21300000, guid: 01cdd86029f32044ba250483e049ff66, type: 3}
+  targetType: 1
+  keywords: []
+  upgradedCardName: Anger+
+  upgradedCardDescription: 'Deal 8 damage.
+
+    Add a copy of this card into your
+    Discard Pile.'
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: 82edb6bece53c0b4591c21f0c45256ee, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords: []
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 0
+  cardEffects:
+  - cardEffect:
+      rid: 864238297542557766
+    cardEffectConfig:
+      rid: 864238297542557767
+  - cardEffect:
+      rid: 864238297542557768
+    cardEffectConfig:
+      rid: 864238297542557769
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238297542557772
+    cardEffectConfig:
+      rid: 864238297542557773
+  - cardEffect:
+      rid: 864238297542557774
+    cardEffectConfig:
+      rid: 864238297542557775
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238297542557766
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557767
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 6
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238297542557768
+      type: {class: ShuffleCardsEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557769
+      type: {class: ShuffleCardsEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        targetCardPiles: 2
+        cardDatas: []
+        duplicateCardInstance: 1
+        duplicateAmount: 1
+    - rid: 864238297542557772
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557773
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 8
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238297542557774
+      type: {class: ShuffleCardsEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557775
+      type: {class: ShuffleCardsEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        targetCardPiles: 2
+        cardDatas: []
+        duplicateCardInstance: 1
+        duplicateAmount: 1

@@ -175,7 +175,11 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (_currentReceiver.CanReceiveCard(_view.CardInstance.CurrentOwner, _view.CardInstance))
         {
             var targets = _currentReceiver.GetReceiverUnitInstance(_view.CardInstance.CurrentOwner, _view.CardInstance);
-            ResetInteractionState();
+        
+            // FIX: Pass 'true' so the reset doesn't ruin the card's visual state 
+            // right before the DOTween animation captures it.
+            ResetInteractionState(isBeingPlayed: true); 
+        
             _view.CardInstance.CurrentOwner.CombatManager.PlayCard(_view.CardInstance, targets);
             return true;
         }
@@ -248,7 +252,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    public void ResetInteractionState()
+    public void ResetInteractionState(bool isBeingPlayed = false) 
     {
         ClearHoveredReceiver();
         isInteractingWithAnyCard = false;
@@ -265,14 +269,19 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         origParent = null;
         origSiblingIndex = -1;
 
-        if (_view.CanvasGroup != null)
-            _view.CanvasGroup.blocksRaycasts = true;
+        // FIX: Only re-enable raycasts and reset visuals if the card ISN'T being played
+        if (!isBeingPlayed)
+        {
+            if (_view.CanvasGroup != null)
+                _view.CanvasGroup.blocksRaycasts = true;
 
-        _view.ResetVisuals();
+            _view.ResetVisuals();
+        }
     }
 
     public void ResetForPool()
     {
+        // Calling it with default false is fine here, because we DO want visuals reset for pooling
         ResetInteractionState();
 
         if (_view.CanvasGroup != null)
@@ -287,8 +296,9 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         Canvas canvas = GetComponent<Canvas>(); 
         if (canvas != null)
         {
-            canvas.overrideSorting = true;
-            canvas.sortingOrder = 1; 
+            // FIX: Turn off the override so the PlayerHand layout can manage sorting naturally
+            canvas.overrideSorting = false; 
+            canvas.sortingOrder = 0; 
         }
 
         isReleasedToPlay = false;

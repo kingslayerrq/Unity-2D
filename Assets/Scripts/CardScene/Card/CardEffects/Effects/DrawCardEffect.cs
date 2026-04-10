@@ -20,14 +20,49 @@ public class DrawCardEffect : BaseCardEffect
             return;
         }
 
-        // filter out non player units
-        var playerTargets = context.Targets.OfType<BasePlayerUnitInstance>().ToList();
-        
-        if (playerTargets.Any())
+        List<BasePlayerUnitInstance> playerTargets = null;
+        if (drawConfig.SecondaryTarget != TargetType.None)
         {
-            DrawAction drawAction = new DrawAction(context.CombatManager.CombatSystem,
-                context.Source, playerTargets, drawConfig.Amount);
+            var secondaryTargets = context.CombatManager?.UnitsManager.
+                GetUnitsByType(drawConfig.SecondaryTarget);
+            if (secondaryTargets != null)
+            {
+                for (int i = 0; i < secondaryTargets.Count; i++)
+                {
+                    if (secondaryTargets[i] is BasePlayerUnitInstance player)
+                    {
+                        playerTargets ??= new List<BasePlayerUnitInstance>();
+                
+                        playerTargets.Add(player);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < context.Targets.Count; i++)
+            {
+                if (context.Targets[i] is BasePlayerUnitInstance player)
+                {
+                    playerTargets ??= new List<BasePlayerUnitInstance>();
+                
+                    playerTargets.Add(player);
+                }
+            }
+        }
+        
+        
+        if (playerTargets != null)
+        {
+            var drawAction = new DrawAction(
+                context.CombatManager.CombatSystem,
+                context.Source, 
+                playerTargets,
+                drawConfig.Amount
+            );
+
             context.CombatManager.ActionQueue.Enqueue(drawAction, null);
         }
+        
     }
 }

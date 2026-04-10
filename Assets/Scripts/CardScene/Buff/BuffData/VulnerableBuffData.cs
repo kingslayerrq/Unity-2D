@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Buff Data", menuName = "Cards/VulnerableBuffData")]
+[CreateAssetMenu(fileName = "Vulnerable Buff Data", menuName = "BuffData/Vulnerable Buff Data")]
 public class VulnerableBuffData : BuffData
 {
     public override BuffInstance CreateInstance(int stacks)

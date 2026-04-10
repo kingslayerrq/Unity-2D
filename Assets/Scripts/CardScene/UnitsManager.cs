@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -147,11 +148,31 @@ public class UnitsManager : MonoBehaviour
     }
     
 
-    
-
     public void SetActivePlayerUnitInstance(BasePlayerUnitInstance unitInstance = null)
     {
         ActivePlayerUnitInstance = unitInstance;
+    }
+
+    public IReadOnlyList<BaseUnitInstance> GetUnitsByType(TargetType targetType)
+    {
+        IReadOnlyList<BaseUnitInstance> units = null;
+        switch (targetType)
+        {
+            case TargetType.Self:
+                units = new BaseUnitInstance[] { this.ActivePlayerUnitInstance };
+                break;
+            case TargetType.AllPlayer:
+                units = this.ActivePlayerUnitInstances;
+                break;
+            case TargetType.AllEnemy:
+                units = this.ActiveEnemyUnitInstances;
+                break;
+            default:
+                Debug.LogError("Secondary target type not supported");
+                break;
+        }
+
+        return units;
     }
 
     private void OnDestroy()

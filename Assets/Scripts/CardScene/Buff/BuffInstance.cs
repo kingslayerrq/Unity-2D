@@ -35,7 +35,7 @@ public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
 
     public virtual void OnTurnStart(BaseUnitInstance owner, CombatSystem combatSystem)
     {
-        throw new System.NotImplementedException();
+        Debug.Log($"{this.Data.BuffName} on turn start");
     }
 
     /**

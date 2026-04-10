@@ -17,10 +17,29 @@ public class HealCardEffect : BaseCardEffect
                            $" on card {context.CardInstance?.Data?.CardName}");
             return;
         }
-        
 
-        HealAction healAction = new HealAction(context.CombatManager.CombatSystem,
+        HealAction healAction;
+
+        if (healConfig.SecondaryTarget != TargetType.None)
+        {
+            var secondaryTarget = context.CombatManager.UnitsManager.GetUnitsByType(healConfig.SecondaryTarget);
+            if (secondaryTarget != null)
+            {
+                healAction = new HealAction(context.CombatManager.CombatSystem, context.Source, secondaryTarget,
+                    healConfig.Amount);
+            }
+            else
+            {
+                Debug.LogError($"HealCardEffectData secondary target {healConfig.SecondaryTarget} not found");
+                return;
+            }
+        }
+        else
+        {
+            healAction = new HealAction(context.CombatManager.CombatSystem,
                 context.Source, context.Targets, healConfig.Amount);
+        }
+        
         
         context.CombatManager.ActionQueue.Enqueue(healAction, null);
     }

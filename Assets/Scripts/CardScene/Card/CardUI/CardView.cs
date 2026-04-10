@@ -60,7 +60,7 @@ public class CardView : MonoBehaviour
         }
         _cardKeywordPopups.Clear();
 
-        foreach (var keyword in CardInstance.Data.Keywords)
+        foreach (var keyword in CardInstance.CurrentKeywords)
         {
             var kwp = Instantiate(cardKeywordPopupPrefab, cardKeywordPopupParent);
             kwp.Setup(keyword);

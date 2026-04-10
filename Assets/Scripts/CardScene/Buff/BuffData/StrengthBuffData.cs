@@ -1,16 +1,12 @@
 using UnityEngine;
 
-public class StrengthBuffData : MonoBehaviour
+[CreateAssetMenu(fileName = "Strength Buff Data", menuName = "BuffData/Strength Buff Data")]
+public class StrengthBuffData : BuffData
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override BuffInstance CreateInstance(int stacks)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return new StrengthBuffInstance(this, stacks);
     }
 }
+
+

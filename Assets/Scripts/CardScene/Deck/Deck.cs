@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -32,5 +33,11 @@ public class Deck
         }
         Debug.Log("Instantiated deck");
     }
-    
+
+    public int CountStrikeCardsPossessed()
+    {
+        if (cardInstances == null || cardInstances.Count == 0) return 0;
+
+        return cardInstances.Where(ci => ci.CurrentName.Contains("Strike")).ToList().Count;
+    }
 }

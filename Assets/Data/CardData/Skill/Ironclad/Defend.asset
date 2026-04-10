@@ -24,14 +24,39 @@ MonoBehaviour:
   targetType: 0
   keywords:
   - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  upgradedCardName: Defend+
+  upgradedCardDescription: Gain 8 block.
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: 3c1bb7700b4f1c84098d5df1603a95f3, type: 3}
+  upgradedTargetType: 0
+  upgradedKeywords:
+  - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 1
   cardEffects:
   - cardEffect:
       rid: 7461714194121621574
     cardEffectConfig:
       rid: 7461714194121621575
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238297542557782
+    cardEffectConfig:
+      rid: 864238297542557783
   references:
     version: 2
     RefIds:
+    - rid: 864238297542557782
+      type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557783
+      type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        amount: 8
     - rid: 7461714194121621574
       type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
       data: 

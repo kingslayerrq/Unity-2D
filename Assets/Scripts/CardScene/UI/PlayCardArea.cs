@@ -30,7 +30,7 @@ public class PlayCardArea : MonoBehaviour, ICardDropReceiver
         List<ICardTarget> targets = new List<ICardTarget>();
         switch (cardInstance.CurrentTargetType)
         {
-            case TargetType.AllAlly:
+            case TargetType.AllPlayer:
                 targets.AddRange(combatManager.Players);
                 break;
             case TargetType.AllEnemy:

@@ -6,9 +6,9 @@ using UnityEngine.Serialization;
 [Serializable]
 public class EnemyShuffleCardsIntentConfig : BaseEnemyIntentConfig
 {
-    [SerializeField] private List<CardData> cardDatas = new List<CardData>();
+    [SerializeField] private List<DynamicCardInstantiateRecipe> cardDatas = new List<DynamicCardInstantiateRecipe>();
     [SerializeField] private CardPileType targetCardPiles;
-    
-    public IReadOnlyList<CardData> CardDatas => cardDatas;
+
+    public IReadOnlyList<DynamicCardInstantiateRecipe> CardDatas => cardDatas;
     public CardPileType TargetCardPiles => targetCardPiles;
 }

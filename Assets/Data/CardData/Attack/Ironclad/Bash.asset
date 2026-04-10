@@ -24,6 +24,19 @@ MonoBehaviour:
   targetType: 1
   keywords:
   - {fileID: 11400000, guid: 93788875c13cbe844800734b0dd2d4a9, type: 2}
+  upgradedCardName: Bash+
+  upgradedCardDescription: Deal 10 damage.\n Apply 3 Vulnerable.
+  upgradedCardPrice: 0
+  upgradedCardCost: 2
+  upgradedCardSprite: {fileID: 21300000, guid: 454c69e79b67f954caac20fefd9183b6, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords:
+  - {fileID: 11400000, guid: 93788875c13cbe844800734b0dd2d4a9, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 1
   cardEffects:
   - cardEffect:
       rid: 7461714194121621572
@@ -33,16 +46,47 @@ MonoBehaviour:
       rid: 7461714194121621576
     cardEffectConfig:
       rid: 7461714194121621577
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238297542557776
+    cardEffectConfig:
+      rid: 864238297542557777
+  - cardEffect:
+      rid: 864238297542557778
+    cardEffectConfig:
+      rid: 864238297542557779
   references:
     version: 2
     RefIds:
+    - rid: 864238297542557776
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557777
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        amount:
+          baseValue: 10
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238297542557778
+      type: {class: BuffCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557779
+      type: {class: BuffCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        buffData: {fileID: 11400000, guid: 31767aad7a58da84587466add5432d18, type: 2}
+        stacks: 3
     - rid: 7461714194121621572
       type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
       data: 
     - rid: 7461714194121621573
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
-        amount: 8
+        amount:
+          baseValue: 8
+          bonusSource: 0
+          bonusMultiplier: 0
         numberOfAttacks: 1
     - rid: 7461714194121621576
       type: {class: BuffCardEffect, ns: , asm: Assembly-CSharp}

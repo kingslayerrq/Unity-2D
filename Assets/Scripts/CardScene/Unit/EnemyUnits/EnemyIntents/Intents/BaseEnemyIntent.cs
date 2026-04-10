@@ -24,10 +24,10 @@ public abstract class BaseEnemyIntent
             case TargetType.AllEnemy:
                 IntentTargets.AddRange(snapshot.AllPlayers);
                 break;
-            case TargetType.Ally:
+            case TargetType.Player:
                 IntentTargets.Add(ChooseEnemyAlly(snapshot));
                 break;
-            case TargetType.AllAlly:
+            case TargetType.AllPlayer:
                 IntentTargets.AddRange(snapshot.AllEnemies);
                 IntentTargets.Remove(snapshot.Self);
                 break;

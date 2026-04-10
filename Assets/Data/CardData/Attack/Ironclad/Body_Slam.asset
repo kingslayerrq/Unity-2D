@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Body_Slam
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: Body Slam
+  cardDescription: Deal damage equal to your Block.
+  cardPrice: 0
+  cardCost: 1
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 0
+  cardSprite: {fileID: 21300000, guid: 951888e8fd53c3f41ba5408f8f8f8f9c, type: 3}
+  targetType: 1
+  keywords:
+  - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  upgradedCardName: Body Slam+
+  upgradedCardDescription: Deal damage equal to your Block.
+  upgradedCardPrice: 0
+  upgradedCardCost: 0
+  upgradedCardSprite: {fileID: 21300000, guid: 4a4d5a394324e1b4aa1cda5e62e62006, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords:
+  - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 0
+  cardEffects:
+  - cardEffect:
+      rid: 864238297542557764
+    cardEffectConfig:
+      rid: 864238297542557765
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238297542557780
+    cardEffectConfig:
+      rid: 864238297542557781
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238297542557764
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557765
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        amount:
+          baseValue: 0
+          bonusSource: 1
+          bonusMultiplier: 1
+        numberOfAttacks: 1
+    - rid: 864238297542557780
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557781
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        amount:
+          baseValue: 0
+          bonusSource: 1
+          bonusMultiplier: 1
+        numberOfAttacks: 1

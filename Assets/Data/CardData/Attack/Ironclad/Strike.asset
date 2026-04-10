@@ -23,19 +23,50 @@ MonoBehaviour:
   cardSprite: {fileID: -185629251077234077, guid: 1843a7150ffb7a04b9d0e2e8f836a53a, type: 3}
   targetType: 1
   keywords: []
+  upgradedCardName: Strike+
+  upgradedCardDescription: Deal 9 damage.
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: 7ec496897cdca0848bd5d098c34b8ff9, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords: []
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 1
   cardEffects:
   - cardEffect:
       rid: 7461714063765798979
     cardEffectConfig:
       rid: 7461714063765798980
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238297542557770
+    cardEffectConfig:
+      rid: 864238297542557771
   references:
     version: 2
     RefIds:
+    - rid: 864238297542557770
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238297542557771
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        amount:
+          baseValue: 9
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
     - rid: 7461714063765798979
       type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
       data: 
     - rid: 7461714063765798980
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
-        amount: 6
+        amount:
+          baseValue: 6
+          bonusSource: 0
+          bonusMultiplier: 0
         numberOfAttacks: 1

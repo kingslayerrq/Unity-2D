@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Setup_Strike
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: Setup Strike
+  cardDescription: 'Deal 7 damage.
+
+    Gain 2 strength this turn.'
+  cardPrice: 0
+  cardCost: 1
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 0
+  cardSprite: {fileID: 21300000, guid: 8279ea6b8f5c29544866c782f70af0d2, type: 3}
+  targetType: 1
+  keywords:
+  - {fileID: 11400000, guid: 66ed7a0c11b1ef244a0ad185725cbe86, type: 2}
+  upgradedCardName: Setup Strike+
+  upgradedCardDescription: 'Deal 9 damage.
+
+    Gain 3 strength this turn.'
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: 2c591fd3d28db9f4c9be247e62f6de4a, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords:
+  - {fileID: 11400000, guid: 66ed7a0c11b1ef244a0ad185725cbe86, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 0
+  cardEffects:
+  - cardEffect:
+      rid: 864238369940701268
+    cardEffectConfig:
+      rid: 864238369940701269
+  - cardEffect:
+      rid: 864238369940701270
+    cardEffectConfig:
+      rid: 864238369940701271
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238369940701272
+    cardEffectConfig:
+      rid: 864238369940701273
+  - cardEffect:
+      rid: 864238369940701274
+    cardEffectConfig:
+      rid: 864238369940701275
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238369940701268
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238369940701269
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 7
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238369940701270
+      type: {class: BuffCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238369940701271
+      type: {class: BuffCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        buffData: {fileID: 11400000, guid: ce6509cf9bdf54342befa4219d5e3835, type: 2}
+        stacks: 2
+    - rid: 864238369940701272
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238369940701273
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 9
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238369940701274
+      type: {class: BuffCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238369940701275
+      type: {class: BuffCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        buffData: {fileID: 11400000, guid: ce6509cf9bdf54342befa4219d5e3835, type: 2}
+        stacks: 3

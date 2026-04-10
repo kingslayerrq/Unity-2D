@@ -18,17 +18,40 @@ public class DmgCardEffect : BaseCardEffect
                            $" on card {context.CardInstance?.Data?.CardName}");
             return;
         }
-        
+
+        int resolvedDmgAmount = dmgConfig.Amount.Resolve(context);
         
         for (int i = 0; i < dmgConfig.NumberOfAttacks; i++)
         {
-            DamageAction damageAction = new DamageAction(
-                context.CombatManager.CombatSystem, 
-                context.Source, 
-                context.Targets, 
-                dmgConfig.Amount, 
-                context.CardInstance.Data.CardType
-            );
+            DamageAction damageAction;
+            if (dmgConfig.SecondaryTarget != TargetType.None)
+            {
+                var secondaryTarget = context.CombatManager?.UnitsManager.GetUnitsByType(dmgConfig.SecondaryTarget);
+                if (secondaryTarget != null)
+                {
+                    damageAction = new DamageAction(context.CombatManager.CombatSystem,
+                        context.Source,
+                        secondaryTarget,
+                        resolvedDmgAmount,
+                        context.CardInstance.Data.CardType);
+                }
+                else
+                {
+                    Debug.LogError($"DmgCardEffectData secondary target {dmgConfig.SecondaryTarget} not found");
+                    return;
+                }
+                
+            }
+            else
+            {
+                damageAction = new DamageAction(
+                    context.CombatManager.CombatSystem, 
+                    context.Source, 
+                    context.Targets, 
+                    resolvedDmgAmount, 
+                    context.CardInstance.Data.CardType
+                );
+            }
             
             context.CombatManager.ActionQueue.Enqueue(damageAction, () => CheckTargetsHealth(context.Targets));
         }

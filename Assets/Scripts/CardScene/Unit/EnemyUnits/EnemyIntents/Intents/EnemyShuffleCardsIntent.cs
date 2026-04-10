@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -22,14 +23,37 @@ public class EnemyShuffleCardsIntent : BaseEnemyIntent
         var playerTargets = context.Targets.OfType<BasePlayerUnitInstance>().ToList();
         if (playerTargets.Any())
         {
+            
             ShuffleCardsAction shuffleCardsAction = new ShuffleCardsAction(context.CombatManager.CombatSystem,
                 context.Source, null,
-                playerTargets, enemyShuffleCardsIntentConfig.CardDatas,
+                playerTargets, GenerateCardsFromRecipes(enemyShuffleCardsIntentConfig.CardDatas),
                 enemyShuffleCardsIntentConfig.TargetCardPiles);
             
             context.CombatManager.ActionQueue.Enqueue(shuffleCardsAction, null);
         }
         
+    }
+    
+    private List<CardInstance> GenerateCardsFromRecipes(IReadOnlyList<DynamicCardInstantiateRecipe> recipes)
+    {
+        List<CardInstance> newCards = new List<CardInstance>();
+
+        foreach (var recipe in recipes)
+        {
+            CardInstance newCardInstance = new CardInstance(recipe.BaseCard); 
+
+            // Check if it should be upgraded
+            bool shouldUpgrade = recipe.AlwaysSpawnUpgraded;
+
+            if (shouldUpgrade)
+            {
+                newCardInstance.Upgrade(); 
+            }
+
+            newCards.Add(newCardInstance);
+        }
+
+        return newCards;
     }
 
     public override BasePlayerUnitInstance ChoosePlayerTarget(CombatSnapshot snapshot)

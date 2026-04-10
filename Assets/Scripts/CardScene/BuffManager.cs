@@ -288,6 +288,7 @@ public class BuffManager : MonoBehaviour
 
         return null;
     }
+    
 
     /// <summary>
     /// Removes all expired buffs from the active list.

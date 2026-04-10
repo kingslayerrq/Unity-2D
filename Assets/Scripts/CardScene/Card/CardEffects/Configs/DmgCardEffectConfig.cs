@@ -4,9 +4,9 @@ using System;
 [Serializable]
 public class DmgCardEffectConfig : BaseCardEffectConfig
 {
-    [SerializeField] private int amount;
+    [SerializeField] private DynamicValue amount;
     [SerializeField] private int numberOfAttacks;
     
-    public int Amount => amount;
+    public DynamicValue Amount => amount;
     public int NumberOfAttacks => numberOfAttacks;
 }

@@ -18,20 +18,23 @@ public class CombatSystem : MonoBehaviour
     }
 
     public void ResolveShuffleCardsToPile(BaseUnitInstance source, IReadOnlyList<BasePlayerUnitInstance> targets, [CanBeNull] CardInstance sourceCardInstance,
-        IReadOnlyList<CardData> cardDatas, CardPileType targetCardPileTypes)
+        IReadOnlyList<CardInstance> cardInstances, CardPileType targetCardPileTypes)
     {
-        if (source == null || targets == null || cardDatas == null) return;
+        if (source == null || targets == null || cardInstances == null) return;
 
-        foreach (var target in targets)
+        for (var i = 0; i < targets.Count; i++)
         {
+            var target = targets[i];
             if (target.IsDead) continue;
             if (target.CardPileManager == null)
             {
                 Debug.Log($"{target.CurrentName} has no CardPileManager!");
                 continue;
             }
-            foreach (var cd in cardDatas)
+
+            for (var index = 0; index < cardInstances.Count; index++)
             {
+                var ci = cardInstances[index];
                 foreach (CardPileType pileType in Enum.GetValues(typeof(CardPileType)))
                 {
                     if (targetCardPileTypes.HasFlag(pileType))
@@ -42,9 +45,9 @@ public class CombatSystem : MonoBehaviour
                             Debug.Log($"{target.CurrentName} has no CardPile of type-{pileType}!");
                             continue;
                         }
-                        // Instantiate CardInstance
-                        CardInstance cardInstance = new CardInstance(cd, target);
-                        cardPile.AddCardToPile(cardInstance);
+
+                        cardPile.AddCardToPile(ci);
+                        ci.SetOwner(target);
                     }
                 }
             }
@@ -58,14 +61,15 @@ public class CombatSystem : MonoBehaviour
         if (cardInstance.RequireTarget && targets == null) return;
         
         CardContext context = new CardContext(source, targets, cardInstance, source.CombatManager);
-        
-        foreach (CardEffectData effect in cardInstance.Data.CardEffects)
+
+        for (var index = 0; index < cardInstance.CurrentCardEffects.Count; index++)
         {
+            var effect = cardInstance.CurrentCardEffects[index];
             if (effect == null) continue;
             Debug.Log($"Executing {cardInstance.Data.CardName}");
             effect.CardEffect.Execute(context, effect);
         }
-        
+
         // Trigger on card played
         source.BuffManager.OnCardPlayed(source, cardInstance, this);
         
@@ -95,58 +99,58 @@ public class CombatSystem : MonoBehaviour
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             if (t.CurrentEnergy < amount)
             {
                 Debug.LogWarning($"Dont have enough energy! Current-{t.CurrentEnergy}: " +
                                  $"Required-{amount}");
                 return;
             }
-        
+
             t.SpendEnergy(amount);
-        
+
             for (int i = 0; i < amount; i++)
             {
                 t.BuffManager.OnEnergySpent(t, this);
             }
         }
-        
     }
 
     public void ResolveBlockReset(BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, BlockResetSource resetSource)
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             if (t.IsDead) continue;
-            
+
             ResetBlockEvent resetEvent = new ResetBlockEvent(source, t, resetSource);
-        
+
             t.BuffManager.OnBeforeBlockReset(t, resetEvent, this);
-        
+
             t.ResetBlock(resetEvent);
-        
+
             t.BuffManager.OnAfterBlockReset(t, resetEvent, this);
         }
-        
     }
     
     public void ResolveDrawCards(BaseUnitInstance source, IReadOnlyList<BasePlayerUnitInstance> targets, int amount)
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             for (int i = 0; i < amount; i++)
             {
                 if (t.IsDead) continue;
                 if (!t.TryDrawToHand(out CardInstance cardInstance)) break;
-            
+
                 // Trigger on card drawn
                 t.BuffManager.OnCardDrawn(t, cardInstance, this);
-
             }
         }
     }
@@ -156,11 +160,13 @@ public class CombatSystem : MonoBehaviour
         if (source == null || targets == null) return;
         
         var cardsToDiscard = cards.ToList();
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             if (t.IsDead) continue;
-            foreach (var card in cardsToDiscard)
+            for (var i = 0; i < cardsToDiscard.Count; i++)
             {
+                var card = cardsToDiscard[i];
                 t.DiscardCard(card);
                 Debug.Log("Discard Card: " + card.CurrentName);
                 // Trigger on card discarded
@@ -173,17 +179,18 @@ public class CombatSystem : MonoBehaviour
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var i = 0; i < targets.Count; i++)
         {
+            var t = targets[i];
             if (t.IsDead) continue;
-            
+
             DamageEvent damageEvent = new DamageEvent(source, t, amount, cardType);
-        
+
             source.BuffManager.OnBeforeDealDamage(source, damageEvent, this);
             t.BuffManager.OnBeforeTakeDamage(t, damageEvent, this);
-        
+
             t.TakeDamage(damageEvent.Amount, damageEvent.Source);
-        
+
             source.BuffManager.OnAfterDealDamage(source, damageEvent, this);
             t.BuffManager.OnAfterTakeDamage(t, damageEvent, this);
         }
@@ -193,16 +200,17 @@ public class CombatSystem : MonoBehaviour
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             if (t.IsDead) continue;
-            
+
             HealEvent healEvent = new HealEvent(source, t, amount);
 
             source.BuffManager.OnApplyHeal(source, healEvent, this);
-        
+
             t.Heal(healEvent.Amount);
-        
+
             t.BuffManager.OnReceiveHeal(t, healEvent, this);
         }
     }
@@ -211,16 +219,17 @@ public class CombatSystem : MonoBehaviour
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             if (t.IsDead) continue;
-            
+
             BlockEvent blockEvent = new BlockEvent(source, t, amount, isFromCard);
 
             source.BuffManager.OnApplyBlock(source, blockEvent, this);
 
             t.Block(blockEvent.Amount);
-        
+
             t.BuffManager.OnReceiveBlock(t, blockEvent, this);
         }
     }
@@ -229,14 +238,15 @@ public class CombatSystem : MonoBehaviour
     {
         if (source == null || targets == null) return;
 
-        foreach (var t in targets)
+        for (var index = 0; index < targets.Count; index++)
         {
+            var t = targets[index];
             if (t.IsDead) continue;
-            
+
             source.BuffManager.OnApplyBuff(source, buffData, stacks, this);
-        
+
             t.ReceiveBuff(buffData, stacks);
-        
+
             t.BuffManager.OnReceiveBuff(t, buffData, stacks, this);
         }
     }
@@ -246,10 +256,11 @@ public class CombatSystem : MonoBehaviour
     {
         if (source == null || allUnits == null || allUnits.Count == 0) return;
 
-        foreach (var u in allUnits)
+        for (var index = 0; index < allUnits.Count; index++)
         {
+            var u = allUnits[index];
             if (u.IsDead) continue;
-            
+
             u.BuffManager?.OnTurnEnd(u, this);
         }
     }

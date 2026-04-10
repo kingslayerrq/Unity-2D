@@ -24,6 +24,15 @@ public abstract class BuffData : ScriptableObject
     {
         return buffDescription;
     }
+    
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        // Automatically sync the cardName string with the filename of the ScriptableObject
+        if (!string.IsNullOrWhiteSpace(buffName) && buffName == this.name) return;
+        buffName = this.name.Replace("_Buff", "").Replace("Temp_", "").Replace("_", " ");
+    }
+#endif
 
 }
 

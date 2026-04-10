@@ -67,6 +67,10 @@ public class CardAnimation : MonoBehaviour
             return null;
         }
 
+        // FIX: 1. Capture the exact world position the moment the player lets go
+        // Do this BEFORE modifying layout elements or parents!
+        Vector3 exactDropPosition = cardRect.position;
+
         CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
@@ -87,6 +91,12 @@ public class CardAnimation : MonoBehaviour
 
         // Bring this actual card to the top-level canvas so it can animate freely
         transform.SetParent(rootCanvas.transform, true);
+        
+        // FIX: 2. Force it to be the last sibling so it renders on top of everything else
+        transform.SetAsLastSibling();
+
+        // FIX: 3. Immediately override Unity's layout snapping by forcing it back to the drop position
+        cardRect.position = exactDropPosition;
 
         Canvas canvas = GetComponent<Canvas>();
         if (canvas == null)
@@ -111,6 +121,9 @@ public class CardAnimation : MonoBehaviour
         Vector3 centerTarget = centerWorldPos + burstOffset;
 
         Sequence seq = DOTween.Sequence();
+        
+        // FIX: 4. Link the sequence to this gameObject so it auto-kills if the card is destroyed
+        seq.SetLink(gameObject);
 
         seq.Append(cardRect.DOMove(centerTarget, flyToCenterDuration).SetEase(Ease.OutCubic));
         seq.Join(cardRect.DOScale(centerScale, flyToCenterDuration).SetEase(Ease.OutBack));
@@ -129,7 +142,6 @@ public class CardAnimation : MonoBehaviour
         
         return seq;
     }
-    
     private Vector3 GetCanvasWorldPoint(Canvas rootCanvas, Vector2 screenPoint)
     {
         RectTransform canvasRect = rootCanvas.transform as RectTransform;
