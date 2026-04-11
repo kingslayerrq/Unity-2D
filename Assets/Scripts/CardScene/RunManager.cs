@@ -10,6 +10,7 @@ public class RunManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private UnitsManager unitsManager;
     [SerializeField] private CombatManager combatManager;
+    [SerializeField] private CombatRewardManager combatRewardManager;
 
     [Header("Tests")]
     [SerializeField] private List<EnemyUnitData> testEnemyDatas;
@@ -37,6 +38,12 @@ public class RunManager : MonoBehaviour
             Debug.LogError($"[RunManager] {name}: No CombatManager found!");
             return;
         }
+
+        if (combatRewardManager == null)
+        {
+            Debug.LogError($"[RunManager] {name}: No CombatRewardManager found!");
+            return;
+        }
     }
 
     /// <summary>
@@ -51,6 +58,8 @@ public class RunManager : MonoBehaviour
         playerUnitData = data;
         unitsManager.CreatePlayerUnitInstance(playerUnitData);
         playerUnitInstance = unitsManager.ActivePlayerUnitInstance;
+        
+        combatRewardManager.Initialize(); // init
         
         SetupAct();
     }
