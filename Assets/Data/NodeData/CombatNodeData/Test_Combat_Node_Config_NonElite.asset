@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7e0dc97b817244e97be2b7829b76ce, type: 3}
+  m_Name: Test_Combat_Node_Config_NonElite
+  m_EditorClassIdentifier: Assembly-CSharp::CombatNodeConfig
+  enemyDatas:
+  - {fileID: 11400000, guid: 32c74908c5444964da4ab2c4a1259399, type: 2}
+  isElite: 0
