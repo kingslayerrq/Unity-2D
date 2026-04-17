@@ -9,17 +9,43 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class RunManager : MonoBehaviour
 {
+    
+
     public static RunManager Instance { get; private set; }
     [Header("References")]
     private UnitsManager unitsManager;
     private CombatManager combatManager;
     private CombatRewardManager combatRewardManager;
+    
+    [Header("Settings")]
+    [SerializeField] private NodeConfigLibrary nodeConfigLibrary;
 
     [Header("Tests")]
     // TODO: Run config
     [SerializeField] private NonEliteCombatNodeConfig testCombatNodeConfig;
     [SerializeField] private PlayerUnitData testPlayerUnitData;
     
+    [SerializeField] private int currentRunSeed;
+    private BaseNode currentNode = null;
+    private int currentAct = 0;
+    private int currentFloor = 0;
+    
+
+    public NodeConfigLibrary NodeConfigLibrary => nodeConfigLibrary;
+    public int CurrentRunSeed => currentRunSeed;
+
+    private System.Random _masterRng;
+    private System.Random _mapRng;
+    private System.Random _lootRng;
+    private System.Random _eventRng;
+    private System.Random _combatRng;
+    private System.Random _shopRng;
+
+    public System.Random MapRng => _mapRng;
+    public System.Random LootRng => _lootRng;
+    public System.Random EventRng => _eventRng;
+    public System.Random CombatRng => _combatRng;
+    public System.Random ShopRng => _shopRng;
     
     [Header("Debug")]
     [SerializeField] private PlayerUnitData playerUnitData;
@@ -28,12 +54,14 @@ public class RunManager : MonoBehaviour
     
     [SerializeField] private int cardRewardAmountAfterCombat;
     public bool AllowCardClassOverride { get; private set; } = false;
-    private BaseNode currentNode = null;
     
 
     public BasePlayerUnitInstance PlayerUnitInstance => playerUnitInstance;
     public int CardRewardAmountAfterCombat => cardRewardAmountAfterCombat;
     public BaseNode CurrentNode => currentNode;
+    public int CurrentAct => currentAct;
+
+    public int CurrentFloor => currentFloor;
 
     public event Action<RunState> OnRunStateChange;
     public event Action<BasePlayerUnitInstance> OnPlayerUnitInstanceCreated;
@@ -105,6 +133,7 @@ public class RunManager : MonoBehaviour
         EnterNode(testCombatNodeConfig);
     }
 
+    #region Enter Node
     /// <summary>
     /// Create the node instance, then call Enter on the node
     /// </summary>
@@ -151,10 +180,23 @@ public class RunManager : MonoBehaviour
     {
         Debug.Log("Entering Treasure");
     }
-
-    public void StartRun()
+    #endregion
+    
+    
+    public void StartRun(int? seed = null)
     {
         // TODO: seed
+        currentRunSeed = seed ?? GenerateSeed();
+        Debug.Log($"Starting run with seed: {currentRunSeed}");
+
+        _masterRng = new System.Random(currentRunSeed);
+        
+        _mapRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Map));
+        _lootRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Loot));
+        _eventRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Event));
+        _combatRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Combat));
+        _shopRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Shop));
+        
         CoroutineRunner.Instance.StartCoroutine(LoadScene("CombatNodeScene"));
     }
 
@@ -208,6 +250,11 @@ public class RunManager : MonoBehaviour
     public void SetCardClassRewardOverride(bool allow)
     {
         AllowCardClassOverride = allow;
+    }
+    
+    private int GenerateSeed()
+    {
+        return Guid.NewGuid().GetHashCode();
     }
 
     private void OnDestroy()

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NonEliteCombatNodeConfig", menuName = "Nodes/Combat")]
+[CreateAssetMenu(fileName = "new NonEliteCombatNodeConfig", menuName = "Nodes/Combat/NonEliteCombatNodeConfig")]
 public class NonEliteCombatNodeConfig : BaseCombatNodeConfig
 {
     

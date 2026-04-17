@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EliteCombatNodeConfig", menuName = "Nodes/Combat")]
+[CreateAssetMenu(fileName = "new EliteCombatNodeConfig", menuName = "Nodes/Combat/EliteCombatNodeConfig")]
 public class EliteCombatNodeConfig : BaseCombatNodeConfig
 {
     public override NodeType NodeType => NodeType.CombatElite;

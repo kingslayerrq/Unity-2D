@@ -7,7 +7,7 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private CombatSystem combatSystem;
     [SerializeField] private UnitsManager unitsManager;
     
-    public CombatNode currentCombatNode;
+    public BaseCombatNode currentCombatNode;
 
     [SerializeField] private int currentTurn;
     [SerializeField] private CombatState currentCombatState = CombatState.None;
@@ -53,7 +53,7 @@ public class CombatManager : MonoBehaviour
 
     }
 
-    public void StartBattle(CombatNode combatNode)
+    public void StartBattle(BaseCombatNode combatNode)
     {
         SetState(CombatState.BattleSetup);
         

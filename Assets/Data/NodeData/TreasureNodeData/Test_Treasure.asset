@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 279f905161b4129429aa8aef30ed608c, type: 3}
+  m_Name: Test_Treasure
+  m_EditorClassIdentifier: Assembly-CSharp::TreasureNodeConfig
+  nodeSprite: {fileID: 21300000, guid: 5c23ebd57b4330741b6bf5f35c6ecf84, type: 3}
+  nodeName: Treasure

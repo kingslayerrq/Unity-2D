@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6786bb769659eff44b3ccb8f6f6018d8, type: 3}
+  m_Name: NodeConfigLibraryData
+  m_EditorClassIdentifier: Assembly-CSharp::NodeConfigLibrary
+  nonEliteCombatNodeConfigs:
+  - {fileID: 11400000, guid: 5991424274e26614bb01cf37839242e0, type: 2}
+  EliteCombatNodeConfigs:
+  - {fileID: 11400000, guid: a0c1917c551b0ce448d39512a39ad69e, type: 2}
+  BossCombatNodeConfigs:
+  - {fileID: 11400000, guid: d542ddab69a62bf41b1788b3edf950c6, type: 2}
+  MerchantNodeConfigs:
+  - {fileID: 11400000, guid: d715ef1ea276e8d4a93f6aa8520014fe, type: 2}
+  RestSiteNodeConfigs:
+  - {fileID: 11400000, guid: 8d881fe7abfe1a74f8b9cce68d9c31e6, type: 2}
+  TreasureNodeConfigs:
+  - {fileID: 11400000, guid: fc3e425badfd84140aa8ca1afe13a239, type: 2}
+  EventNodeConfigs:
+  - {fileID: 11400000, guid: c43e3e68b12e85849af17790dc78ef63, type: 2}
+  UnknownNodeConfig: {fileID: 11400000, guid: 810392ddfef10a3478941a2acd3258cd, type: 2}

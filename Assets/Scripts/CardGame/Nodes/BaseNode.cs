@@ -3,6 +3,11 @@ using UnityEngine;
 public abstract class BaseNode
 {
     public BaseNodeConfig NodeConfig { get; }
+    public int Act { get; internal set; }
+    public int Floor { get; internal set; }
+    public int Index { get; internal set; }
+    
+    public NodeType Type;
     
     protected  BaseNode(BaseNodeConfig nodeConfig)
     {
@@ -15,11 +20,13 @@ public abstract class BaseNode
 
 public enum NodeType
 {
-    Quest,
-    CombatNonElite,
-    Shop,
-    Campfire,
+    None,
+    CombatBoss,
     CombatElite,
+    CombatNonElite,
+    Merchant,
+    RestSite,
     Treasure,
-    Event
+    Event,
+    Unknown
 }
