@@ -256,4 +256,9 @@ public class PlayerHandView : MonoBehaviour
             return true;
         });
     }
+
+    private void OnDestroy()
+    {
+        transform.DOKill();
+    }
 }

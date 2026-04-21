@@ -9,29 +9,27 @@ public class DeckPileUI : CardPileUI
     {
         base.Awake();
         RunManager.Instance.OnPlayerUnitInstanceCreated += OnPlayerUnitCreated;
-        if (_cardPileButton != null)
-        {
-            _cardPileButton.onClick.AddListener(DisplayCardsInPile);
-        }
+
+        // Panel was inactive when the player unit was created — bootstrap immediately
+        if (RunManager.Instance.PlayerUnitInstance != null)
+            OnPlayerUnitCreated(RunManager.Instance.PlayerUnitInstance);
     }
-    private void Start()
-    {
-        Debug.Log("DeckPileUI Start");
-        RunManager.Instance.PlayerUnitInstance.OnPlayerDeckInitialized += InitializeCardPileUI;
-    }
-    
+
     private void OnPlayerUnitCreated(BasePlayerUnitInstance unit)
     {
-        // Cleanup old subscriptions if player unit is replaced (new run)
         if (_playerUnit != null)
         {
             _playerUnit.OnPlayerDeckInitialized -= OnDeckReady;
             if (_playerUnit.DeckInstance != null)
-                _playerUnit.DeckInstance.OnDeckChanged -= OnDeckReady;
+                _playerUnit.DeckInstance.OnDeckChanged -= UpdateDeckCount;
         }
 
         _playerUnit = unit;
         _playerUnit.OnPlayerDeckInitialized += OnDeckReady;
+
+        // Deck already initialized before this panel became active
+        if (_playerUnit.DeckInstance != null)
+            OnDeckReady();
     }
 
     private void OnDeckReady()

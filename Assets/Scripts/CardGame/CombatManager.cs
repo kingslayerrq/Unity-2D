@@ -56,7 +56,8 @@ public class CombatManager : MonoBehaviour
     public void StartBattle(BaseCombatNode combatNode)
     {
         SetState(CombatState.BattleSetup);
-        
+
+        unitsManager.RegisterExistingPlayerUnit(RunManager.Instance.PlayerUnitInstance);
         unitsManager.SpawnAndBindPlayerView();
         
         if (endTurnButton != null) endTurnButton.Initialize(Player);
@@ -64,7 +65,7 @@ public class CombatManager : MonoBehaviour
         IReadOnlyList<EnemyUnitData> enemyUnitDatas = combatNode.EnemyUnitDatas;
 
         unitsManager.CreateAndSpawnEnemyUnits(enemyUnitDatas);
-        
+
         SetState(CombatState.BattleStart);
         EnterPlayerTurnStart();
     }

@@ -7,7 +7,7 @@ using Random = System.Random;
 public class CardPile
 {
     private readonly List<CardInstance> cards;
-    private readonly Random rng = new();
+    
     
     protected CardPileType _cardPileType;
     
@@ -99,7 +99,7 @@ public class CardPile
     {
         for (int i = cards.Count - 1; i > 0; i--)
         {
-            int j = rng.Next(i + 1);
+            int j = RunManager.Instance.CombatRng.Next(i + 1);
             (cards[i], cards[j]) = (cards[j], cards[i]);
         }
     }

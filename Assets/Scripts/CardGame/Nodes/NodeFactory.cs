@@ -3,10 +3,9 @@ using UnityEngine;
 
 public static class NodeFactory
 {
-    public static BaseNode CreateNode(NodeType nodeType,
-        int act, int floor, int index, System.Random rng, NodeConfigLibrary library)
+    public static BaseNode CreateNode(MapNodeData mapNode, System.Random rng, NodeConfigLibrary library)
     {
-        BaseNode node = nodeType switch
+        BaseNode node = mapNode.AssignedType switch
         {
             NodeType.CombatBoss => new BossCombatNode(GetRandomConfig(library.BossCombatNodeConfigs, rng)),
             NodeType.CombatElite => new EliteCombatNode(GetRandomConfig(library.EliteCombatNodeConfigs, rng)),
@@ -16,11 +15,9 @@ public static class NodeFactory
             NodeType.RestSite => new RestSiteNode(GetRandomConfig(library.RestSiteNodeConfigs, rng)),
             NodeType.Treasure => new TreasureNode(GetRandomConfig(library.TreasureNodeConfigs, rng)),
             NodeType.Unknown => new UnknownNode(library.UnknownNodeConfig),
-            _ => throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(mapNode.AssignedType), mapNode.AssignedType, null)
         };
-        node.Act = act;
-        node.Floor = floor;
-        node.Index = index;
+        node.SetNodeData(mapNode);
         return node;
     }
     

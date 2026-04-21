@@ -3,19 +3,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Controls a run
 /// </summary>
 public class RunManager : MonoBehaviour
 {
-    
+    private static RunManager _instance;
+    private static bool _isQuitting = false;
+    public static RunManager Instance { get 
+    {
+        if (_isQuitting)
+        {
+            return null;
+        }
+        if (_instance == null)
+        {
+            // Try to find it in the scene first
+            _instance = FindFirstObjectByType<RunManager>();
 
-    public static RunManager Instance { get; private set; }
+            // If it's STILL null, we spawn it from a prefab in the Resources folder!
+            if (_instance == null)
+            {
+                GameObject prefab = Resources.Load<GameObject>("RunManager");
+                GameObject singletonObject = Instantiate(prefab);
+                _instance = singletonObject.GetComponent<RunManager>();
+            }
+        }
+        return _instance;
+    }}
     [Header("References")]
+    private MapGenerator mapGenerator;
     private UnitsManager unitsManager;
     private CombatManager combatManager;
     private CombatRewardManager combatRewardManager;
+    private GameObject characterSelectPanel;
+    private GameObject mapPanel;
+    private GameObject combatPanel;
+    
+    public GameObject CombatPanel => combatPanel;
+    public GameObject MapPanel => mapPanel;
+    
     
     [Header("Settings")]
     [SerializeField] private NodeConfigLibrary nodeConfigLibrary;
@@ -29,12 +58,13 @@ public class RunManager : MonoBehaviour
     private BaseNode currentNode = null;
     private int currentAct = 0;
     private int currentFloor = 0;
+    private bool isMapGenerated = false;
     
 
     public NodeConfigLibrary NodeConfigLibrary => nodeConfigLibrary;
     public int CurrentRunSeed => currentRunSeed;
 
-    private System.Random _masterRng;
+    // private System.Random _masterRng;
     private System.Random _mapRng;
     private System.Random _lootRng;
     private System.Random _eventRng;
@@ -68,18 +98,20 @@ public class RunManager : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance != null) 
+        if (_instance != null) 
         { 
             Destroy(gameObject); 
             return; 
         }
         
-        Instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject);
-        
     }
-    
 
+    public void RegisterMapGenerator(MapGenerator mg)
+    {
+        mapGenerator = mg;
+    }
     public void RegisterCombatManager(CombatManager cm)
     {
         combatManager = cm;
@@ -92,17 +124,33 @@ public class RunManager : MonoBehaviour
     public void RegisterCombatRewardManager(CombatRewardManager crm)
     {
         combatRewardManager = crm;
+        combatRewardManager.Initialize();
     }
 
     public void RegisterUnitsManager(UnitsManager um)
     {
         unitsManager = um;
     }
+    
+    public void RegisterUIPanels(GameObject charSelect, GameObject map, GameObject combat)
+    {
+        characterSelectPanel = charSelect;
+        mapPanel = map;
+        combatPanel = combat;
+        HideAllPanels();
+        characterSelectPanel.SetActive(true);
+    }
 
+    private void HideAllPanels()
+    {
+        characterSelectPanel.SetActive(false);
+        mapPanel.SetActive(false);
+        combatPanel.SetActive(false);
+    }
 
     /// <summary>
     /// sets the player unit data
-    /// create playerunit instance through UnitsManager
+    /// creates playerunit instance directly (no UnitsManager needed pre-combat)
     /// enters SetupActState
     /// </summary>
     /// <param name="data"></param>
@@ -110,12 +158,8 @@ public class RunManager : MonoBehaviour
     {
         SetRunState(RunState.SelectPlayerUnitState);
         playerUnitData = data;
-        unitsManager.CreatePlayerUnitInstance(playerUnitData);
-        playerUnitInstance = unitsManager.ActivePlayerUnitInstance;
+        playerUnitInstance = new BasePlayerUnitInstance(data);
         OnPlayerUnitInstanceCreated?.Invoke(playerUnitInstance);
-        
-        combatRewardManager.Initialize(); // init
-        
         SetupAct();
     }
 
@@ -123,45 +167,53 @@ public class RunManager : MonoBehaviour
     {
         SetRunState(RunState.SetupActState);
         // TODO: set up act logics
+        if (!isMapGenerated)
+        {
+            mapGenerator.GenerateNewMapWithSeed(currentRunSeed);
+            isMapGenerated = true;
+        }
         EnterMap();
     }
 
     public void EnterMap()
     {
+        HideAllPanels();
+        MapPanel?.SetActive(true);
         SetRunState(RunState.MapState);
         Debug.Log("Entering Map");
-        EnterNode(testCombatNodeConfig);
     }
 
     #region Enter Node
     /// <summary>
     /// Create the node instance, then call Enter on the node
     /// </summary>
-    /// <param name="nodeConfig"></param>
-    public void EnterNode(BaseNodeConfig nodeConfig)
+    /// <param name="node"></param>
+    public void EnterNode(BaseNode node)
     {
-        BaseNode node = nodeConfig.CreateNode();
+        HideAllPanels();
         node.Enter(this);
         currentNode = node;
     }
     public void EnterNonEliteCombat(NonEliteCombatNode node)
     {
         SetRunState(RunState.CombatState);
+        combatPanel.SetActive(true);
         combatManager.StartBattle(node);
     }
 
     public void EnterEliteCombat(EliteCombatNode node)
     {
         SetRunState(RunState.CombatState);
+        combatPanel.SetActive(true);
         combatManager.StartBattle(node);
     }
 
-    private void EnterCampfire()
+    private void EnterRestSite(RestSiteNode node)
     {
         Debug.Log("Entering Campfire");
     }
 
-    private void EnterShop()
+    private void EnterMerchant(MerchantNode node)
     {
         Debug.Log("Entering Shop");
     }
@@ -176,39 +228,46 @@ public class RunManager : MonoBehaviour
         Debug.Log("Entering Event");
     }
 
-    private void EnterTreasure()
+    private void EnterTreasure(TreasureNode node)
     {
         Debug.Log("Entering Treasure");
     }
     #endregion
-    
-    
-    public void StartRun(int? seed = null)
+
+    public void StartRunWithRandomSeed()
     {
-        // TODO: seed
+        StartRun(null);
+    }
+
+    public void StartRunWithSeed(int seed)
+    {
+        StartRun(seed);
+    }
+    
+    private void StartRun(int? seed = null)
+    {
+        // seed
         currentRunSeed = seed ?? GenerateSeed();
         Debug.Log($"Starting run with seed: {currentRunSeed}");
 
-        _masterRng = new System.Random(currentRunSeed);
-        
+        // _masterRng = new System.Random(currentRunSeed);
+
         _mapRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Map));
         _lootRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Loot));
         _eventRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Event));
         _combatRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Combat));
         _shopRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Shop));
-        
+
         CoroutineRunner.Instance.StartCoroutine(LoadScene("CombatNodeScene"));
     }
 
     private IEnumerator LoadScene(string sceneName)
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-
         while (operation != null && !operation.isDone)
         {
             yield return null;
         }
-        ChoosePlayerUnit(testPlayerUnitData);
     }
 
     private void SetRunState(RunState newRunState)
@@ -221,6 +280,7 @@ public class RunManager : MonoBehaviour
     {
         // show reward panel
         combatRewardManager.DisplayResultCanvas(true);
+        currentFloor += 1;
     }
 
     private void EnterRunVictory()
@@ -263,6 +323,11 @@ public class RunManager : MonoBehaviour
         {
             combatManager.OnStateChange -= HandleCombatStateChange;
         }
+    }
+    
+    private void OnApplicationQuit()
+    {
+        _isQuitting = true;
     }
 }
 

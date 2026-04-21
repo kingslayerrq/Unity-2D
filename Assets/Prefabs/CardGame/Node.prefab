@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1787614570921734062}
   - component: {fileID: 3168578055911612419}
   - component: {fileID: 6240687223651073493}
+  - component: {fileID: 7367019961266861359}
+  - component: {fileID: 3424674131249499519}
   m_Layer: 5
   m_Name: Node
   m_TagString: Untagged
@@ -75,3 +77,31 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7367019961266861359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992834293726777215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05cb1df331eb9b64b81b9f80dd8e2279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NodeView
+  hoverScale: 1.2
+  hoverAnimationTime: 0.3
+  breathScale: 1.2
+  breathAnimationTime: 1
+--- !u!114 &3424674131249499519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992834293726777215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0461cac93053b1347a7292119f37a4ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NodeInteraction

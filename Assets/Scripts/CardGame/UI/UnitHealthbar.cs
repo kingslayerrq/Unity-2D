@@ -60,5 +60,7 @@ public class UnitHealthbar : MonoBehaviour
     {
         if (_unitInstance == null) return;
         _unitInstance.OnHealthChanged -= UpdateHealthBar;
+        
+        transform.DOKill();
     }
 }

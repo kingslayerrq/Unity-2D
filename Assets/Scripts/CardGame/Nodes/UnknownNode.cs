@@ -81,9 +81,7 @@ public class UnknownNode : BaseNode
             _ => throw new ArgumentOutOfRangeException(nameof(config), config, null)
         };
 
-        node.Act = Act;
-        node.Floor = Floor;
-        node.Index = Index;
+        node.SetNodeData(NodeData);
         return node;
     }
 

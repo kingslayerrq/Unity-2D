@@ -26,7 +26,7 @@ public class CombatRewardManager : MonoBehaviour
     [SerializeField] private Button _continueButton;
     [SerializeField] private Button _retryButton;
     
-    private UnityAction EnterMapAction = () => RunManager.Instance.EnterMap();
+    private UnityAction EnterMapAction => ContinueToMap;
     
     
     [Header("Card Reward UI")]
@@ -94,6 +94,13 @@ public class CombatRewardManager : MonoBehaviour
         RunManager.Instance.RegisterCombatRewardManager(this);
     }
 
+    private void ContinueToMap()
+    {
+        _winPanel.SetActive(false);
+        _losePanel.SetActive(false);
+        RunManager.Instance.EnterMap();
+    }
+
     public void Initialize()
     {
         _cardRewardDict.Clear();
@@ -112,12 +119,16 @@ public class CombatRewardManager : MonoBehaviour
 
         _winPanel.SetActive(isWin);
         _losePanel.SetActive(!isWin);
-        
+
+        if (isWin)
+        {
+            _cachedRewardCards = null;
+            if (_cardRewardButton != null) _cardRewardButton.gameObject.SetActive(true);
+        }
+
         _resultCanvasGroup.DOFade(1f, .1f);
         _resultCanvasGroup.interactable = true;
         _resultCanvasGroup.blocksRaycasts = true;
-        
-        
     }
 
     public void HideResultCanvas()
@@ -341,5 +352,7 @@ public class CombatRewardManager : MonoBehaviour
         {
             _skipRewardButton.onClick.RemoveListener(HideResultCanvas);
         }
+        
+        transform.DOKill();
     }
 }

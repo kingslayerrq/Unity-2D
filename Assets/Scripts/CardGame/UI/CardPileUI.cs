@@ -42,6 +42,11 @@ public abstract class CardPileUI : MonoBehaviour, IPointerEnterHandler, IPointer
             _cardPileIconOrigScale = _cardPileIconImage.transform.localScale;
         }
 
+        if (_cardPileButton != null)
+        {
+            _cardPileButton.onClick.AddListener(DisplayCardsInPile);
+        }
+
         if (_cardPileCanvasGroup != null)
         {
             _backButton = _cardPileCanvasGroup.GetComponentInChildren<Button>();
@@ -214,6 +219,8 @@ public abstract class CardPileUI : MonoBehaviour, IPointerEnterHandler, IPointer
         {
             _backButton.onClick.RemoveListener(HideCardsInPile);
         }
+
+        transform.DOKill();
     }
 
     public void OnPointerEnter(PointerEventData eventData)

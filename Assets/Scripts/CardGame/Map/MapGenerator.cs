@@ -36,18 +36,43 @@ public class MapGenerator : MonoBehaviour
     
     private MapNodeData[][] nodeGrid;
     private Random mapRng;
-    
+    private List<NodeView> _cacheNodeViews = new List<NodeView>();
+
+    private void Awake()
+    {
+        RunManager.Instance.RegisterMapGenerator(this);
+        RunManager.Instance.OnRunStateChange += OnEnterMapState;
+    }
+
     private void Start()
     {
         if (!Application.isPlaying || !generateOnPlay)
             return;
 
-        GenerateNewMapWithRandomSeed();
+        // GenerateNewMapWithRandomSeed();
+    }
+
+    private void OnEnterMapState(RunState runState)
+    {
+        if (runState == RunState.MapState)
+        {
+            for (int i = 0; i < _cacheNodeViews.Count; i++)
+            {
+                var nv =  _cacheNodeViews[i];
+                nv.RefreshNodeState();
+            }
+        }
     }
 
     public void GenerateNewMapWithRandomSeed()
     {
         runSeed = Guid.NewGuid().GetHashCode();
+        GenerateMap();
+    }
+
+    public void GenerateNewMapWithSeed(int seed)
+    {
+        runSeed = seed;
         GenerateMap();
     }
 
@@ -59,9 +84,11 @@ public class MapGenerator : MonoBehaviour
 
         InitGrid();
         ConnectNodes();
-        PruneOrphanNodes();
+        LogOrphanNodes();
         AssignNodeTypes(false);
         BuildRuntimeNodes();
+        
+        DrawVisualMap();
     }
 
     private void PrepareGenerationState()
@@ -153,19 +180,17 @@ public class MapGenerator : MonoBehaviour
             nodeGrid[floor] = new MapNodeData[nodesPerFloor];
             for (int index = 0; index < nodesPerFloor; index++)
             {
-                GameObject node = Instantiate(nodePrefab, mapContainer.transform);
-                // Debug.Log($"Spawned node {node.name}, activeSelf={node.activeSelf}, activeInHierarchy={node.activeInHierarchy}, parent={node.transform.parent.name}");
-                
-                node.name =  $"Node{floor}_{index}: [{currentX}_{currentY}]";
-                
-                var nodeRectTransform = node.GetComponent<RectTransform>();
-                if (nodeRectTransform != null) nodeRectTransform.anchoredPosition = new Vector2(currentX, currentY);
-                
+                // GameObject node = Instantiate(nodePrefab, mapContainer.transform);
+                // // Debug.Log($"Spawned node {node.name}, activeSelf={node.activeSelf}, activeInHierarchy={node.activeInHierarchy}, parent={node.transform.parent.name}");
+                //
+                // node.name =  $"Node{floor}_{index}: [{currentX}_{currentY}]";
+                //
+                // var nodeRectTransform = node.GetComponent<RectTransform>();
+                // if (nodeRectTransform != null) nodeRectTransform.anchoredPosition = new Vector2(currentX, currentY);
+                //
                 // mapnodedata
-                // nodeGrid[floor][index] = new MapNodeData(RunManager.Instance.CurrentAct,
-                //     floor, index,  false, default, nodePrefab);
                 nodeGrid[floor][index] = new MapNodeData(0,
-                    floor, index,  false, NodeType.None, node);
+                    floor, index, new Vector2(currentX, currentY));
                 
                 currentX += stepX;
             }
@@ -257,7 +282,35 @@ public class MapGenerator : MonoBehaviour
                 currentIndex = chosenNextIndex;
             }
         }
-        DrawVisualLines();
+        // DrawVisualLines();
+    }
+    
+    private void DrawVisualMap()
+    {
+        for (int floor = 0; floor < floorPerAct; floor++)
+        {
+            for (int index = 0; index < nodesPerFloor; index++)
+            {
+                MapNodeData mapNode = nodeGrid[floor][index];
+
+                // Only instantiate views for nodes that are part of the path
+                if (!mapNode.IsReachable)
+                    continue;
+
+                GameObject nodeObj = Instantiate(nodePrefab, mapContainer.transform);
+                NodeView view = nodeObj.GetComponent<NodeView>();
+                
+                if (view != null)
+                {
+                    view.Initialize(mapNode);
+                    // Add to cache
+                    _cacheNodeViews.Add(view);
+                }
+            }
+        }
+        
+        // Draw lines after nodes are created
+        DrawVisualLines(); 
     }
     private void DrawVisualLines()
     {
@@ -266,18 +319,20 @@ public class MapGenerator : MonoBehaviour
             for (int index = 0; index < nodesPerFloor; index++)
             {
                 MapNodeData node = nodeGrid[floor][index];
+                
+                if (!node.IsReachable) continue; 
 
                 foreach (MapNodeData child in node.Children)
                 {
-                    RectTransform startRect = node.ViewObject.GetComponent<RectTransform>();
-                    RectTransform endRect = child.ViewObject.GetComponent<RectTransform>();
-
-                    CreateUINodeConnection(startRect.anchoredPosition, endRect.anchoredPosition);
+                    CreateUINodeConnection(node.Position, child.Position);
                 }
             }
         }
     }
-    private void PruneOrphanNodes()
+    /// <summary>
+    /// Debug
+    /// </summary>
+    private void LogOrphanNodes()
     {
         int prunedCount = 0;
 
@@ -286,16 +341,14 @@ public class MapGenerator : MonoBehaviour
             for (int index = 0; index < nodesPerFloor; index++)
             {
                 MapNodeData node = nodeGrid[floor][index];
-                // Debug.Log($"Prune check: floor {floor}, index {index}, reachable = {node.IsReachable}, view = {node.ViewObject?.name}");
+                
                 if (!node.IsReachable)
                 {
-                    node.ViewObject.SetActive(false);
                     prunedCount++;
                 }
             }
         }
-    
-        Debug.Log($"Map Generation Complete. Pruned {prunedCount} orphan nodes.");
+        Debug.Log($"Data Generation Phase: Identified {prunedCount} unreachable nodes.");
     }
     private void CreateUINodeConnection(Vector2 startPos, Vector2 endPos)
     {
@@ -637,14 +690,7 @@ public class MapGenerator : MonoBehaviour
                         )
                     );
 
-                    BaseNode runtimeNode = NodeFactory.CreateNode(
-                        mapNode.AssignedType,
-                        mapNode.Act,
-                        mapNode.Floor,
-                        mapNode.Index,
-                        nodeRng,
-                        nodeConfigLibrary
-                    );
+                    BaseNode runtimeNode = NodeFactory.CreateNode(mapNode, nodeRng, nodeConfigLibrary);
 
                     if (runtimeNode == null)
                     {
@@ -653,8 +699,6 @@ public class MapGenerator : MonoBehaviour
                     }
 
                     mapNode.RuntimeNode = runtimeNode;
-
-                    ApplyNodeVisual(mapNode);
                 }
                 catch (System.Exception ex)
                 {
@@ -665,57 +709,14 @@ public class MapGenerator : MonoBehaviour
             }
         }
     }
-
-    private void ApplyNodeVisual(MapNodeData mapNode)
-    {
-        if (mapNode.ViewObject == null)
-        {
-            Debug.LogError($"ViewObject is null for node floor={mapNode.Floor}, index={mapNode.Index}");
-            return;
-        }
-
-        if (mapNode.RuntimeNode == null)
-        {
-            Debug.LogError($"RuntimeNode is null for node floor={mapNode.Floor}, index={mapNode.Index}");
-            return;
-        }
-
-        if (mapNode.RuntimeNode.NodeConfig == null)
-        {
-            Debug.LogError(
-                $"NodeConfig is null for node floor={mapNode.Floor}, index={mapNode.Index}, type={mapNode.AssignedType}"
-            );
-            return;
-        }
-
-        Sprite sprite = mapNode.RuntimeNode.NodeConfig.NodeSprite;
-        if (sprite == null)
-        {
-            Debug.LogWarning(
-                $"NodeSprite is null for node floor={mapNode.Floor}, index={mapNode.Index}, type={mapNode.AssignedType}, config={mapNode.RuntimeNode.NodeConfig.name}"
-            );
-            return;
-        }
-
-        Image image = mapNode.ViewObject.GetComponent<Image>();
-        if (image == null)
-        {
-            image = mapNode.ViewObject.GetComponentInChildren<Image>(true);
-        }
-
-        if (image == null)
-        {
-            Debug.LogError(
-                $"No Image component found on node view floor={mapNode.Floor}, index={mapNode.Index}, view={mapNode.ViewObject.name}"
-            );
-            return;
-        }
-
-        image.enabled = true;
-        image.sprite = sprite;
-        image.color = Color.white;
-        image.preserveAspect = true;
-    }
-
+    
     #endregion
+
+    private void OnDestroy()
+    {
+        if (RunManager.Instance != null)
+        {
+            RunManager.Instance.OnRunStateChange -= OnEnterMapState;
+        }
+    }
 }

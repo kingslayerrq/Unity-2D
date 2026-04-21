@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -186,5 +187,10 @@ public class CardView : MonoBehaviour
             popupParentRect.anchorMax = new Vector2(1f, 0.5f);
             popupParentRect.anchoredPosition = new Vector2(popupSpacing, 0f); 
         }
+    }
+
+    private void OnDestroy()
+    {
+        transform.DOKill();
     }
 }

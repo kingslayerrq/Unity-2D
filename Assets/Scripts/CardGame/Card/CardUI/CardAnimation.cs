@@ -268,6 +268,9 @@ public class CardAnimation : MonoBehaviour
 
         return seq;
     }
-   
-    
+
+    private void OnDestroy()
+    {
+        transform.DOKill();
+    }
 }

@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 318792857}
   - component: {fileID: 318792856}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: MapCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -661,7 +661,7 @@ MonoBehaviour:
   verticalOffset: 0
   nodesPerFloor: 7
   floorPerAct: 15
-  runSeed: -1482903169
+  runSeed: -625521547
   mapContainerHeightMult: 3
   generateOnPlay: 0
 --- !u!4 &1849670029
