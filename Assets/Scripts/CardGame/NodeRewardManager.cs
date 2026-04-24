@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
-public class CombatRewardManager : MonoBehaviour
+public class NodeRewardManager : MonoBehaviour
 {
     [Header("Card Rewards Data")]
     [SerializeField] private CardRewardData ironcladReward;
@@ -23,7 +24,7 @@ public class CombatRewardManager : MonoBehaviour
     [SerializeField] private GameObject _losePanel;
     [SerializeField] private Button _cardRewardButton;
     [SerializeField] private Button _skipRewardButton;
-    [SerializeField] private Button _continueButton;
+    [FormerlySerializedAs("_continueButton")] [SerializeField] private Button _continueToMapButton;
     [SerializeField] private Button _retryButton;
     
     private UnityAction EnterMapAction => ContinueToMap;
@@ -59,9 +60,9 @@ public class CombatRewardManager : MonoBehaviour
             _skipRewardButton.onClick.AddListener(HideSelectionCanvasGroup);
         }
 
-        if (_continueButton != null)
+        if (_continueToMapButton != null)
         {
-            _continueButton.onClick.AddListener(EnterMapAction);
+            _continueToMapButton.onClick.AddListener(EnterMapAction);
         }
         
         if (_retryButton == null) _retryButton = _losePanel.GetComponentInChildren<Button>();
@@ -94,11 +95,14 @@ public class CombatRewardManager : MonoBehaviour
         RunManager.Instance.RegisterCombatRewardManager(this);
     }
 
+    /// <summary>
+    /// Exit current node to map
+    /// </summary>
     private void ContinueToMap()
     {
         _winPanel.SetActive(false);
         _losePanel.SetActive(false);
-        RunManager.Instance.EnterMap();
+        RunManager.Instance.ExitNode(RunManager.Instance.CurrentNode);
     }
 
     public void Initialize()
@@ -333,9 +337,9 @@ public class CombatRewardManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_continueButton != null)
+        if (_continueToMapButton != null)
         {
-            _continueButton.onClick.RemoveListener(EnterMapAction);
+            _continueToMapButton.onClick.RemoveListener(EnterMapAction);
         }
 
         if (_retryButton != null)

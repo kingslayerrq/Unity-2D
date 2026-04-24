@@ -25,10 +25,9 @@ public class BuffManager : MonoBehaviour
     /// </summary>
     private readonly List<BuffInstance> activeBuffs = new();
 
-    /// <summary>
-    /// Read-only access for other systems like UI, debug panels, tooltips, etc.
-    /// </summary>
     public IReadOnlyList<BuffInstance> ActiveBuffs => activeBuffs;
+
+    public event Action OnBuffsChanged;
 
     /// <summary>
     /// Applies a buff to this unit.
@@ -53,6 +52,8 @@ public class BuffManager : MonoBehaviour
         {
             activeBuffs.Add(data.CreateInstance(stacks));
         }
+
+        OnBuffsChanged?.Invoke();
     }
 
     /// <summary>
@@ -296,8 +297,15 @@ public class BuffManager : MonoBehaviour
     /// A buff is considered expired when its runtime instance reports IsExpired == true.
     /// This usually happens when duration/stacks fall to zero or below.
     /// </summary>
+    public void ClearAllBuffs()
+    {
+        activeBuffs.Clear();
+        OnBuffsChanged?.Invoke();
+    }
+
     private void CleanUpExpiredBuffs()
     {
         activeBuffs.RemoveAll(buffInstance => buffInstance.IsExpired);
+        OnBuffsChanged?.Invoke();
     }
 }

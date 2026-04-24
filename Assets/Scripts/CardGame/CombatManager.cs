@@ -10,7 +10,7 @@ public class CombatManager : MonoBehaviour
     public BaseCombatNode currentCombatNode;
 
     [SerializeField] private int currentTurn;
-    [SerializeField] private CombatState currentCombatState = CombatState.None;
+    [SerializeField] private NodeState currentCombatState = NodeState.None;
     
     [Header("Canvas UI")]
     [SerializeField] private PlayerHandView playerHandView;
@@ -19,12 +19,12 @@ public class CombatManager : MonoBehaviour
     private CombatActionQueue actionQueue = new CombatActionQueue();
 
 
-    public event Action<CombatState> OnStateChange;
+    public event Action<NodeState> OnStateChange;
     public event Action<int> OnPlayerNewTurnStart;
     
     public PlayerHandView PlayerHandView => playerHandView;
     public int CurrentTurn => currentTurn;
-    public CombatState CurrentCombatState => currentCombatState;
+    public NodeState CurrentCombatState => currentCombatState;
     public CombatActionQueue ActionQueue => actionQueue;
     public CombatSystem CombatSystem => combatSystem;
     public UnitsManager UnitsManager => unitsManager;
@@ -55,7 +55,7 @@ public class CombatManager : MonoBehaviour
 
     public void StartBattle(BaseCombatNode combatNode)
     {
-        SetState(CombatState.BattleSetup);
+        SetState(NodeState.BattleSetup);
 
         unitsManager.RegisterExistingPlayerUnit(RunManager.Instance.PlayerUnitInstance);
         unitsManager.SpawnAndBindPlayerView();
@@ -66,13 +66,13 @@ public class CombatManager : MonoBehaviour
 
         unitsManager.CreateAndSpawnEnemyUnits(enemyUnitDatas);
 
-        SetState(CombatState.BattleStart);
+        SetState(NodeState.BattleStart);
         EnterPlayerTurnStart();
     }
 
     public void EnterPlayerTurnStart()
     {
-        SetState(CombatState.PlayerTurnStart);
+        SetState(NodeState.PlayerTurnStart);
         
         // Determine enemy intent
         DetermineEnemiesIntents();
@@ -100,7 +100,7 @@ public class CombatManager : MonoBehaviour
 
     public void EnterPlayerAction()
     {
-        SetState(CombatState.PlayerAction);
+        SetState(NodeState.PlayerAction);
         
         
     }
@@ -114,7 +114,7 @@ public class CombatManager : MonoBehaviour
 
     public void EndPlayerTurn()
     {
-        SetState(CombatState.PlayerTurnEnd);
+        SetState(NodeState.PlayerTurnEnd);
         
         // remove the card from player's hand
         actionQueue.Enqueue(new DiscardAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, Player.Hand.Cards), null);
@@ -127,7 +127,7 @@ public class CombatManager : MonoBehaviour
 
     private void EnterEnemyTurnStart()
     {
-        SetState(CombatState.EnemyTurnStart);
+        SetState(NodeState.EnemyTurnStart);
         RunEnemyTurn();
     }
 
@@ -144,7 +144,7 @@ public class CombatManager : MonoBehaviour
 
     private void RunEnemyTurn()
     {
-        SetState(CombatState.EnemyAction);
+        SetState(NodeState.EnemyAction);
         Debug.Log("Enemy Turn Action");
         for( int i = 0; i < Enemies.Count; i++)
         {
@@ -162,7 +162,7 @@ public class CombatManager : MonoBehaviour
         // {
         //     actionQueue.Clear();
         // }
-        SetState(CombatState.Victory);
+        SetState(NodeState.Victory);
     }
 
     private void EnterDefeatState()
@@ -171,10 +171,10 @@ public class CombatManager : MonoBehaviour
         // {
         //     actionQueue.Clear();
         // }
-        SetState(CombatState.Defeat);
+        SetState(NodeState.Defeat);
     }
 
-    private void SetState(CombatState newState)
+    private void SetState(NodeState newState)
     {
         currentCombatState = newState;
         OnStateChange?.Invoke(currentCombatState);
@@ -190,7 +190,7 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    public enum CombatState
+    public enum NodeState
     {
         None,
         BattleSetup,

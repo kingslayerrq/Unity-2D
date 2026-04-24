@@ -19,3 +19,4 @@ MonoBehaviour:
   isStackable: 1
   isDebuff: 1
   expiresAtEndOfTurn: 1
+  keywordData: {fileID: 11400000, guid: 93788875c13cbe844800734b0dd2d4a9, type: 2}

@@ -7,12 +7,9 @@ public class BossCombatNode : BaseCombatNode
     }
 
 
-    public override void Enter(RunManager runManager)
-    {
-        Debug.Log("Entering Boss Combat");
-    }
+    public override void OnEnter() { }
 
-    public override void Exit(RunManager runManager)
+    public override void OnExit()
     {
         Debug.Log("Exiting Boss Combat");
     }

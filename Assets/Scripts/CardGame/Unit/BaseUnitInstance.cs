@@ -30,6 +30,7 @@ public abstract class BaseUnitInstance :  ICardTarget
 
     public event Action<int, int> OnHealthChanged;
     public event Action<bool> OnHighlightTriggered;
+    public event Action OnDisposed;
     
 
     #region getters
@@ -64,24 +65,27 @@ public abstract class BaseUnitInstance :  ICardTarget
             this.CombatManager.OnStateChange += HandleCombatStateChange;
         }
         Debug.Log($"{CurrentName} Initialize");
-        currentHealth = currentMaxHealth;
+        if (!isInitialized)
+            currentHealth = currentMaxHealth;
         isInitialized = true;
     }
 
-    protected virtual void HandleCombatStateChange(CombatManager.CombatState combatState)
+    protected virtual void HandleCombatStateChange(CombatManager.NodeState combatState)
     {
         switch (combatState)
         {
-            case CombatManager.CombatState.BattleSetup:
+            case CombatManager.NodeState.BattleSetup:
                 OnBattleSetup();
                 break;
-            case CombatManager.CombatState.BattleStart:
+            case CombatManager.NodeState.BattleStart:
                 OnBattleStart();
                 break;
-            case CombatManager.CombatState.Victory:
+            case CombatManager.NodeState.Victory:
+                BuffManager?.ClearAllBuffs();
                 OnVictory();
                 break;
-            case CombatManager.CombatState.Defeat:
+            case CombatManager.NodeState.Defeat:
+                BuffManager?.ClearAllBuffs();
                 OnDefeat();
                 break;
             default:
@@ -123,8 +127,6 @@ public abstract class BaseUnitInstance :  ICardTarget
     /// </summary>
     protected void InitHealth()
     {
-        Debug.Log($"{CurrentName} InitHealth {isInitialized} - {currentHealth}");
-        currentHealth = isInitialized ? currentHealth : currentMaxHealth;
         OnHealthChanged?.Invoke(currentHealth, currentMaxHealth);
     }
 
@@ -137,6 +139,8 @@ public abstract class BaseUnitInstance :  ICardTarget
     /// Call Dispose when defeated
     /// </summary>
     public abstract void Dispose();
+
+    protected void NotifyDisposed() => OnDisposed?.Invoke();
     
     #region ICardTargetImplementation
 

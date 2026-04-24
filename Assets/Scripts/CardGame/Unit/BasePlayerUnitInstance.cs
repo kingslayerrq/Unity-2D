@@ -96,7 +96,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
     public override void Dispose()
     {
         Debug.Log($"Player - {CurrentName} Disposed");
-        
+
         if (CombatManager != null)
         {
             CombatManager.OnStateChange -= HandleCombatStateChange;
@@ -105,6 +105,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
                 CombatManager.UnitsManager.RemoveUnit(this);
             }
         }
+        NotifyDisposed();
     }
 
     #region Draw Cards Healper

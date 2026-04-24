@@ -101,7 +101,9 @@ public class UnitsManager : MonoBehaviour
             Debug.LogError("No active player unit");
             return;
         }
-        // Spawn the visual representation for this specific combat
+        foreach (Transform child in playerSpawnPoint)
+            Destroy(child.gameObject);
+
         UnitView playerUnitView = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity, playerSpawnPoint);
         
     
@@ -122,6 +124,10 @@ public class UnitsManager : MonoBehaviour
     /// <param name="datas">Enemy datas</param>
     public void CreateAndSpawnEnemyUnits(IReadOnlyList<EnemyUnitData> datas)
     {
+        foreach (Transform spawnPoint in enemySpawnPoints)
+            foreach (Transform child in spawnPoint)
+                Destroy(child.gameObject);
+
         ActiveEnemyUnitInstances.Clear();
 
         for (int i = 0; i < datas.Count; i++)
@@ -151,11 +157,11 @@ public class UnitsManager : MonoBehaviour
     }
     
 
-    private void HandleStateChange(CombatManager.CombatState combatState)
+    private void HandleStateChange(CombatManager.NodeState combatState)
     {
         switch (combatState)
         {
-            case CombatManager.CombatState.BattleSetup:
+            case CombatManager.NodeState.BattleSetup:
                 break;
             default:
                 break;

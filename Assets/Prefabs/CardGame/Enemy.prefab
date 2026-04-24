@@ -505,6 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fca067250cbe8647866688f2368637d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitView
+  unitImage: {fileID: 2852273629155071809}
 --- !u!1 &7003087903487970639
 GameObject:
   m_ObjectHideFlags: 0

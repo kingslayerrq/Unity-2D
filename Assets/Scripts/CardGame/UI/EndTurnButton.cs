@@ -68,9 +68,9 @@ public class EndTurnButton : MonoBehaviour
             _endTurnButtonText.text = turnNumber.ToString();
     }
 
-    private void HandlePlayerActionStateChange(CombatManager.CombatState combatState)
+    private void HandlePlayerActionStateChange(CombatManager.NodeState combatState)
     {
-        if (combatState == CombatManager.CombatState.PlayerAction)
+        if (combatState == CombatManager.NodeState.PlayerAction)
         {
             _endTurnButton.interactable = true;
             if (_endTurnButtonBackground != null) 

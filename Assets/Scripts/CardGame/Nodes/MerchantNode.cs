@@ -6,12 +6,9 @@ public class MerchantNode : BaseNode
     {
     }
 
-    public override void Enter(RunManager runManager)
-    {
-        throw new System.NotImplementedException();
-    }
+    public override void OnEnter() { }
 
-    public override void Exit(RunManager runManager)
+    public override void OnExit()
     {
         throw new System.NotImplementedException();
     }

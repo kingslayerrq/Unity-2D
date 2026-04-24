@@ -57,7 +57,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         if (_view.CardInstance == null || _view.CardInstance.CurrentOwner == null) return false;
         return _view.CardInstance.CurrentOwner.CombatManager.CurrentCombatState ==
-               CombatManager.CombatState.PlayerAction;
+               CombatManager.NodeState.PlayerAction;
         
     }
     public void OnPointerEnter(PointerEventData eventData)

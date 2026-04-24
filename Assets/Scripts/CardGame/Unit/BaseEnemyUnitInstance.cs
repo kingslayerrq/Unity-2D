@@ -61,8 +61,7 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
                 CombatManager.UnitsManager.RemoveUnit(this);
             }
         }
-
-        
+        NotifyDisposed();
     }
 
     protected override void OnBattleStart()

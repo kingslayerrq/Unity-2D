@@ -37,7 +37,7 @@ public class RunManager : MonoBehaviour
     private MapGenerator mapGenerator;
     private UnitsManager unitsManager;
     private CombatManager combatManager;
-    private CombatRewardManager combatRewardManager;
+    private NodeRewardManager combatRewardManager;
     private GameObject characterSelectPanel;
     private GameObject mapPanel;
     private GameObject combatPanel;
@@ -56,9 +56,9 @@ public class RunManager : MonoBehaviour
     
     [SerializeField] private int currentRunSeed;
     private BaseNode currentNode = null;
-    private int currentAct = 0;
-    private int currentFloor = 0;
-    private bool isMapGenerated = false;
+    private int _currentAct = 0;
+    private int _currentFloor = 0;
+    private bool _isMapGenerated = false;
     
 
     public NodeConfigLibrary NodeConfigLibrary => nodeConfigLibrary;
@@ -89,9 +89,9 @@ public class RunManager : MonoBehaviour
     public BasePlayerUnitInstance PlayerUnitInstance => playerUnitInstance;
     public int CardRewardAmountAfterCombat => cardRewardAmountAfterCombat;
     public BaseNode CurrentNode => currentNode;
-    public int CurrentAct => currentAct;
+    public int CurrentAct => _currentAct;
 
-    public int CurrentFloor => currentFloor;
+    public int CurrentFloor => _currentFloor;
 
     public event Action<RunState> OnRunStateChange;
     public event Action<BasePlayerUnitInstance> OnPlayerUnitInstanceCreated;
@@ -108,6 +108,7 @@ public class RunManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    #region Dependencies
     public void RegisterMapGenerator(MapGenerator mg)
     {
         mapGenerator = mg;
@@ -121,7 +122,7 @@ public class RunManager : MonoBehaviour
         }
     }
 
-    public void RegisterCombatRewardManager(CombatRewardManager crm)
+    public void RegisterCombatRewardManager(NodeRewardManager crm)
     {
         combatRewardManager = crm;
         combatRewardManager.Initialize();
@@ -140,6 +141,10 @@ public class RunManager : MonoBehaviour
         HideAllPanels();
         characterSelectPanel.SetActive(true);
     }
+    
+
+    #endregion
+    
 
     private void HideAllPanels()
     {
@@ -167,15 +172,16 @@ public class RunManager : MonoBehaviour
     {
         SetRunState(RunState.SetupActState);
         // TODO: set up act logics
-        if (!isMapGenerated)
+        if (!_isMapGenerated)
         {
             mapGenerator.GenerateNewMapWithSeed(currentRunSeed);
-            isMapGenerated = true;
+            _isMapGenerated = true;
         }
         EnterMap();
     }
-
-    public void EnterMap()
+    
+    
+    private void EnterMap()
     {
         HideAllPanels();
         MapPanel?.SetActive(true);
@@ -183,54 +189,45 @@ public class RunManager : MonoBehaviour
         Debug.Log("Entering Map");
     }
 
-    #region Enter Node
-    /// <summary>
-    /// Create the node instance, then call Enter on the node
-    /// </summary>
-    /// <param name="node"></param>
+    #region Node
     public void EnterNode(BaseNode node)
     {
         HideAllPanels();
-        node.Enter(this);
         currentNode = node;
-    }
-    public void EnterNonEliteCombat(NonEliteCombatNode node)
-    {
-        SetRunState(RunState.CombatState);
-        combatPanel.SetActive(true);
-        combatManager.StartBattle(node);
-    }
+        // On enter setup
+        node.OnEnter();
 
-    public void EnterEliteCombat(EliteCombatNode node)
-    {
-        SetRunState(RunState.CombatState);
-        combatPanel.SetActive(true);
-        combatManager.StartBattle(node);
+        switch (node.Type)
+        {
+            case NodeType.CombatNonElite:
+            case NodeType.CombatElite:
+            case NodeType.CombatBoss:
+                SetRunState(RunState.CombatState);
+                combatPanel.SetActive(true);
+                combatManager.StartBattle((BaseCombatNode)node);
+                break;
+            case NodeType.RestSite:
+                Debug.Log("Entering Campfire");
+                break;
+            case NodeType.Merchant:
+                Debug.Log("Entering Shop");
+                break;
+            case NodeType.Treasure:
+                Debug.Log("Entering Treasure");
+                break;
+            case NodeType.Event:
+                Debug.Log("Entering Event");
+                break;
+            default:
+                Debug.Log($"Node type {node.Type}");
+                break;
+        }
     }
-
-    private void EnterRestSite(RestSiteNode node)
+    
+    public void ExitNode(BaseNode node)
     {
-        Debug.Log("Entering Campfire");
-    }
-
-    private void EnterMerchant(MerchantNode node)
-    {
-        Debug.Log("Entering Shop");
-    }
-
-    private void EnterQuest()
-    {
-        Debug.Log("Entering Quest");
-    }
-
-    private void EnterEvent()
-    {
-        Debug.Log("Entering Event");
-    }
-
-    private void EnterTreasure(TreasureNode node)
-    {
-        Debug.Log("Entering Treasure");
+        node.OnExit();
+        EnterMap();
     }
     #endregion
 
@@ -276,11 +273,16 @@ public class RunManager : MonoBehaviour
         OnRunStateChange?.Invoke(newRunState);
     }
 
-    private void EnterCombatVictory()
+    /// <summary>
+    /// Displaying reward
+    /// progress to next floor
+    /// </summary>
+    private void EnterNodeReward()
     {
+        SetRunState(RunState.WinState);
         // show reward panel
         combatRewardManager.DisplayResultCanvas(true);
-        currentFloor += 1;
+        _currentFloor += 1;
     }
 
     private void EnterRunVictory()
@@ -294,14 +296,14 @@ public class RunManager : MonoBehaviour
         combatRewardManager.DisplayResultCanvas(false);
     }
 
-    private void HandleCombatStateChange(CombatManager.CombatState newCombatState)
+    private void HandleCombatStateChange(CombatManager.NodeState newNodeState)
     {
-        if (newCombatState == CombatManager.CombatState.Victory)
+        if (newNodeState == CombatManager.NodeState.Victory)
         {
             // TODO: enter run victory if last node is beaten
-            EnterCombatVictory();
+            EnterNodeReward();
         }
-        else if (newCombatState == CombatManager.CombatState.Defeat)
+        else if (newNodeState == CombatManager.NodeState.Defeat)
         {
             EnterRunLoss();
         }

@@ -3,9 +3,9 @@
 public class EliteCombatNode : BaseCombatNode
 {
     public EliteCombatNode(EliteCombatNodeConfig config) : base(config) { }
-    public override void Enter(RunManager runManager) => runManager.EnterEliteCombat(this);
+    public override void OnEnter() { }
 
-    public override void Exit(RunManager runManager)
+    public override void OnExit()
     {
         Debug.Log("Exit Elite Combat");
     }

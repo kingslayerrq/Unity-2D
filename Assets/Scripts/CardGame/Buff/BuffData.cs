@@ -10,6 +10,7 @@ public abstract class BuffData : ScriptableObject
     [SerializeField] private bool isStackable = true;
     [SerializeField] private bool isDebuff;
     [SerializeField] private bool expiresAtEndOfTurn;
+    [SerializeField] private KeywordData keywordData;
     
     public string BuffName => buffName;
     public Sprite BuffIcon => buffIcon;
@@ -17,6 +18,7 @@ public abstract class BuffData : ScriptableObject
     public bool IsStackable => isStackable;
     public bool IsDebuff => isDebuff;
     public bool ExpiresAtEndOfTurn => expiresAtEndOfTurn;
+    public KeywordData KeywordData => keywordData;
 
     public abstract BuffInstance CreateInstance(int stacks);
     

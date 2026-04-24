@@ -10,19 +10,17 @@ public class UnknownNode : BaseNode
     {
     }
 
-    public override void Enter(RunManager runManager)
+    public override void OnEnter()
     {
         if (!_resolved)
-        {
-            ResolveUnknown(runManager);
-        }
+            ResolveUnknown(RunManager.Instance);
 
-        _resolvedInnerNode.Enter(runManager);
+        _resolvedInnerNode.OnEnter();
     }
 
-    public override void Exit(RunManager runManager)
+    public override void OnExit()
     {
-        _resolvedInnerNode?.Exit(runManager);
+        _resolvedInnerNode?.OnExit();
     }
 
     private void ResolveUnknown(RunManager runManager)
