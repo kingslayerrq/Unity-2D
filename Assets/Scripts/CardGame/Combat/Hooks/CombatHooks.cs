@@ -38,6 +38,11 @@ namespace CardScene.Combat.Hooks
     {
         void OnCardDiscarded(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
     }
+
+    public interface IOnCardExhausted
+    {
+        void OnCardExhausted(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem);
+    }
     
     public interface IOnBeforeDealDamage
     {

@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Bloodletting
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: Bloodletting
+  cardDescription: 'Lose 3 HP.
+
+    Gain 2 Energy.'
+  cardPrice: 0
+  cardCost: 0
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 1
+  cardSprite: {fileID: 21300000, guid: bbccd68e666831c4d8d0ecfc947d8210, type: 3}
+  targetType: 0
+  keywords:
+  - {fileID: 11400000, guid: e3cdf08ef499b4d4d9bdc2d15102cd40, type: 2}
+  upgradedCardName: Bloodletting+
+  upgradedCardDescription: 'Lose 3 HP.
+
+    Gain 3 Energy.'
+  upgradedCardPrice: 0
+  upgradedCardCost: 0
+  upgradedCardSprite: {fileID: 21300000, guid: 920dcd05089d50a49a58d2be8208b5cf, type: 3}
+  upgradedTargetType: 0
+  upgradedKeywords:
+  - {fileID: 11400000, guid: e3cdf08ef499b4d4d9bdc2d15102cd40, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 1
+  cardEffects:
+  - cardEffect:
+      rid: 864238706542248013
+    cardEffectConfig:
+      rid: 864238706542248014
+  - cardEffect:
+      rid: 864238706542248015
+    cardEffectConfig:
+      rid: 864238706542248016
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238706542248017
+    cardEffectConfig:
+      rid: 864238706542248018
+  - cardEffect:
+      rid: 864238706542248019
+    cardEffectConfig:
+      rid: 864238706542248020
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238706542248013
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248014
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        amount:
+          baseValue: 3
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238706542248015
+      type: {class: GainEnergyCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248016
+      type: {class: GainEnergyCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 2
+    - rid: 864238706542248017
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248018
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        amount:
+          baseValue: 3
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 864238706542248019
+      type: {class: GainEnergyCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248020
+      type: {class: GainEnergyCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 3

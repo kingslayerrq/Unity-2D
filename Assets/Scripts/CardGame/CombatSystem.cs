@@ -75,8 +75,8 @@ public class CombatSystem : MonoBehaviour
         
         if (source.Hand.RemoveCard(cardInstance))
         {
-            // exhaust power cards
-            if (cardInstance.CurrentCardType == CardType.Power)
+            // exhaust
+            if (cardInstance.CurrentCardType == CardType.Power || cardInstance.IsExhaustOnPlay())
                 source.CardPileManager.ExhaustPile.AddCardToPile(cardInstance);
             else
             {
@@ -115,6 +115,18 @@ public class CombatSystem : MonoBehaviour
             {
                 t.BuffManager.OnEnergySpent(t, this);
             }
+        }
+    }
+
+    public void ResolveGainEnergy(BaseUnitInstance source, IReadOnlyList<BasePlayerUnitInstance> targets, int amount)
+    {
+        if (source == null || targets == null) return;
+
+        for (var index = 0; index < targets.Count; index++)
+        {
+            var t = targets[index];
+            if (t.IsDead) continue;
+            t.GainEnergy(amount);
         }
     }
 
@@ -173,6 +185,13 @@ public class CombatSystem : MonoBehaviour
                 t.BuffManager.OnCardDiscarded(t, card, this);
             }
         }
+    }
+
+    public void ResolveExhaust(BasePlayerUnitInstance source, CardInstance card)
+    {
+        if (source == null || card == null) return;
+        source.ExhaustCard(card);
+        source.BuffManager.OnCardExhausted(source, card, this);
     }
 
     public void ResolveDamage(BaseUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, int amount, CardType cardType)

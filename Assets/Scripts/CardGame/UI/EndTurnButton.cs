@@ -39,6 +39,9 @@ public class EndTurnButton : MonoBehaviour
 
         _playerUnitInstance = playerInstance;
 
+        if (_endTurnButtonText != null)
+            _endTurnButtonText.text = "";
+
         if (_playerUnitInstance != null && _playerUnitInstance.CombatManager != null)
         {
             _endTurnButton.onClick.AddListener(_playerUnitInstance.CombatManager.EndPlayerTurn);

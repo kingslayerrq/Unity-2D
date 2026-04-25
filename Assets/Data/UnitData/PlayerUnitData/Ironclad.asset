@@ -23,3 +23,5 @@ MonoBehaviour:
   startingDeckData: {fileID: 11400000, guid: 9bddc5a6675e656438f7da9fd4961f19, type: 2}
   drawAmount: 5
   maxEnergy: 3
+  playerCardClass: 0
+  playerEnergyViewSprite: {fileID: 21300000, guid: 2e564b2d44b99cb48aada07d00d8876f, type: 3}

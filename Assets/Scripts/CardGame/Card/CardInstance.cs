@@ -110,6 +110,19 @@ public class CardInstance
     
     public bool RequireTarget => Data.TargetType != TargetType.None;
 
+    public bool IsExhaustOnPlay()
+    {
+        if (currentCardEffects == null) return false;
+        foreach (var effectData in currentCardEffects)
+        {
+            if (effectData?.CardEffect is not ExhaustCardEffect) continue;
+            // No config assigned → defaults to ThisCard
+            if (effectData.CardEffectConfig is not ExhaustCardEffectConfig config) return true;
+            return config.ExhaustMode == ExhaustMode.ThisCard;
+        }
+        return false;
+    }
+
     public CardInstance Clone()
     {
         CardInstance clone = new CardInstance(this.data, this.currentOwner, this.currentIsUpgraded,

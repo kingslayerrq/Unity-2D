@@ -120,7 +120,6 @@ public class NodeRewardManager : MonoBehaviour
     public void DisplayResultCanvas(bool isWin)
     {
         if (_resultCanvasGroup == null || _winPanel == null || _losePanel == null) return;
-
         _winPanel.SetActive(isWin);
         _losePanel.SetActive(!isWin);
 

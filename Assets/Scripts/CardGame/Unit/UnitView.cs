@@ -45,6 +45,7 @@ public class UnitView : MonoBehaviour
             var r = unitInstance.CurrentSprite.rect;
             GetComponent<RectTransform>().sizeDelta = new Vector2(r.width, r.height);
         }
+
     }
 
     private void OnUnitDisposed()

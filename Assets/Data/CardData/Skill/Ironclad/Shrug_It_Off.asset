@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Shrug_It_Off
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: Shrug It Off
+  cardDescription: 'Gain 8 block.
+
+    Draw 1 card.'
+  cardPrice: 0
+  cardCost: 1
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 1
+  cardSprite: {fileID: 21300000, guid: 38730cb3db23c7642a220f1a85531d4b, type: 3}
+  targetType: 0
+  keywords:
+  - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  upgradedCardName: Shrug It Off+
+  upgradedCardDescription: 'Gain 11 block.
+
+    Draw 1 card.'
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: 12086dfcaffb4cb4cab450bb052dcbc6, type: 3}
+  upgradedTargetType: 0
+  upgradedKeywords:
+  - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 0
+  cardEffects:
+  - cardEffect:
+      rid: 864238706542248021
+    cardEffectConfig:
+      rid: 864238706542248022
+  - cardEffect:
+      rid: 864238706542248023
+    cardEffectConfig:
+      rid: 864238706542248024
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238706542248025
+    cardEffectConfig:
+      rid: 864238706542248026
+  - cardEffect:
+      rid: 864238706542248027
+    cardEffectConfig:
+      rid: 864238706542248028
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238706542248021
+      type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248022
+      type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 8
+    - rid: 864238706542248023
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248024
+      type: {class: DrawCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 1
+    - rid: 864238706542248025
+      type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248026
+      type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 11
+    - rid: 864238706542248027
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248028
+      type: {class: DrawCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 1

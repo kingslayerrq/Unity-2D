@@ -15,6 +15,7 @@ public class CombatManager : MonoBehaviour
     [Header("Canvas UI")]
     [SerializeField] private PlayerHandView playerHandView;
     [SerializeField] private EndTurnButton endTurnButton;
+    [SerializeField] private UnitEnergyView unitEnergyView;
     
     private CombatActionQueue actionQueue = new CombatActionQueue();
 
@@ -61,6 +62,7 @@ public class CombatManager : MonoBehaviour
         unitsManager.SpawnAndBindPlayerView();
         
         if (endTurnButton != null) endTurnButton.Initialize(Player);
+        if (unitEnergyView != null) unitEnergyView.Initialize(Player);
 
         IReadOnlyList<EnemyUnitData> enemyUnitDatas = combatNode.EnemyUnitDatas;
 
@@ -108,8 +110,9 @@ public class CombatManager : MonoBehaviour
     // Spends Energy and Play the card wrapper
     public void PlayCard(CardInstance card, List<BaseUnitInstance> targets)
     {
+        bool toDiscard = !card.IsExhaustOnPlay();
         actionQueue.Enqueue(new SpendEnergyAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, card.CurrentCost), null);
-        actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card), null);
+        actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card, toDiscard), null);
     }
 
     public void EndPlayerTurn()
@@ -156,21 +159,20 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+    private void BattleCleanup()
+    {
+        currentTurn = 0;
+    }
+
     private void EnterWinState()
     {
-        // if (actionQueue != null)
-        // {
-        //     actionQueue.Clear();
-        // }
+        BattleCleanup();
         SetState(NodeState.Victory);
     }
 
     private void EnterDefeatState()
     {
-        // if (actionQueue != null)
-        // {
-        //     actionQueue.Clear();
-        // }
+        BattleCleanup();
         SetState(NodeState.Defeat);
     }
 

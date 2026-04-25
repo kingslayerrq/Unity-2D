@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Perfected_Strike
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: Perfected Strike
+  cardDescription: 'Deal 6 damage.
+
+    Deal 2 additional damage for ALL your cards
+    containing "Strike". '
+  cardPrice: 0
+  cardCost: 2
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 0
+  cardSprite: {fileID: 21300000, guid: 111ebf4423dcf37409f8390a2c914db9, type: 3}
+  targetType: 1
+  keywords: []
+  upgradedCardName: Perfected Strike+
+  upgradedCardDescription: 'Deal 6 damage.
+
+    Deal 3 additional damage for ALL
+    your cards containing "Strike". '
+  upgradedCardPrice: 0
+  upgradedCardCost: 2
+  upgradedCardSprite: {fileID: 21300000, guid: 0128327cfd30cb84ea8de51ca70e857b, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords: []
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 0
+  cardEffects:
+  - cardEffect:
+      rid: 864238706542248009
+    cardEffectConfig:
+      rid: 864238706542248010
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238706542248011
+    cardEffectConfig:
+      rid: 864238706542248012
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238706542248009
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248010
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 6
+          bonusSource: 2
+          bonusMultiplier: 2
+        numberOfAttacks: 1
+    - rid: 864238706542248011
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238706542248012
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 6
+          bonusSource: 2
+          bonusMultiplier: 3
+        numberOfAttacks: 1

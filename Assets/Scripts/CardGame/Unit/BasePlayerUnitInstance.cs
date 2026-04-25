@@ -85,6 +85,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
     {
         Debug.Log($"Player - {CurrentName} Defeat");
         hand?.Clear();
+        currentEnergy = 0;
     }
 
     protected void InitEnergy()
@@ -148,6 +149,18 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         }
         return false;
     }
+
+    public bool ExhaustCard(CardInstance card)
+    {
+        if (card == null) return false;
+
+        if (hand.RemoveCard(card))
+        {
+            CardPileManager.ExhaustPile.AddCardToPile(card);
+            return true;
+        }
+        return false;
+    }
     
     #endregion
     
@@ -155,11 +168,20 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
     public void ResetEnergy()
     {
         currentEnergy = currentMaxEnergy;
+        OnEnergyChanged?.Invoke(currentEnergy, currentMaxEnergy);
     }
 
     public void SpendEnergy(int amount)
     {
+        Debug.Log($"Player - {CurrentName} Spend Energy");
         currentEnergy -= amount;
+        OnEnergyChanged?.Invoke(currentEnergy, currentMaxEnergy);
+    }
+
+    public void GainEnergy(int amount)
+    {
+        currentEnergy += amount;
+        OnEnergyChanged?.Invoke(currentEnergy, currentMaxEnergy);
     }
     #endregion
     

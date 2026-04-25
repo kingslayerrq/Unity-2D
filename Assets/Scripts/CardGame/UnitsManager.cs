@@ -162,6 +162,9 @@ public class UnitsManager : MonoBehaviour
         switch (combatState)
         {
             case CombatManager.NodeState.BattleSetup:
+                _allActiveUnits.Clear();
+                ActivePlayerUnitInstances.Clear();
+                ActivePlayerUnitInstance = null;
                 break;
             default:
                 break;

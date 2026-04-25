@@ -144,6 +144,12 @@ public class BuffManager : MonoBehaviour
         CleanUpExpiredBuffs();
     }
 
+    public void OnCardExhausted(BaseUnitInstance owner, CardInstance cardInstance, CombatSystem combatSystem)
+    {
+        Dispatch<IOnCardExhausted>(handler => handler.OnCardExhausted(owner, cardInstance, combatSystem));
+        CleanUpExpiredBuffs();
+    }
+
     /// <summary>
     /// Called at the start of the owner's turn.
     /// Buffs like regen, poison ticks, or start-of-turn resets may react here.
