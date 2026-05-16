@@ -10,6 +10,11 @@ jobs:
     name: Build & Upload 🚀
     runs-on: ubuntu-latest
     steps:
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          docker system prune -af
       # 1. Checkout the project code
       - name: Checkout repository
         uses: actions/checkout@v4
