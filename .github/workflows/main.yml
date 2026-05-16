@@ -35,12 +35,11 @@ jobs:
           targetPlatform: WebGL
           buildsPath: build
 
-      # 4. Push to Itch.io using a maintained Butler action
-      - name: Deploy to Itch.io
-        uses: manateeworks/butler-publish-itchio-action@v1.0.3
+      # 4. Install official Butler and Push to Itch.io
+      - name: Setup Butler 🎩
+        uses: jdno/setup-butler@v1
+
+      - name: Upload to Itch.io 🚀
+        run: butler push build/WebGL Kingslayerrq/sts-clone:html5
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
-          CHANNEL: html5
-          ITCH_GAME: sts-clone
-          ITCH_USER: Kingslayerrq
-          PACKAGE: build/WebGL
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
