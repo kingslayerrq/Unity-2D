@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: True_Grit
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardClass: 0
+  cardName: True Grit
+  cardDescription: 'Gain 7 block.
+
+    Exhaust 1 card at random.'
+  cardPrice: 0
+  cardCost: 1
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 1
+  cardSprite: {fileID: 21300000, guid: f5595567ac22d0145805b3bbc051506e, type: 3}
+  targetType: 0
+  keywords:
+  - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
+  upgradedCardName: True Grit+
+  upgradedCardDescription: 'Gain 9 block.
+
+    Exhaust 1 card.'
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: bf90f7fdd2deb544398436fe3f1c4b1b, type: 3}
+  upgradedTargetType: 0
+  upgradedKeywords:
+  - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
+  spawnWeight: 0
+  isUpgraded: 0
+  isEnchanted: 0
+  isUnlocked: 1
+  isDiscovered: 0
+  cardEffects:
+  - cardEffect:
+      rid: 864238740792672264
+    cardEffectConfig:
+      rid: 864238740792672265
+  - cardEffect:
+      rid: 864238740792672266
+    cardEffectConfig:
+      rid: 864238740792672267
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 864238740792672268
+    cardEffectConfig:
+      rid: 864238740792672269
+  - cardEffect:
+      rid: 864238740792672270
+    cardEffectConfig:
+      rid: 864238740792672271
+  references:
+    version: 2
+    RefIds:
+    - rid: 864238740792672264
+      type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238740792672265
+      type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 7
+    - rid: 864238740792672266
+      type: {class: ExhaustCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238740792672267
+      type: {class: ExhaustCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        exhaustMode: 1
+        count: 1
+        isOptional: 0
+        excludeSelf: 1
+    - rid: 864238740792672268
+      type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238740792672269
+      type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 9
+    - rid: 864238740792672270
+      type: {class: ExhaustCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 864238740792672271
+      type: {class: ExhaustCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        exhaustMode: 2
+        count: 1
+        isOptional: 0
+        excludeSelf: 1

@@ -36,6 +36,21 @@ public class CardView : MonoBehaviour
     public CanvasGroup CanvasGroup { get; private set; }
     public CardAnimation CardAnimation { get; private set; }
     public CardInstance CardInstance { get; private set; }
+    public int CurrentSortingOrder => cardCanvas != null ? cardCanvas.sortingOrder : 0;
+    public bool CurrentOverrideSorting => cardCanvas != null && cardCanvas.overrideSorting;
+
+    /// <summary>
+    /// Sets both <c>overrideSorting</c> and <c>sortingOrder</c> on the per-card Canvas.
+    /// Use this whenever a sortingOrder value is meant to actually drive rendering — the
+    /// codebase resets <c>overrideSorting=false</c> on pool return, so a bare sortingOrder
+    /// write has no visual effect on an in-hand card.
+    /// </summary>
+    public void SetSortingState(bool overrideSorting, int sortingOrder)
+    {
+        if (cardCanvas == null) return;
+        cardCanvas.overrideSorting = overrideSorting;
+        cardCanvas.sortingOrder = sortingOrder;
+    }
     private CardInteraction _cardInteraction;
 
     private void Awake()
@@ -106,7 +121,7 @@ public class CardView : MonoBehaviour
     public void VisualHoverEnter()
     {
         preHoverSortingOrder = cardCanvas.sortingOrder;
-        SetSortingOrder(100, true);
+        SetSortingOrder(CONSTANTS.CARD_HOVER_BUMP, true);
         transform.DOKill();
         transform.DOScale(_origScale * hoverScaleAmount, animDuration).SetEase(Ease.OutBack);
         AdaptPopupPosition();
@@ -139,7 +154,7 @@ public class CardView : MonoBehaviour
         transform.localScale = _origScale;
         transform.localRotation = Quaternion.identity;
         transform.localPosition = Vector3.zero;
-        SetSortingOrder(1); // Reset to base sorting
+        SetSortingOrder(CONSTANTS.CARD_BASE_SORTING_ORDER); // Reset to base sorting
         HideAllPopups();
     }
 

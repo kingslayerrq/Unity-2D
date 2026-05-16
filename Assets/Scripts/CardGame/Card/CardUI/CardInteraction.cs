@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CardView))]
@@ -19,6 +20,16 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private bool isDragging = false;
     private bool frameDelay = false;
     private bool _isDisplayOnly = false;
+
+    // ----- Hand-card selection mode (for effects like SelectDiscard / SelectExhaust) -----
+    // While active, left-clicking an in-hand card with an owner fires
+    // OnHandCardClickedDuringSelection instead of picking the card up to play it,
+    // and dragging is suppressed entirely.
+    public static bool IsSelectionModeActive { get; private set; }
+    public static event Action<CardInstance> OnHandCardClickedDuringSelection;
+
+    public static void EnterSelectionMode() => IsSelectionModeActive = true;
+    public static void ExitSelectionMode() => IsSelectionModeActive = false;
     
     [Header("Drag & Drop")]
     private int origSiblingIndex;
@@ -45,7 +56,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             UpdateReceivers(Input.mousePosition);
         }
         
-        if ((isSelected || isDragging) && Input.GetMouseButtonDown(1))
+        if ((isSelected || isDragging) && Mouse.current.leftButton.wasPressedThisFrame)
         {
             isSelected = false;
             isDragging = false;
@@ -78,6 +89,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (_isDisplayOnly) return;
+        if (IsSelectionModeActive) return;
         if (!IsPlayCardAllowed()) return;
         if (_view.CardInstance is not { CurrentCardState: CardState.InHand }) return;
         if (eventData.button != PointerEventData.InputButton.Left) return;
@@ -114,8 +126,18 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         if (eventData.button != PointerEventData.InputButton.Left) return;
         if (_view.CardInstance?.CurrentOwner == null)
         {
-            // Try to select to add
+            // Try to select to add (used by NodeRewardManager card picker)
             OnCardSelectedToAdd?.Invoke(_view.CardInstance);
+            return;
+        }
+        if (IsSelectionModeActive &&
+            _view.CardInstance != null &&
+            _view.CardInstance.CurrentCardState == CardState.InHand)
+        {
+            // Hand-card selection mode (Select Discard / Select Exhaust): a click
+            // toggles the card's selection on the active CardSelectionCanvas
+            // instead of picking it up to play.
+            OnHandCardClickedDuringSelection?.Invoke(_view.CardInstance);
             return;
         }
         if (!IsPlayCardAllowed()) return;
@@ -148,8 +170,8 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
         le.preferredWidth = GetComponent<RectTransform>().rect.width;
         le.preferredHeight = GetComponent<RectTransform>().rect.height;
         
-        transform.SetParent(origParent.parent); 
-        _view.SetSortingOrder(999);
+        transform.SetParent(origParent.parent);
+        _view.SetSortingOrder(CONSTANTS.CARD_DRAG_SORTING_ORDER);
         _view.CanvasGroup.blocksRaycasts = false;
     }
 
@@ -291,6 +313,17 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 _view.CanvasGroup.blocksRaycasts = true;
 
             _view.ResetVisuals();
+        }
+        else
+        {
+            // Drag is over and the card is in flight to its play animation. Force
+            // overrideSorting=true (it's been off since pool reset) and lower the
+            // sortingOrder to CARD_IN_FLIGHT (800) so the card sits below the
+            // selection canvas at 1000 while a queued RequestSelection action is
+            // paused on player input. The play animation itself will overwrite
+            // this with CARD_ANIMATION_GHOST_START (1500) when it captures the
+            // card, so this won't affect the fly-to-discard visuals.
+            _view.SetSortingState(true, CONSTANTS.CARD_IN_FLIGHT_SORTING_ORDER);
         }
     }
 

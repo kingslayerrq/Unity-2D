@@ -18,6 +18,17 @@ public class ExhaustCardEffect : BaseCardEffect
         if (effectData.CardEffectConfig is not ExhaustCardEffectConfig exhaustConfig) return;
         if (exhaustConfig.ExhaustMode == ExhaustMode.ThisCard) return;
 
+        if (exhaustConfig.ExhaustMode == ExhaustMode.SelectHandCard)
+        {
+            // Wrap the prompt in a queued action so the queue pauses (via WaitUntil)
+            // until the player confirms. The action then enqueues one ExhaustAction per chosen card.
+            context.CombatManager.ActionQueue.Enqueue(
+                new RequestExhaustSelectionAction(context.CombatManager, sourcePlayer,
+                    context.CardInstance, exhaustConfig),
+                null);
+            return;
+        }
+
         CardInstance cardToExhaust = ResolveTarget(exhaustConfig.ExhaustMode, context, sourcePlayer);
         if (cardToExhaust == null) return;
 
@@ -45,7 +56,9 @@ public class ExhaustCardEffect : BaseCardEffect
                 return candidates[RunManager.Instance.CombatRng.Next(candidates.Count)];
 
             case ExhaustMode.SelectHandCard:
-                Debug.LogWarning("ExhaustCardEffect: SelectHandCard requires a selection UI — not yet implemented.");
+                // Handled in Execute() before this method is called.
+                Debug.LogWarning("ExhaustCardEffect.ResolveTarget: SelectHandCard should be routed via " +
+                                 "RequestExhaustSelectionAction, not ResolveTarget.");
                 return null;
 
             default:

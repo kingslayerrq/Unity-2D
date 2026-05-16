@@ -18,18 +18,18 @@ public class CardAnimation : MonoBehaviour
     [SerializeField] private float burstIndentY = -8f;
     [SerializeField] private int maxBurstIndentSteps = 4;
     
-    [SerializeField] private const int GhostSortingStart = 1500;
-    private static int nextGhostSortingOrder = GhostSortingStart;
-    
+    private static int nextGhostSortingOrder = CONSTANTS.CARD_ANIMATION_GHOST_START;
+
     private static float lastGhostSpawnTime = -999f;
     private static int currentBurstIndex = 0;
 
     private static int GetNextGhostSortingOrder()
     {
-        // earlier spawned card stays on top
-        if (nextGhostSortingOrder < 1000)
+        // earlier spawned card stays on top — counter resets once it dips into
+        // the selection-canvas band so ghosts always render above selection UI.
+        if (nextGhostSortingOrder <= CONSTANTS.CARD_SELECTION_TRAY_SORTING_ORDER)
         {
-            nextGhostSortingOrder = GhostSortingStart;
+            nextGhostSortingOrder = CONSTANTS.CARD_ANIMATION_GHOST_START;
         }
 
         return nextGhostSortingOrder--;
