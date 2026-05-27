@@ -861,7 +861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: c930592dddda5f24fbaded5a8319c38c, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1034,7 +1034,6 @@ MonoBehaviour:
   cardCost: {fileID: 8599246948124919844}
   cardKeywordPopupParent: {fileID: 8821980415425464115}
   cardKeywordPopupPrefab: {fileID: 2984549489705582878, guid: f57cc122f9bc988489675126eeff33ef, type: 3}
-  origSiblingIndex: 0
   popupParentRect: {fileID: 8821980415425464115}
   popupSpacing: 4
   playerHandRect: {fileID: 7576119566931832752, guid: 79a0f4e901837f343849067527901765, type: 3}
@@ -1116,6 +1115,7 @@ MonoBehaviour:
   burstIndentX: 24
   burstIndentY: -8
   maxBurstIndentSteps: 4
+  cardVisual: {fileID: 0}
 --- !u!114 &6059512241588058731
 MonoBehaviour:
   m_ObjectHideFlags: 0

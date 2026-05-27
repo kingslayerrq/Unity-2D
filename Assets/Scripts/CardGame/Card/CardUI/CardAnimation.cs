@@ -22,6 +22,58 @@ public class CardAnimation : MonoBehaviour
 
     private static float lastGhostSpawnTime = -999f;
     private static int currentBurstIndex = 0;
+    
+    [Header("Dissolve")]
+    [SerializeField] private Image cardVisual;
+    private static readonly int DissolveAmountId = Shader.PropertyToID("_DissolveAmount");
+
+
+    public Sequence ExhaustAnimationSelf(Canvas rootCanvas)
+    {
+        Sequence seq = DOTween.Sequence();
+
+        // 1. Reset the material state
+        ResetDissolveState();
+
+        if (cardVisual != null && cardVisual.material != null)
+        {
+            // 2. Tween the material float directly
+            seq.Append(DOTween.To(
+                () => cardVisual.material.GetFloat(DissolveAmountId),
+                (x) => cardVisual.material.SetFloat(DissolveAmountId, x),
+                1f, // Target value
+                0.6f // Duration
+            ).SetEase(Ease.OutSine));
+        }
+
+        // 3. Add kinetic juice
+        seq.Join(transform.DOLocalMoveY(transform.localPosition.y + 75f, 0.6f).SetEase(Ease.OutQuad));
+        seq.Join(transform.DOScale(0.8f, 0.6f));
+
+        // 4. Fade out CanvasGroup to hide text/cost while burning
+        if (TryGetComponent(out CanvasGroup cg))
+        {
+            seq.Join(cg.DOFade(0f, 0.4f).SetEase(Ease.InQuad));
+        }
+
+        return seq;
+    }
+
+    public void ResetDissolveState()
+    {
+        if (cardVisual != null && cardVisual.material != null)
+        {
+            cardVisual.material.SetFloat(DissolveAmountId, 0f);
+        }
+        
+        if (TryGetComponent(out CanvasGroup cg))
+        {
+            cg.alpha = 1f; // Ensure text is visible again when pulled from pool
+        }
+
+        transform.localScale = Vector3.one;
+    }
+
 
     private static int GetNextGhostSortingOrder()
     {

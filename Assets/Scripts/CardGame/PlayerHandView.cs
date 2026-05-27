@@ -184,7 +184,8 @@ public class PlayerHandView : MonoBehaviour
     private void ReturnToPool(CardView view)
     {
         if (view == null) return;
-
+        
+        view.CardAnimation.ResetDissolveState();
         view.ResetForPool();
         view.gameObject.SetActive(false);
         view.transform.SetParent(cardContainer, false);
@@ -243,6 +244,48 @@ public class PlayerHandView : MonoBehaviour
         if (sequences.Count == 0)
             yield break;
 
+        yield return new WaitUntil(() =>
+        {
+            for (int i = 0; i < sequences.Count; i++)
+            {
+                Sequence seq = sequences[i];
+
+                if (seq != null && seq.IsActive() && !seq.IsComplete())
+                    return false;
+            }
+
+            return true;
+        });
+    }
+    
+    public IEnumerator ExhaustCardsAnimation(IReadOnlyList<CardInstance> cards)
+    {
+        if (cards == null || cards.Count == 0)
+            yield break;
+
+        List<Sequence> sequences = new List<Sequence>();
+
+        foreach (CardInstance card in cards)
+        {
+            if (!TryGetView(card, out CardView view))
+                continue;
+
+            if (view == null || view.CardAnimation == null)
+                continue;
+
+            // Call the new exhaust method we built in Step 2
+            Sequence seq = view.CardAnimation.ExhaustAnimationSelf(rootCanvas);
+
+            if (seq != null)
+            {
+                sequences.Add(seq);
+            }
+        }
+
+        if (sequences.Count == 0)
+            yield break;
+
+        // Wait for all exhaust tweens in the sequence list to finish
         yield return new WaitUntil(() =>
         {
             for (int i = 0; i < sequences.Count; i++)

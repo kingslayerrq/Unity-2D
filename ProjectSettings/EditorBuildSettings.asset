@@ -6,16 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/CombatNodeScene.unity
+    path: Assets/Scenes/CardGameScene/CombatNodeScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/EntryScene.unity
+    path: Assets/Scenes/CardGameScene/EntryScene.unity
     guid: c2f763027853c804ca69e371e55bd163
   - enabled: 1
-    path: Assets/Scenes/MapScene.unity
+    path: Assets/Scenes/CardGameScene/MapScene.unity
     guid: 101543dbe2b9d444094480178b80ddd8
   - enabled: 1
-    path: Assets/Scenes/ChooseCharacterScene.unity
+    path: Assets/Scenes/CardGameScene/ChooseCharacterScene.unity
     guid: c4dac9f12d5218449b11a6ea360dc547
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

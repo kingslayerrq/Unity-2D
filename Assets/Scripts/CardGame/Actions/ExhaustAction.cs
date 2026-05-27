@@ -21,7 +21,7 @@ public class ExhaustAction : ICombatAction
 
         _combatSystem.ResolveExhaust(_source, _card);
 
-        yield return _source.CombatManager.PlayerHandView.DiscardCardsAnimation(new[] { _card });
+        yield return _source.CombatManager.PlayerHandView.ExhaustCardsAnimation(new[] { _card });
 
         _source.CombatManager.PlayerHandView.CompleteAnimateOut(_card);
         _source.CombatManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
