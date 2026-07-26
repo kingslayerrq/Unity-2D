@@ -29,6 +29,7 @@ public abstract class BaseUnitInstance :  ICardTarget
     public bool IsDead => currentHealth <= 0;
 
     public event Action<int, int> OnHealthChanged;
+    public event Action<int> OnBlockChanged;
     public event Action<bool> OnHighlightTriggered;
     public event Action OnDisposed;
     
@@ -110,16 +111,21 @@ public abstract class BaseUnitInstance :  ICardTarget
             case BlockResetSource.CardEffect:
                 break;
             case BlockResetSource.TurnStart:
-                currentBlock = 0;
+                ResetBlock();
                 break;
             case BlockResetSource.TurnEnd:
-                currentBlock = 0;
+                ResetBlock();
                 break;
             default:
                 break;
         }
     }
 
+    protected void ResetBlock()
+    {
+        currentBlock = 0;
+        OnBlockChanged?.Invoke(currentBlock);
+    }
     
     /// <summary>
     /// Set the current health to max or current based on <value>isInitialized</value>
@@ -152,6 +158,7 @@ public abstract class BaseUnitInstance :  ICardTarget
         {
             var blocked = Mathf.Min(currentBlock, remainingDamage);
             currentBlock -= blocked;
+            OnBlockChanged?.Invoke(currentBlock);
             remainingDamage -= blocked;
         }
         if (remainingDamage > 0) lastDamagedBy = source;
@@ -163,6 +170,7 @@ public abstract class BaseUnitInstance :  ICardTarget
     public void Block(int amount)
     {
         currentBlock += amount;
+        OnBlockChanged?.Invoke(currentBlock);
     }
 
     public void Heal(int amount)

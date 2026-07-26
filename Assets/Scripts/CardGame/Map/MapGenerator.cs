@@ -19,6 +19,8 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private int verticalOffset;
     [SerializeField] private int nodesPerFloor;
     [SerializeField] private int floorPerAct;
+    [SerializeField] private float minHorizontalGap = 50f;
+    [SerializeField] private float minVerticalGap = 100f;
     
     [Header("Debug")]
     [SerializeField] private int runSeed;
@@ -154,44 +156,34 @@ public class MapGenerator : MonoBehaviour
     private void InitGrid()
     {
         if (nodesPerFloor <= 0 || floorPerAct <= 0) return;
-        
+    
         nodeGrid = new MapNodeData[floorPerAct][];
-        
-        float horizontalGap = (_mapContainerWidth - nodesPerFloor * _nodeIconWidth - 2 * horizontalOffset) / (nodesPerFloor + 1);
-        float verticalGap = (_mapContainerHeight - floorPerAct * _nodeIconHeight - 2 * verticalOffset) / (floorPerAct + 1);
+    
+       
+        float horizontalGap = (_mapContainerWidth - (nodesPerFloor * _nodeIconWidth) - (2 * horizontalOffset)) / (nodesPerFloor + 1);
+    
+
+        float calcVerticalGap = (_mapContainerHeight - (floorPerAct * _nodeIconHeight) - (2 * verticalOffset)) / (floorPerAct + 1);
+        float verticalGap = Mathf.Max(calcVerticalGap, minVerticalGap); 
 
         float stepX = horizontalGap + _nodeIconWidth;
         float stepY = verticalGap + _nodeIconHeight;
-
-        float startX = 0 - _mapContainerWidth / 2 + horizontalOffset + _nodeIconWidth / 2 + horizontalGap;
-        float startY = 0 - _mapContainerHeight / 2 + verticalOffset  + _nodeIconHeight / 2 + verticalGap;
         
+        float requiredHeight = (floorPerAct * _nodeIconHeight) + (verticalGap * (floorPerAct + 1)) + (2 * verticalOffset);
+        _mapContainerRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, requiredHeight);
+        
+        float startX = (-_mapContainerWidth / 2) + horizontalOffset + (_nodeIconWidth / 2) + horizontalGap;
+        float startY = (-requiredHeight / 2) + verticalOffset + (_nodeIconHeight / 2) + verticalGap;
+    
         float currentX = startX;
         float currentY = startY;
-        
-        // Debug.Log($"mapContainerHeight: {_mapContainerHeight}," +
-        //           $"mapContainerWidth: {_mapContainerWidth}" +
-        //           $"startX: {startX}," +
-        //           $"startY: {startY}," +
-        //           $"horizontal Gap: {horizontalGap}," +
-        //           $"vertical Gap: {verticalGap}");
+    
         for (int floor = 0; floor < floorPerAct; floor++)
         {
             nodeGrid[floor] = new MapNodeData[nodesPerFloor];
             for (int index = 0; index < nodesPerFloor; index++)
             {
-                // GameObject node = Instantiate(nodePrefab, mapContainer.transform);
-                // // Debug.Log($"Spawned node {node.name}, activeSelf={node.activeSelf}, activeInHierarchy={node.activeInHierarchy}, parent={node.transform.parent.name}");
-                //
-                // node.name =  $"Node{floor}_{index}: [{currentX}_{currentY}]";
-                //
-                // var nodeRectTransform = node.GetComponent<RectTransform>();
-                // if (nodeRectTransform != null) nodeRectTransform.anchoredPosition = new Vector2(currentX, currentY);
-                //
-                // mapnodedata
-                nodeGrid[floor][index] = new MapNodeData(0,
-                    floor, index, new Vector2(currentX, currentY));
-                
+                nodeGrid[floor][index] = new MapNodeData(0, floor, index, new Vector2(currentX, currentY));
                 currentX += stepX;
             }
             currentX = startX;
