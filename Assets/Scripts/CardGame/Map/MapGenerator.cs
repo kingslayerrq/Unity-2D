@@ -19,7 +19,6 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private int verticalOffset;
     [SerializeField] private int nodesPerFloor;
     [SerializeField] private int floorPerAct;
-    [SerializeField] private float minHorizontalGap = 50f;
     [SerializeField] private float minVerticalGap = 100f;
     
     [Header("Debug")]
@@ -66,51 +65,62 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    public void GenerateNewMapWithRandomSeed()
+    public bool GenerateNewMapWithRandomSeed()
     {
         runSeed = Guid.NewGuid().GetHashCode();
-        GenerateMap();
+        return GenerateMap();
     }
 
-    public void GenerateNewMapWithSeed(int seed)
+    public bool GenerateNewMapWithSeed(int seed)
     {
         runSeed = seed;
-        GenerateMap();
+        return GenerateMap();
     }
 
-    public void GenerateMap()
+    public bool GenerateMap()
     {
         // clear before generate
         ClearGeneratedMap();
-        PrepareGenerationState();
+        if (!PrepareGenerationState())
+            return false;
 
         InitGrid();
         ConnectNodes();
         LogOrphanNodes();
         AssignNodeTypes(false);
         BuildRuntimeNodes();
-        
+
         DrawVisualMap();
+        return true;
     }
 
-    private void PrepareGenerationState()
+    private bool PrepareGenerationState()
     {
         if (mapContainer == null || nodePrefab == null || linePrefab == null)
         {
             Debug.LogError("MapGenerator is missing one or more references.");
-            return;
+            return false;
         }
 
         _mapContainerRect = mapContainer.GetComponent<RectTransform>();
         if (_mapContainerRect == null)
         {
             Debug.LogError("mapContainer does not have a RectTransform.");
-            return;
+            return false;
         }
 
         mapRng = new Random(SeedUtility.DeriveSeed(runSeed, RngCategory.Map));
 
         _mapContainerWidth = _mapContainerRect.rect.width;
+        if (_mapContainerWidth <= 0f)
+        {
+            Debug.LogError(
+                "Cannot generate the map before its UI layout has a " +
+                "positive width.",
+                this);
+            return false;
+        }
+
         _mapContainerHeight = Screen.height * mapContainerHeightMult;
         _mapContainerRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _mapContainerHeight);
 
@@ -118,11 +128,12 @@ public class MapGenerator : MonoBehaviour
         if (nodeRect == null)
         {
             Debug.LogError("nodePrefab does not have a RectTransform.");
-            return;
+            return false;
         }
 
         _nodeIconWidth = nodeRect.rect.width;
         _nodeIconHeight = nodeRect.rect.height;
+        return true;
     }
 
     public void ClearGeneratedMap()

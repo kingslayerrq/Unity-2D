@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ae0383276a359429ce4aa84c923412, type: 3}
+  m_Name: Necro
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUnitData
+  unitName: The Necrobinder
+  unitDescription: "A Spireborn lich who seeks revenge. \nCalls upon her trusty left
+    hand, Osty, in combat."
+  unitType: 0
+  unitSpriteCombat: {fileID: -6627735485152799415, guid: dcf609546ae1ec4418d80f3e55b292d8, type: 3}
+  maxHealth: 66
+  characterID: be04dcadd06c6e8428a721626133373e
+  isUnlockedByDefault: 0
+  startingDeckData: {fileID: 0}
+  drawAmount: 5
+  maxEnergy: 3
+  playerCardClass: 3
+  playerEnergyViewSprite: {fileID: 1104001808275105380, guid: e2c6b5fba38fd654ba5429aba63c2408, type: 3}
+  playerCharacterSelectBackground: {fileID: -7394183810050430747, guid: 82b6dce4f397d7c46bf4ef0366def188, type: 3}
+  playerCharacterSelectPfpUnlocked: {fileID: 4879854532501341472, guid: 049284392498bdb4ea60aa05ec764598, type: 3}
+  playerCharacterSelectPfpLocked: {fileID: 3213944349009986490, guid: 583b1ac0bfb8dd849a87afd1a5b1a9b1, type: 3}
+  playerStartingHealth: 66
+  playerStartingGold: 99
+  startingRelicData: {fileID: 0}

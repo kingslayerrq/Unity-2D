@@ -1,11 +1,12 @@
-using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Cards/Card Data")]
-public class CardData: ScriptableObject
+public class CardData : ScriptableObject
 {
+    [Header("Identity")]
+    [SerializeField] private string id;
+
     [Header("Base Card Info")] 
     [SerializeField] private CardClass cardClass;
     [SerializeField] private string cardName;
@@ -31,76 +32,54 @@ public class CardData: ScriptableObject
     [SerializeField] private TargetType upgradedTargetType;
     [SerializeField] private List<KeywordData> upgradedKeywords;
 
-    [Header("Rarity Settings")] 
-    [Tooltip("Controls how often the card appears in rewards." +
-             "Higher number = more common. E.g., Common: 100, Uncommon: 40, Rare: 10")]
-    [SerializeField] private int spawnWeight;
+    [Header("Rarity & Unlock Settings")] 
+    [Tooltip("Controls how often the card appears in rewards. NOT USED!!!")]
+    private int spawnWeight;
+    [UnityEngine.Serialization.FormerlySerializedAs("isUnlocked")]
+    [SerializeField] private bool isUnlockedByDefault = true;
 
-    [Header("Runtime Card Status")] 
-    [SerializeField] private bool isUpgraded;
-    [SerializeField] private bool isEnchanted;
-    
-    [Header("Card Data Status")]
-    [SerializeField] private bool isUnlocked;
-    [SerializeField] private bool isDiscovered;
-    
     [Header("Effects")]
     [SerializeField] private List<CardEffectData> cardEffects;
     [SerializeField] private List<CardEffectData> upgradedCardEffects;
     
+    // Getters
+    public string ID => id;
     public CardClass CardClass => cardClass;
-    
     public string CardName => cardName;
-
     public string CardDescription => cardDescription;
-
     public int CardPrice => cardPrice;
-
     public int CardCost => cardCost;
-    
     public CardRarity CardRarity => cardRarity;
-    
     public int SpawnWeight => spawnWeight;
     public int CardLevel => cardLevel;
-
     public CardType CardType => cardType;
-
     public Sprite CardSprite => cardSprite;
-
     public TargetType TargetType => targetType;
-    
-    public List<KeywordData> Keywords => keywords;
-    
+    public IReadOnlyList<KeywordData> Keywords => keywords;
     public IReadOnlyList<CardEffectData> CardEffects => cardEffects;
+
     public string UpgradedCardName => upgradedCardName;
-
     public string UpgradedCardDescription => upgradedCardDescription;
-
     public int UpgradedCardPrice => upgradedCardPrice;
-
     public int UpgradedCardCost => upgradedCardCost;
-
     public Sprite UpgradedCardSprite => upgradedCardSprite;
-
     public TargetType UpgradedTargetType => upgradedTargetType;
-
     public IReadOnlyList<KeywordData> UpgradedKeywords => upgradedKeywords;
     public IReadOnlyList<CardEffectData> UpgradedCardEffects => upgradedCardEffects;
     
-    public bool IsUnlocked => isUnlocked;
-    public bool IsDiscovered => isDiscovered;
-    public bool IsEnchanted => isEnchanted;
-    public bool IsUpgraded => isUpgraded;
+    public bool IsUnlockedByDefault => isUnlockedByDefault;
 
-    public void SetDiscovered(bool discovered)
-    {
-        this.isDiscovered = discovered;
-    }
-    
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        // Automatically sync the cardName string with the filename of the ScriptableObject
+        // Auto-assign unique GUID
+        if (string.IsNullOrEmpty(id))
+        {
+            string path = UnityEditor.AssetDatabase.GetAssetPath(this);
+            id = UnityEditor.AssetDatabase.AssetPathToGUID(path);
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+
         if (!string.IsNullOrWhiteSpace(cardName) && cardName == this.name) return;
         cardName = this.name.Replace("_", " ");
         upgradedCardName = (this.name + "+").Replace("_", " ");
@@ -144,6 +123,7 @@ public enum CardClass
     Silent,
     Regent,
     Necro,
+    Defect,
     None
 }
 

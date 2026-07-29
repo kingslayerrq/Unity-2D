@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 public abstract class UnitData : ScriptableObject
@@ -8,7 +9,7 @@ public abstract class UnitData : ScriptableObject
     [TextArea]
     [SerializeField] private string unitDescription;
     [SerializeField] private UnitType unitType;
-    [SerializeField] private Sprite unitSprite;
+    [FormerlySerializedAs("unitSprite")] [SerializeField] private Sprite unitSpriteCombat;
     [SerializeField] private int maxHealth;
 
     public string UnitName => unitName;
@@ -17,7 +18,7 @@ public abstract class UnitData : ScriptableObject
 
     public UnitType UnitType => unitType;
 
-    public Sprite UnitSprite => unitSprite;
+    public Sprite UnitSprite => unitSpriteCombat;
 
     public int MaxHealth => maxHealth;
 }

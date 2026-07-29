@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Strike
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: f77324086e0da1241b58b1c564435dd1
   cardClass: 0
   cardName: Strike
   cardDescription: Deal 6 damage.
@@ -30,11 +31,7 @@ MonoBehaviour:
   upgradedCardSprite: {fileID: 21300000, guid: 7ec496897cdca0848bd5d098c34b8ff9, type: 3}
   upgradedTargetType: 1
   upgradedKeywords: []
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 1
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 7461714063765798979
@@ -54,6 +51,7 @@ MonoBehaviour:
     - rid: 864238297542557771
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 9
           bonusSource: 0
@@ -65,6 +63,7 @@ MonoBehaviour:
     - rid: 7461714063765798980
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 6
           bonusSource: 0

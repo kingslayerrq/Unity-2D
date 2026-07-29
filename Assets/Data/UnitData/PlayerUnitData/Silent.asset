@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ae0383276a359429ce4aa84c923412, type: 3}
+  m_Name: Silent
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUnitData
+  unitName: The Silent
+  unitDescription: "A huntress from outside the Spire. \nReady to stab and poison
+    anything in her way."
+  unitType: 0
+  unitSpriteCombat: {fileID: -7621378308760344536, guid: 9d05d4233133acd4ea079c37eb008f6f, type: 3}
+  maxHealth: 70
+  characterID: 5b79eb43a51228d4e81b293895118eaf
+  isUnlockedByDefault: 0
+  startingDeckData: {fileID: 0}
+  drawAmount: 5
+  maxEnergy: 3
+  playerCardClass: 1
+  playerEnergyViewSprite: {fileID: -1682754264208196184, guid: a4e8d8316ededc04f8760c906c8e5a46, type: 3}
+  playerCharacterSelectBackground: {fileID: 6725640725953285613, guid: 4308aabcb350d6a48950404fc2280fb4, type: 3}
+  playerCharacterSelectPfpUnlocked: {fileID: 1506625475934417489, guid: ea814e61e403ad341a21cf3bf2a87015, type: 3}
+  playerCharacterSelectPfpLocked: {fileID: 4631727547786546923, guid: b23ddca95f3bf40468e4b48638cb916e, type: 3}
+  playerStartingHealth: 70
+  playerStartingGold: 99
+  startingRelicData: {fileID: 0}

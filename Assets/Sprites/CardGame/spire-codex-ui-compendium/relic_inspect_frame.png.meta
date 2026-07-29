@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 00198aea3f04f5a4292a8622ec98e338
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7492486996486549603
+    second: relic_inspect_frame_0
+  - first:
+      213: -997933373601025723
+    second: relic_inspect_frame_1
+  - first:
+      213: 4615737881823317788
+    second: relic_inspect_frame_2
+  - first:
+      213: -2346428583819303812
+    second: relic_inspect_frame_3
+  - first:
+      213: -3346333246133448516
+    second: relic_inspect_frame_4
+  - first:
+      213: -3162602553694317071
+    second: relic_inspect_frame_5
+  - first:
+      213: 1303348443555381022
+    second: relic_inspect_frame_6
+  - first:
+      213: 3094772598435356796
+    second: relic_inspect_frame_7
+  - first:
+      213: 1609757716572659729
+    second: relic_inspect_frame_8
+  - first:
+      213: -4406623499855120821
+    second: relic_inspect_frame_9
+  - first:
+      213: -5357960050786599415
+    second: relic_inspect_frame_10
+  - first:
+      213: 1967635767583580690
+    second: relic_inspect_frame_11
+  - first:
+      213: 4407573311327443421
+    second: relic_inspect_frame_12
+  - first:
+      213: 5421034944786837367
+    second: relic_inspect_frame_13
+  - first:
+      213: -8453598789523949866
+    second: relic_inspect_frame_14
+  - first:
+      213: -2990679318667036171
+    second: relic_inspect_frame_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: relic_inspect_frame_0
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 343
+        width: 58
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9f8f2a06c6550890800000000000000
+      internalID: -7492486996486549603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_1
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 387
+        width: 109
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 541f00d42e0a622f0800000000000000
+      internalID: -997933373601025723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_2
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 381
+        width: 35
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1f8466f5256e0040800000000000000
+      internalID: 4615737881823317788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_3
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 387
+        width: 109
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c74a0aa82afcf6fd0800000000000000
+      internalID: -2346428583819303812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_4
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 343
+        width: 58
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb0d22c64af6f81d0800000000000000
+      internalID: -3346333246133448516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 225
+        width: 20
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f59e4dcbbd2c14d0800000000000000
+      internalID: -3162602553694317071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_6
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 225
+        width: 20
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1f3da4018c661210800000000000000
+      internalID: 1303348443555381022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 187
+        width: 27
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c702a5e0847d2fa20800000000000000
+      internalID: 3094772598435356796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_8
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 187
+        width: 27
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 110e1c64d12075610800000000000000
+      internalID: 1609757716572659729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 75
+        width: 20
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b463f30364788d2c0800000000000000
+      internalID: -4406623499855120821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_10
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 75
+        width: 20
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90e7124b8b3b4a5b0800000000000000
+      internalID: -5357960050786599415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_11
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 0
+        width: 58
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2122c2e3e427e4b10800000000000000
+      internalID: 1967635767583580690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_12
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 1
+        width: 109
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd91a270398da2d30800000000000000
+      internalID: 4407573311327443421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_13
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 35
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77faff67f826b3b40800000000000000
+      internalID: 5421034944786837367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_14
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 1
+        width: 109
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d6b0c4a0b8ceaa80800000000000000
+      internalID: -8453598789523949866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: relic_inspect_frame_15
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 0
+        width: 58
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f97eb54109fe76d0800000000000000
+      internalID: -2990679318667036171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      relic_inspect_frame_0: -7492486996486549603
+      relic_inspect_frame_1: -997933373601025723
+      relic_inspect_frame_10: -5357960050786599415
+      relic_inspect_frame_11: 1967635767583580690
+      relic_inspect_frame_12: 4407573311327443421
+      relic_inspect_frame_13: 5421034944786837367
+      relic_inspect_frame_14: -8453598789523949866
+      relic_inspect_frame_15: -2990679318667036171
+      relic_inspect_frame_2: 4615737881823317788
+      relic_inspect_frame_3: -2346428583819303812
+      relic_inspect_frame_4: -3346333246133448516
+      relic_inspect_frame_5: -3162602553694317071
+      relic_inspect_frame_6: 1303348443555381022
+      relic_inspect_frame_7: 3094772598435356796
+      relic_inspect_frame_8: 1609757716572659729
+      relic_inspect_frame_9: -4406623499855120821
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

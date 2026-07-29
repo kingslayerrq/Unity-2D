@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Burning_Pact
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: e255046862262d04aab351e0c721d48a
   cardClass: 0
   cardName: Burning Pact
   cardDescription: 'Exhaust 1 card.
@@ -36,11 +37,7 @@ MonoBehaviour:
   upgradedTargetType: 0
   upgradedKeywords:
   - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238730494869572
@@ -70,6 +67,9 @@ MonoBehaviour:
       data:
         secondaryTarget: 6
         exhaustMode: 2
+        count: 1
+        isOptional: 0
+        excludeSelf: 1
     - rid: 864238730494869574
       type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
       data: 
@@ -86,6 +86,9 @@ MonoBehaviour:
       data:
         secondaryTarget: 6
         exhaustMode: 2
+        count: 1
+        isOptional: 0
+        excludeSelf: 1
     - rid: 864238730494869578
       type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
       data: 

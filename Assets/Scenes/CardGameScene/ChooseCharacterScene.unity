@@ -736,7 +736,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16cc335232240584a966c2339b1eab80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChooseCharacterSceneController
-  testPlayerUnitData: {fileID: 11400000, guid: 1f423659d77ad2e40b8f21bce527c08f, type: 2}
 --- !u!4 &2065631841
 Transform:
   m_ObjectHideFlags: 0

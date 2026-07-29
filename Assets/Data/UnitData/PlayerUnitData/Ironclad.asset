@@ -18,10 +18,18 @@ MonoBehaviour:
     Crushes foes with sword
     and flame against his will. '
   unitType: 0
-  unitSprite: {fileID: -253164801965239119, guid: 9f2e15b9a9498ac4c89f8ced1b10b4e2, type: 3}
-  maxHealth: 90
+  unitSpriteCombat: {fileID: 513725931863094429, guid: 738487e0d0c6aea4fbb7b4bdd74cfe29, type: 3}
+  maxHealth: 80
+  characterID: 1f423659d77ad2e40b8f21bce527c08f
+  isUnlockedByDefault: 1
   startingDeckData: {fileID: 11400000, guid: 9bddc5a6675e656438f7da9fd4961f19, type: 2}
   drawAmount: 5
   maxEnergy: 3
   playerCardClass: 0
-  playerEnergyViewSprite: {fileID: 21300000, guid: 2e564b2d44b99cb48aada07d00d8876f, type: 3}
+  playerEnergyViewSprite: {fileID: -4098781104036176928, guid: 1fd7b394760d5664b9b5c1f72dfd1e45, type: 3}
+  playerCharacterSelectBackground: {fileID: -9176441728699976776, guid: 4321e277c261af34ba8909b474c11d09, type: 3}
+  playerCharacterSelectPfpUnlocked: {fileID: 947361093670624916, guid: b0b456187b1c5064ea0e89b75720b0c4, type: 3}
+  playerCharacterSelectPfpLocked: {fileID: 0}
+  playerStartingHealth: 80
+  playerStartingGold: 99
+  startingRelicData: {fileID: 11400000, guid: a8dceb6473d3cf347a86dc94ff7ade60, type: 2}

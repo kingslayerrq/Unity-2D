@@ -53,7 +53,8 @@ public class NodeView : MonoBehaviour
 
     private void OnEnable()
     {
-        ToggleBreathing(Data.RuntimeNode.IsNext);
+        if (Data?.RuntimeNode != null)
+            ToggleBreathing(Data.RuntimeNode.IsNext);
     }
 
     private void ToggleBreathing(bool isNextNode)
@@ -107,6 +108,10 @@ public class NodeView : MonoBehaviour
         {
             _nodeImage.enabled =  false;
         }
+
+        ToggleBreathing(
+            data.RuntimeNode != null &&
+            data.RuntimeNode.IsNext);
     }
 
     public void RefreshNodeState()

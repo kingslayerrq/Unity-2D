@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 0f3514e465e8fd24792cc2323eeed186
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5651527835580303355
+    second: the_kin_boss_icon_0
+  - first:
+      213: 7775476750617964908
+    second: the_kin_boss_icon_1
+  - first:
+      213: 8401961198718644208
+    second: the_kin_boss_icon_2
+  - first:
+      213: 4310959470287913090
+    second: the_kin_boss_icon_3
+  - first:
+      213: -3919691596820016590
+    second: the_kin_boss_icon_4
+  - first:
+      213: -1160030120043659120
+    second: the_kin_boss_icon_5
+  - first:
+      213: -7871015162167532879
+    second: the_kin_boss_icon_6
+  - first:
+      213: 3188528589662502701
+    second: the_kin_boss_icon_7
+  - first:
+      213: -5857030544887172138
+    second: the_kin_boss_icon_8
+  - first:
+      213: -128184629301485031
+    second: the_kin_boss_icon_9
+  - first:
+      213: 8469358189540909976
+    second: the_kin_boss_icon_10
+  - first:
+      213: -8589908571604913710
+    second: the_kin_boss_icon_11
+  - first:
+      213: -8274302637716182052
+    second: the_kin_boss_icon_12
+  - first:
+      213: 9148987659533434799
+    second: the_kin_boss_icon_13
+  - first:
+      213: -4521652104588531716
+    second: the_kin_boss_icon_14
+  - first:
+      213: 643406832815852585
+    second: the_kin_boss_icon_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: the_kin_boss_icon_0
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 239
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 508f00a606db191b0800000000000000
+      internalID: -5651527835580303355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_1
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 239
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6174ef88ea08eb60800000000000000
+      internalID: 7775476750617964908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_2
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 239
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ff6d3ad133c99470800000000000000
+      internalID: 8401961198718644208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_3
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 247
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2800e9b3cca93db30800000000000000
+      internalID: 4310959470287913090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 17
+        width: 275
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 232957692457a99c0800000000000000
+      internalID: -3919691596820016590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_5
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 233
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0904b0e70ceb6efe0800000000000000
+      internalID: -1160030120043659120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_6
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 224
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b26a45996984c290800000000000000
+      internalID: -7871015162167532879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_7
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 230
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2fb207dbddef3c20800000000000000
+      internalID: 3188528589662502701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_8
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 228
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d3336550c5a7bea0800000000000000
+      internalID: -5857030544887172138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_9
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 229
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 912e1d042c8983ef0800000000000000
+      internalID: -128184629301485031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_10
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 159
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 893a12b9664398570800000000000000
+      internalID: 8469358189540909976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_11
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 110
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d1f7685aa38ac880800000000000000
+      internalID: -8589908571604913710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_12
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 7
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdb69d21795cb2d80800000000000000
+      internalID: -8274302637716182052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_13
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 4
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faf3cec8dcbb7fe70800000000000000
+      internalID: 9148987659533434799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_14
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 2
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf76a1c1e5ddf31c0800000000000000
+      internalID: -4521652104588531716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: the_kin_boss_icon_15
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 7
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92c4c040b17dde800800000000000000
+      internalID: 643406832815852585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      the_kin_boss_icon_0: -5651527835580303355
+      the_kin_boss_icon_1: 7775476750617964908
+      the_kin_boss_icon_10: 8469358189540909976
+      the_kin_boss_icon_11: -8589908571604913710
+      the_kin_boss_icon_12: -8274302637716182052
+      the_kin_boss_icon_13: 9148987659533434799
+      the_kin_boss_icon_14: -4521652104588531716
+      the_kin_boss_icon_15: 643406832815852585
+      the_kin_boss_icon_2: 8401961198718644208
+      the_kin_boss_icon_3: 4310959470287913090
+      the_kin_boss_icon_4: -3919691596820016590
+      the_kin_boss_icon_5: -1160030120043659120
+      the_kin_boss_icon_6: -7871015162167532879
+      the_kin_boss_icon_7: 3188528589662502701
+      the_kin_boss_icon_8: -5857030544887172138
+      the_kin_boss_icon_9: -128184629301485031
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

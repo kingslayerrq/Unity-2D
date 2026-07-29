@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ae0383276a359429ce4aa84c923412, type: 3}
+  m_Name: Regent
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUnitData
+  unitName: The Regent
+  unitDescription: "Heir to the Throne of Stars. \nWields cosmic powers but his minions
+    do the work."
+  unitType: 0
+  unitSpriteCombat: {fileID: -6268942292424918814, guid: a0077a9e0f6b77f4a8f8c5ba26842b23, type: 3}
+  maxHealth: 75
+  characterID: e9bea87309ec43d4385a117f68b46946
+  isUnlockedByDefault: 0
+  startingDeckData: {fileID: 0}
+  drawAmount: 5
+  maxEnergy: 3
+  playerCardClass: 2
+  playerEnergyViewSprite: {fileID: 9016001589277618373, guid: a52da66a109b5294a9dcb6683f03905e, type: 3}
+  playerCharacterSelectBackground: {fileID: -4371341860476347860, guid: 1482430deb7aa054bae82a1078962ffc, type: 3}
+  playerCharacterSelectPfpUnlocked: {fileID: -6621433446854371210, guid: f7eaae1c8b78d554a9d8d5d82a2fdbd7, type: 3}
+  playerCharacterSelectPfpLocked: {fileID: 7014958956415093606, guid: ed4c6cc21b3525f43a4be5ef280a70a4, type: 3}
+  playerStartingHealth: 75
+  playerStartingGold: 99
+  startingRelicData: {fileID: 0}

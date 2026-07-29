@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Bash
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: fb9ea15d8b712a14187cdeef192ef9f0
   cardClass: 0
   cardName: Bash
   cardDescription: Deal 8 damage.\n Apply 2 Vulnerable.
@@ -32,11 +33,7 @@ MonoBehaviour:
   upgradedTargetType: 1
   upgradedKeywords:
   - {fileID: 11400000, guid: 93788875c13cbe844800734b0dd2d4a9, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 1
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 7461714194121621572
@@ -64,6 +61,7 @@ MonoBehaviour:
     - rid: 864238297542557777
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 10
           bonusSource: 0
@@ -75,6 +73,7 @@ MonoBehaviour:
     - rid: 864238297542557779
       type: {class: BuffCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         buffData: {fileID: 11400000, guid: 31767aad7a58da84587466add5432d18, type: 2}
         stacks: 3
     - rid: 7461714194121621572
@@ -83,6 +82,7 @@ MonoBehaviour:
     - rid: 7461714194121621573
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 8
           bonusSource: 0
@@ -94,5 +94,6 @@ MonoBehaviour:
     - rid: 7461714194121621577
       type: {class: BuffCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         buffData: {fileID: 11400000, guid: 31767aad7a58da84587466add5432d18, type: 2}
         stacks: 2

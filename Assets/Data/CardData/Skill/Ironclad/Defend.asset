@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Defend
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 87d61f4169e4353439ddd100e390a6a0
   cardClass: 0
   cardName: Defend
   cardDescription: Gain 5 block.
@@ -32,11 +33,7 @@ MonoBehaviour:
   upgradedTargetType: 0
   upgradedKeywords:
   - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 1
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 7461714194121621574
@@ -56,6 +53,7 @@ MonoBehaviour:
     - rid: 864238297542557783
       type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount: 8
     - rid: 7461714194121621574
       type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
@@ -63,4 +61,5 @@ MonoBehaviour:
     - rid: 7461714194121621575
       type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount: 5

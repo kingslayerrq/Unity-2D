@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ae0383276a359429ce4aa84c923412, type: 3}
+  m_Name: Defect
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUnitData
+  unitName: The Defect
+  unitDescription: "An automaton eternally modifying itself to survive. \nDeploys
+    Orb technology when it must fight."
+  unitType: 0
+  unitSpriteCombat: {fileID: -7962066408448275049, guid: 56eab8ef9f4f02148bd216cc73da2f2c, type: 3}
+  maxHealth: 75
+  characterID: a344db01a1771b043902c4d772c9c4b5
+  isUnlockedByDefault: 0
+  startingDeckData: {fileID: 0}
+  drawAmount: 5
+  maxEnergy: 3
+  playerCardClass: 4
+  playerEnergyViewSprite: {fileID: 704441964465580925, guid: ef122820730a3cc4b9af061b334ca1e3, type: 3}
+  playerCharacterSelectBackground: {fileID: 1582776166557295223, guid: 89a2b7b5b22f1424d94284b29b7ee6fd, type: 3}
+  playerCharacterSelectPfpUnlocked: {fileID: -372785602058085604, guid: 3a01243e1b0d29b469d097333f7975be, type: 3}
+  playerCharacterSelectPfpLocked: {fileID: 4386724860058926631, guid: 874070476623a644a819cbfddcfb2054, type: 3}
+  playerStartingHealth: 75
+  playerStartingGold: 99
+  startingRelicData: {fileID: 0}

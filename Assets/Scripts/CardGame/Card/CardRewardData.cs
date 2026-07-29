@@ -22,6 +22,7 @@ public class CardRewardData : ScriptableObject
     [ContextMenu("Auto-Populate Filtered Cards")]
     public void AutoPopulateCards()
     {
+        availableCards ??= new List<CardData>();
         availableCards.Clear();
 
         // Find all assets of type CardData anywhere in the project
@@ -46,7 +47,6 @@ public class CardRewardData : ScriptableObject
                     continue; // Skip to the next card if it doesn't match
                 }
 
-                if (!card.IsUnlocked) continue;
                 // If it passes all active filters, add it to the pool!
                 availableCards.Add(card);
             }

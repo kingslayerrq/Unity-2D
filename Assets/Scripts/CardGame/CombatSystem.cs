@@ -73,6 +73,13 @@ public class CombatSystem : MonoBehaviour
         // Trigger on card played
         source.BuffManager.OnCardPlayed(source, cardInstance, this);
         
+        // Record progression only after the card resolves successfully.
+        if (GlobalProgressionManager.HasInstance)
+        {
+            GlobalProgressionManager.Instance.RecordCardPlayed(
+                cardInstance);
+        }
+        
         if (source.Hand.RemoveCard(cardInstance))
         {
             // exhaust
