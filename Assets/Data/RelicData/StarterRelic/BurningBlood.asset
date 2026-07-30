@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0574dbd3c43d643b384184412b2dcd, type: 3}
   m_Name: BurningBlood
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
+  relicId: a8dceb6473d3cf347a86dc94ff7ade60
+  isUnlockedByDefault: 1
+  isDiscoveredByDefault: 1
   relicName: Burning Blood
   relicDescription: At the end of combat, heal 6 HP.
   relicIcon: {fileID: 2410305648406330871, guid: fa2e32f6b124523419eb8fbed5adf99e, type: 3}
+  relicIconUndiscovered: {fileID: 0}
+  relicType: 0

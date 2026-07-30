@@ -110,7 +110,7 @@ public class CombatManager : MonoBehaviour
     // Spends Energy and Play the card wrapper
     public void PlayCard(CardInstance card, List<BaseUnitInstance> targets)
     {
-        bool toDiscard = !card.IsExhaustOnPlay();
+        bool toDiscard = !card.ShouldExhaustAfterPlay();
         actionQueue.Enqueue(new SpendEnergyAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, card.CurrentCost), null);
         actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card, toDiscard), null);
     }
@@ -120,7 +120,8 @@ public class CombatManager : MonoBehaviour
         SetState(NodeState.PlayerTurnEnd);
         
         // remove the card from player's hand
-        actionQueue.Enqueue(new DiscardAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, Player.Hand.Cards), null);
+        actionQueue.Enqueue(new DiscardAction(combatSystem, Player, 
+            new List<BasePlayerUnitInstance>{Player}, Player.Hand.Cards, CardMoveCause.EndTurn), null);
         
         actionQueue.Enqueue(new EndTurnAction(combatSystem, Player, AllUnits), null);
         

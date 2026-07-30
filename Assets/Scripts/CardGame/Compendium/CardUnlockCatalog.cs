@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(
-    menuName = "Progression/Card Unlock Catalog")]
+    menuName = "Progression/Card Unlock Catalog", fileName = "CardUnlockCatalog")]
 public sealed class CardUnlockCatalog : ScriptableObject
 {
     [SerializeField]

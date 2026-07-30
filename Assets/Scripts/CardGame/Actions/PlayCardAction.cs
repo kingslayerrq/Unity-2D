@@ -28,7 +28,7 @@ public class PlayCardAction : ICombatAction
         if (_toDiscard)
             _source.CombatManager.ActionQueue.Enqueue(new PlayToDiscardAction(_combatSystem, _source, _targets, _card), null);
         else
-            _source.CombatManager.ActionQueue.Enqueue(new PlayToExhaustAction(_combatSystem, _source, _card), null);
+            _source.CombatManager.ActionQueue.Enqueue(new PlayToExhaustAction(_source, _card), null);
 
         yield return null;
     }

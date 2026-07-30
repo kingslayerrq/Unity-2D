@@ -54,7 +54,7 @@ public class RequestDiscardSelectionAction : ICombatAction
         {
             _cm.ActionQueue.Enqueue(
                 new DiscardAction(_cm.CombatSystem, _source,
-                    new List<BasePlayerUnitInstance>{_source}, chosen),
+                    new List<BasePlayerUnitInstance>{_source}, chosen, CardMoveCause.CardEffect),
                 null);
         }
     }

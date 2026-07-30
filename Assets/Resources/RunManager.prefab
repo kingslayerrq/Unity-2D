@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7348289301265732101}
   - component: {fileID: 7348289301265732102}
   - component: {fileID: 7348289301265732103}
+  - component: {fileID: 1339102044036534573}
   m_Layer: 0
   m_Name: RunManager
   m_TagString: Untagged
@@ -47,9 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1a6353e7f4ca7d4ab83b379c44571dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RunManager
-  characterSelectPanel: {fileID: 0}
-  mapPanel: {fileID: 0}
-  combatPanel: {fileID: 0}
   nodeConfigLibrary: {fileID: 11400000, guid: e0a2773fa9368624b8e3d4f1350f8a15, type: 2}
   testCombatNodeConfig: {fileID: 11400000, guid: 5991424274e26614bb01cf37839242e0, type: 2}
   testPlayerUnitData: {fileID: 11400000, guid: 1f423659d77ad2e40b8f21bce527c08f, type: 2}
@@ -82,10 +80,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16047bccaa123c94b872fa60c17315d7, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalProgressionManager
   cardCatalog: {fileID: 11400000, guid: 0283c251511d2e84c856406c5dd0a154, type: 2}
   characterCatalog: {fileID: 11400000, guid: be5385ed54e64e77bd1cc25c293070fe, type: 2}
+  relicCatalog: {fileID: 0}
   persistBetweenScenes: 1
 --- !u!114 &7348289301265732102
 MonoBehaviour:
@@ -97,7 +96,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e20421237e4e4844893c2831ce93676c, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardUnlockEvaluator
   unlockCatalog: {fileID: 11400000, guid: 79895cecc9faaff4cbe26850ff9f143e, type: 2}
   progression: {fileID: 7348289301265732101}
@@ -111,7 +110,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4907acdc76c40894d8cc9fb653253d7f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterUnlockEvaluator
   unlockCatalog: {fileID: 11400000, guid: 8c48cc114bd94ec895ed2fc264873e9a, type: 2}
+  progression: {fileID: 7348289301265732101}
+--- !u!114 &1339102044036534573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903297769567028718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960f8c43bfd8810478c7a4d13f581e23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RelicUnlockEvaluator
+  unlockCatalog: {fileID: 0}
   progression: {fileID: 7348289301265732101}

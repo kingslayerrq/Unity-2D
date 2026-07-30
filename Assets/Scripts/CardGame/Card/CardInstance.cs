@@ -11,6 +11,11 @@ public class CardInstance
     [SerializeField] private bool currentIsEnchanted;
     
     [NonSerialized] private BasePlayerUnitInstance currentOwner;
+    
+    public bool ShouldExhaustAfterPlay()
+    {
+        return CurrentCardType == CardType.Power || IsExhaustOnPlay();
+    }
 
     #region Dynamic Properties
     public CardData Data => data;
@@ -96,15 +101,38 @@ public class CardInstance
 
     public bool IsExhaustOnPlay()
     {
-        var effects = CurrentCardEffects;
-        if (effects == null) return false;
+        IReadOnlyList<CardEffectData> effects = CurrentCardEffects;
+        if (effects == null)
+            return false;
 
-        foreach (var effectData in effects)
+        foreach (CardEffectData effectData in effects)
         {
-            if (effectData?.CardEffect is not ExhaustCardEffect) continue;
-            if (effectData.CardEffectConfig is not ExhaustCardEffectConfig config) return true;
-            return config.ExhaustMode == ExhaustMode.ThisCard;
+            if (effectData == null ||
+                effectData.Trigger != CardEffectTrigger.OnPlay)
+            {
+                continue;
+            }
+
+            if (effectData.CardEffect is not ExhaustCardEffect)
+                continue;
+
+            if (effectData.CardEffectConfig
+                is not ExhaustCardEffectConfig config)
+            {
+                continue;
+            }
+
+            bool hasConditions =
+                effectData.Conditions != null &&
+                effectData.Conditions.Count > 0;
+
+            if (!hasConditions &&
+                config.ExhaustMode == ExhaustMode.ThisCard)
+            {
+                return true;
+            }
         }
+
         return false;
     }
 

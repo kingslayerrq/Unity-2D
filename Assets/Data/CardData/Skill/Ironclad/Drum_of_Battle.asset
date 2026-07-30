@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Drum_of_Battle
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 048b46d78401acf4fb6297ce716aaff0
+  cardClass: 0
+  cardName: Drum of Battle
+  cardDescription: 'Draw 2 cards.
+
+    When this card is
+
+    Exhausted, gain <ironclad_energy_icon><ironclad_energy_icon> '
+  cardPrice: 0
+  cardCost: 1
+  cardRarity: 1
+  cardLevel: 0
+  cardType: 1
+  cardSprite: {fileID: 21300000, guid: 65646e21bc3b90940ba20e45c6beb98d, type: 3}
+  targetType: 0
+  keywords:
+  - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
+  upgradedCardName: Drum of Battle+
+  upgradedCardDescription: 'Draw 2 cards.
+
+    When this card is
+
+    Exhausted,
+    gain <ironclad_energy_icon><ironclad_energy_icon><ironclad_energy_icon>'
+  upgradedCardPrice: 0
+  upgradedCardCost: 1
+  upgradedCardSprite: {fileID: 21300000, guid: e87a32327c2501c49b4d56d28c90e24a, type: 3}
+  upgradedTargetType: 0
+  upgradedKeywords:
+  - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
+  isUnlockedByDefault: 0
+  cardEffects:
+  - cardEffect:
+      rid: 897455054053441613
+    cardEffectConfig:
+      rid: 897455054053441614
+    trigger: 0
+    conditions: []
+  - cardEffect:
+      rid: 897455054053441623
+    cardEffectConfig:
+      rid: 897455054053441624
+    trigger: 2
+    conditions: []
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 897455054053441615
+    cardEffectConfig:
+      rid: 897455054053441616
+    trigger: 0
+    conditions: []
+  - cardEffect:
+      rid: 897455054053441625
+    cardEffectConfig:
+      rid: 897455054053441626
+    trigger: 2
+    conditions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 897455054053441613
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441614
+      type: {class: DrawCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        amount: 2
+    - rid: 897455054053441615
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441616
+      type: {class: DrawCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 0
+        amount: 2
+    - rid: 897455054053441623
+      type: {class: GainEnergyCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441624
+      type: {class: GainEnergyCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 2
+    - rid: 897455054053441625
+      type: {class: GainEnergyCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441626
+      type: {class: GainEnergyCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount: 2

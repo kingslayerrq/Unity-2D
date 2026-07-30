@@ -9,13 +9,17 @@ public class DiscardAction : ICombatAction
     private readonly BasePlayerUnitInstance _source;
     private readonly List<BasePlayerUnitInstance> _targets;
     private readonly IReadOnlyList<CardInstance> _cards;
+    private CardMoveCause _moveCause;
 
-    public DiscardAction(CombatSystem combatSystem, BasePlayerUnitInstance source, List<BasePlayerUnitInstance> targets, IReadOnlyList<CardInstance> cards)
+    public DiscardAction(CombatSystem combatSystem, BasePlayerUnitInstance source, 
+        List<BasePlayerUnitInstance> targets, IReadOnlyList<CardInstance> cards,
+        CardMoveCause moveCause)
     {
         _combatSystem = combatSystem;
         _source = source;
         _targets = targets;
         _cards = cards?.ToList();
+        _moveCause = moveCause;
     }
 
     public IEnumerator ExecuteAction()
@@ -27,7 +31,7 @@ public class DiscardAction : ICombatAction
             _source.CombatManager.PlayerHandView.TryBeginAnimateOut(card, out var view);
         }
         
-        _combatSystem.ResolveDiscard(_source, _targets,  _cards);
+        _combatSystem.ResolveDiscard(_source, _targets, _cards, _moveCause);
         
         yield return _source.CombatManager.PlayerHandView.DiscardCardsAnimation(_cards);
 

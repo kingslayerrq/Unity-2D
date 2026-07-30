@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewKeyword", menuName = "Cards/Keyword Data")]
+[CreateAssetMenu(fileName = "NewKeyword", menuName = "Keywords/Keyword Data")]
 public class KeywordData : ScriptableObject
 {
     [Header("Keyword Info")]

@@ -57,7 +57,7 @@ public sealed class LocalJsonProgressionStoreTests
             result.Save.DefeatedBossIds,
             Does.Contain("boss-1"));
 
-        CardProgressRecord card = result.Save.Cards[0];
+        CardProgressRecord card = result.Save.CardProgress[0];
         Assert.That(card.CardId, Is.EqualTo("card-1"));
         Assert.That(card.IsUnlocked, Is.True);
         Assert.That(card.TimesPlayed, Is.EqualTo(1));
@@ -212,7 +212,7 @@ public sealed class LocalJsonProgressionStoreTests
             new("card-1", unlockedByDefault: false);
         card.Unlock();
         card.RecordPlayed();
-        save.Cards.Add(card);
+        save.CardProgress.Add(card);
 
         CharacterProgressRecord character =
             new(

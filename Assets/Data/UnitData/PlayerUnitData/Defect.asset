@@ -30,4 +30,4 @@ MonoBehaviour:
   playerCharacterSelectPfpLocked: {fileID: 4386724860058926631, guid: 874070476623a644a819cbfddcfb2054, type: 3}
   playerStartingHealth: 75
   playerStartingGold: 99
-  startingRelicData: {fileID: 0}
+  startingRelicData: {fileID: 11400000, guid: 13627b8d05d87ef4b99461f75a26e128, type: 2}

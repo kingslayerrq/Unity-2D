@@ -36,7 +36,7 @@ public class CardData : ScriptableObject
     [Tooltip("Controls how often the card appears in rewards. NOT USED!!!")]
     private int spawnWeight;
     [UnityEngine.Serialization.FormerlySerializedAs("isUnlocked")]
-    [SerializeField] private bool isUnlockedByDefault = true;
+    [SerializeField] private bool isUnlockedByDefault = false;
 
     [Header("Effects")]
     [SerializeField] private List<CardEffectData> cardEffects;

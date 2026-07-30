@@ -29,7 +29,7 @@ public class SelectDiscardCardEffect : BaseCardEffect
                 if (picks.Count == 0) return;
                 context.CombatManager.ActionQueue.Enqueue(
                     new DiscardAction(context.CombatManager.CombatSystem,
-                        source, new List<BasePlayerUnitInstance> { source }, picks),
+                        source, new List<BasePlayerUnitInstance> { source }, picks, CardMoveCause.CardEffect),
                     null);
                 break;
             }
@@ -45,7 +45,7 @@ public class SelectDiscardCardEffect : BaseCardEffect
                 if (picks.Count == 0) return;
                 context.CombatManager.ActionQueue.Enqueue(
                     new DiscardAction(context.CombatManager.CombatSystem,
-                        source, new List<BasePlayerUnitInstance> { source }, picks),
+                        source, new List<BasePlayerUnitInstance> { source }, picks, CardMoveCause.CardEffect),
                     null);
                 break;
             }

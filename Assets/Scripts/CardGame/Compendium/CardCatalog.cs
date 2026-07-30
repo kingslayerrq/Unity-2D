@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Holds all cards definition
 /// </summary>
-[CreateAssetMenu(menuName = "Cards/Card Catalog", fileName =  "New Card Catalog")]
+[CreateAssetMenu(menuName = "Cards/Card Catalog", fileName =  "CardCatalog")]
 public sealed class CardCatalog : ScriptableObject
 {
     [SerializeField] private List<CardData> cards = new();

@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
+  m_Name: Cinder
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 0d2f58d91a1c69c47abae0a5e4b9a5a9
+  cardClass: 0
+  cardName: Cinder
+  cardDescription: 'Deal 18 damage.
+
+    Exhaust a random card in your Hand.'
+  cardPrice: 0
+  cardCost: 2
+  cardRarity: 0
+  cardLevel: 0
+  cardType: 0
+  cardSprite: {fileID: 21300000, guid: 8d1b9ac7d6422694595ecbd45ead707a, type: 3}
+  targetType: 1
+  keywords:
+  - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
+  upgradedCardName: Cinder+
+  upgradedCardDescription: 'Deal 24 damage.
+
+    Exhaust a random card in your Hand.'
+  upgradedCardPrice: 0
+  upgradedCardCost: 2
+  upgradedCardSprite: {fileID: 21300000, guid: aabcefbb08a55824da3d21ad8a1b5218, type: 3}
+  upgradedTargetType: 1
+  upgradedKeywords:
+  - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
+  isUnlockedByDefault: 0
+  cardEffects:
+  - cardEffect:
+      rid: 897455054053441605
+    cardEffectConfig:
+      rid: 897455054053441606
+  - cardEffect:
+      rid: 897455054053441607
+    cardEffectConfig:
+      rid: 897455054053441608
+  upgradedCardEffects:
+  - cardEffect:
+      rid: 897455054053441609
+    cardEffectConfig:
+      rid: 897455054053441610
+  - cardEffect:
+      rid: 897455054053441611
+    cardEffectConfig:
+      rid: 897455054053441612
+  references:
+    version: 2
+    RefIds:
+    - rid: 897455054053441605
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441606
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 18
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 897455054053441607
+      type: {class: ExhaustCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441608
+      type: {class: ExhaustCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        exhaustMode: 1
+        count: 1
+        isOptional: 0
+        excludeSelf: 1
+    - rid: 897455054053441609
+      type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441610
+      type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        amount:
+          baseValue: 24
+          bonusSource: 0
+          bonusMultiplier: 0
+        numberOfAttacks: 1
+    - rid: 897455054053441611
+      type: {class: ExhaustCardEffect, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 897455054053441612
+      type: {class: ExhaustCardEffectConfig, ns: , asm: Assembly-CSharp}
+      data:
+        secondaryTarget: 6
+        exhaustMode: 1
+        count: 1
+        isOptional: 0
+        excludeSelf: 1

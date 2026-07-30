@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f0574dbd3c43d643b384184412b2dcd, type: 3}
+  m_Name: DivineRight
+  m_EditorClassIdentifier: Assembly-CSharp::RelicData
+  relicId: 4b76a014142311d41b38f52df547f647
+  isUnlockedByDefault: 1
+  isDiscoveredByDefault: 1
+  relicName: Divine Right
+  relicDescription: At the start of each combat, gain <sprite name="star_icon"> <sprite
+    name="star_icon"> <sprite name="star_icon">.
+  keywords:
+  - {fileID: 11400000, guid: 963fb937481d9574092d15753bc3a123, type: 2}
+  relicIcon: {fileID: -3571003194009333597, guid: 27ad1b56c35a4d743a00d875f41ece9b, type: 3}
+  relicIconUndiscovered: {fileID: 0}
+  relicType: 0

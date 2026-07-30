@@ -297,7 +297,7 @@ public sealed class GlobalProgressionManagerPersistenceTests
     {
         ProgressionLoadResult result = store.Load();
 
-        return result.Save.Cards.Find(
+        return result.Save.CardProgress.Find(
             record => record.CardId == card.ID);
     }
 

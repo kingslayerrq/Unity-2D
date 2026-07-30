@@ -5,7 +5,7 @@ using UnityEngine;
 /// Holds every playable character definition.
 /// </summary>
 [CreateAssetMenu(
-    menuName = "Progression/Character Catalog",
+    menuName = "Progression/CharacterCatalog",
     fileName = "CharacterCatalog")]
 public sealed class CharacterCatalog : ScriptableObject
 {

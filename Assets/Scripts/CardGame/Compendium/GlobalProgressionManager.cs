@@ -10,6 +10,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     [SerializeField] private CardCatalog cardCatalog;
     [SerializeField] private CharacterCatalog characterCatalog;
+    [SerializeField] private RelicCatalog relicCatalog;
     [SerializeField] private bool persistBetweenScenes = true;
 
     public event Action ProgressionChanged;
@@ -21,13 +22,15 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     private readonly Dictionary<string, CharacterProgressRecord>
         characterProgressById = new();
+    private readonly Dictionary<string, RelicProgressRecord> relicProgressById = new();
+    
 
     private GlobalProgressionSave currentSave;
     private IProgressionStore progressionStore;
     private bool isDirty;
 
-    public event Action<CardData, CardProgressRecord>
-        CardProgressChanged;
+    public event Action<CardData, CardProgressRecord> CardProgressChanged;
+    public event Action<RelicData, RelicProgressRecord> RelicProgressChanged;
 
     private void Awake()
     {
@@ -190,7 +193,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             card.IsUnlockedByDefault);
 
         cardProgressById.Add(card.ID, record);
-        currentSave.Cards.Add(record);
+        currentSave.CardProgress.Add(record);
         MarkDirty();
 
         return record;
@@ -206,6 +209,109 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
         return currentSave.DefeatedBossIds.Contains(bossId);
     }
+
+    #region Relic progress
+
+    public bool IsUnlocked(RelicData relic)
+    {
+        if (relic == null)
+        {
+            return false;
+        }
+
+        if (TryGetProgress(relic, out RelicProgressRecord record))
+        {
+            return record.IsUnlocked;
+        }
+        return relic.IsUnlockedByDefault;
+    }
+    
+    public bool IsDiscovered(RelicData relic)
+    {
+        if (relic == null)
+            return false;
+
+        if (TryGetProgress(relic, out RelicProgressRecord record))
+            return record.IsDiscovered;
+
+        return relic.IsDiscoveredByDefault;
+    }
+    
+    public void DiscoverRelic(RelicData relic)
+    {
+        RelicProgressRecord record = EnsureRecord(relic);
+
+        if (!record.Discover())
+            return;
+
+        CommitRelicChange(relic, record);
+    }
+
+    public void UnlockRelic(RelicData relic)
+    {
+        RelicProgressRecord record = EnsureRecord(relic);
+
+        if (!record.Unlock())
+            return;
+
+        CommitRelicChange(relic, record, true);
+    }
+    
+    public bool TryGetProgress(
+        RelicData relic,
+        out RelicProgressRecord record)
+    {
+        record = null;
+
+        if (relic == null ||
+            string.IsNullOrWhiteSpace(relic.RelicId))
+        {
+            return false;
+        }
+
+        return relicProgressById.TryGetValue(
+            relic.RelicId,
+            out record);
+    }
+    
+    /// <summary>
+    /// Return the record, and create it if necessary.
+    /// </summary>
+    /// <param name="relic"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
+    private RelicProgressRecord EnsureRecord(RelicData relic)
+    {
+        if (relic == null)
+            throw new ArgumentNullException(nameof(relic));
+
+        if (string.IsNullOrWhiteSpace(relic.RelicId))
+        {
+            throw new InvalidOperationException(
+                $"Relic '{relic.name}' has no persistent ID.");
+        }
+
+        if (relicProgressById.TryGetValue(
+                relic.RelicId,
+                out RelicProgressRecord record))
+        {
+            return record;
+        }
+
+        record = new RelicProgressRecord(
+            relic.RelicId,
+            relic.IsUnlockedByDefault,
+            relic.IsDiscoveredByDefault);
+
+        relicProgressById.Add(relic.RelicId, record);
+        currentSave.RelicProgress.Add(record);
+        MarkDirty();
+
+        return record;
+    }
+
+    #endregion
 
     #region Character progress
 
@@ -386,6 +492,16 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             SaveCheckpoint();
     }
 
+    private void CommitRelicChange(RelicData relic, RelicProgressRecord record, bool saveImmediately = false)
+    {
+        MarkDirty();
+        RelicProgressChanged?.Invoke(relic, record);
+        ProgressionChanged?.Invoke();
+        
+        if (saveImmediately)
+            SaveCheckpoint();
+    }
+
     private void CommitCharacterChange()
     {
         MarkDirty();
@@ -397,9 +513,57 @@ public sealed class GlobalProgressionManager : MonoBehaviour
     {
         bool changed = ReconcileCardsWithCatalog();
         changed |= ReconcileCharactersWithCatalog();
+        changed |= ReconcileRelicsWithCatalog();
 
         if (changed)
             MarkDirty();
+    }
+
+    private bool ReconcileRelicsWithCatalog()
+    {
+        if (relicCatalog == null)
+        {
+            Debug.LogError("Global progression requires a relic catalog.", this);
+            return false;
+        }
+        
+        bool changed = false;
+        foreach (RelicData relic in relicCatalog.Relics)
+        {
+            if (relic == null)
+            {
+                continue;
+            }
+            if (string.IsNullOrWhiteSpace(relic.RelicId))
+            {
+                Debug.LogError(
+                    $"Relic '{relic.name}' has no persistent ID.",
+                    relic);
+
+                continue;
+            }
+
+            if (relicProgressById.TryGetValue(
+                    relic.RelicId,
+                    out RelicProgressRecord existingRecord))
+            {
+                changed |=
+                    existingRecord.Reconcile(relic.IsUnlockedByDefault, relic.IsDiscoveredByDefault);
+                continue;
+            }
+
+            RelicProgressRecord record = new(
+                relic.RelicId,
+                relic.IsUnlockedByDefault,
+                relic.IsDiscoveredByDefault);
+
+            relicProgressById.Add(relic.RelicId, record);
+            currentSave.RelicProgress.Add(record);
+
+            changed = true;
+        }
+        
+        return changed;
     }
 
     private bool ReconcileCardsWithCatalog()
@@ -444,7 +608,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
                 card.IsUnlockedByDefault);
 
             cardProgressById.Add(card.ID, record);
-            currentSave.Cards.Add(record);
+            currentSave.CardProgress.Add(record);
 
             changed = true;
         }
@@ -568,7 +732,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
         currentSave ??= new GlobalProgressionSave();
         currentSave.EnsureCollectionsInitialized();
 
-        foreach (CardProgressRecord record in currentSave.Cards)
+        foreach (CardProgressRecord record in currentSave.CardProgress)
         {
             if (record == null ||
                 string.IsNullOrWhiteSpace(record.CardId))

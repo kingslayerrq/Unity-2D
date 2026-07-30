@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public sealed class GlobalProgressionSave
@@ -11,19 +12,21 @@ public sealed class GlobalProgressionSave
     private int version = CurrentVersion;
 
     [SerializeField]
-    private List<CardProgressRecord> cards = new();
-
-    [SerializeField]
     private int totalRunWins;
 
     [SerializeField]
     private List<string> defeatedBossIds = new();
+    
+    [FormerlySerializedAs("cards")] [SerializeField]
+    private List<CardProgressRecord> cardProgress = new();
 
     [SerializeField]
     private List<CharacterProgressRecord> characterProgress = new();
+    
+    [SerializeField] private List<RelicProgressRecord> relicProgress = new();
 
     public int Version => version;
-    public List<CardProgressRecord> Cards => cards;
+    public List<CardProgressRecord> CardProgress => cardProgress;
 
     public int TotalRunWins
     {
@@ -35,11 +38,14 @@ public sealed class GlobalProgressionSave
 
     public List<CharacterProgressRecord> CharacterProgress =>
         characterProgress;
+    
+    public List<RelicProgressRecord> RelicProgress => relicProgress;
 
     public void EnsureCollectionsInitialized()
     {
-        cards ??= new List<CardProgressRecord>();
+        cardProgress ??= new List<CardProgressRecord>();
         defeatedBossIds ??= new List<string>();
         characterProgress ??= new List<CharacterProgressRecord>();
+        relicProgress ??= new List<RelicProgressRecord>();
     }
 }

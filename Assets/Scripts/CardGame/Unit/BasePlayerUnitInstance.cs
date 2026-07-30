@@ -150,6 +150,11 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         return false;
     }
 
+    /// <summary>
+    /// Exhause the card instance from the unit's hand add to exhaust pile
+    /// </summary>
+    /// <param name="card"></param>
+    /// <returns></returns>
     public bool ExhaustCard(CardInstance card)
     {
         if (card == null) return false;

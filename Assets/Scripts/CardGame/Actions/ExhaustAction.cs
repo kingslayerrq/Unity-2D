@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 public class ExhaustAction : ICombatAction
 {
@@ -19,7 +20,7 @@ public class ExhaustAction : ICombatAction
 
         _source.CombatManager.PlayerHandView.TryBeginAnimateOut(_card, out _);
 
-        _combatSystem.ResolveExhaust(_source, _card);
+        _combatSystem.ResolveExhaust(_source, CardMoveCause.CardEffect, _card);
 
         yield return _source.CombatManager.PlayerHandView.ExhaustCardsAnimation(new[] { _card });
 

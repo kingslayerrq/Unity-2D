@@ -54,21 +54,58 @@ public class CombatSystem : MonoBehaviour
         }
     }
     
+    private void ResolveCardEffects(CardContext context)
+    {
+        IReadOnlyList<CardEffectData> rules =
+            context.CardInstance.CurrentCardEffects;
+
+        if (rules == null)
+            return;
+
+        foreach (CardEffectData rule in rules)
+        {
+            if (rule == null || rule.Trigger != context.Trigger)
+                continue;
+
+            if (!ConditionsPass(rule, context))
+                continue;
+
+            if (rule.CardEffect == null)
+            {
+                Debug.LogWarning("Card effect rule has no effect.");
+                continue;
+            }
+
+            rule.CardEffect.Execute(context, rule);
+        }
+    }
+
+    private bool ConditionsPass(CardEffectData rule, CardContext context)
+    {
+        if (rule.Conditions == null || rule.Conditions.Count == 0) return true;
+        foreach (var condition in rule.Conditions)
+        {
+            if (condition == null)
+            {
+                Debug.LogError($"Condition is null!", this);
+                return false;
+            }
+            if (!condition.IsMet(context)) return false;
+        }
+
+        return true;
+    }
+    
     
     public void ResolvePlayCard(BasePlayerUnitInstance source, IReadOnlyList<BaseUnitInstance> targets, CardInstance cardInstance)
     {
         if (source == null || cardInstance == null) return;
         if (cardInstance.RequireTarget && targets == null) return;
         
-        CardContext context = new CardContext(source, targets, cardInstance, source.CombatManager);
+        CardContext context = new CardContext(source, targets, CardEffectTrigger.OnPlay, CardMoveCause.None,
+            cardInstance, source.CombatManager);
 
-        for (var index = 0; index < cardInstance.CurrentCardEffects.Count; index++)
-        {
-            var effect = cardInstance.CurrentCardEffects[index];
-            if (effect == null) continue;
-            Debug.Log($"Executing {cardInstance.Data.CardName}");
-            effect.CardEffect.Execute(context, effect);
-        }
+        ResolveCardEffects(context);
 
         // Trigger on card played
         source.BuffManager.OnCardPlayed(source, cardInstance, this);
@@ -83,8 +120,24 @@ public class CombatSystem : MonoBehaviour
         if (source.Hand.RemoveCard(cardInstance))
         {
             // exhaust
-            if (cardInstance.CurrentCardType == CardType.Power || cardInstance.IsExhaustOnPlay())
+            if (cardInstance.ShouldExhaustAfterPlay())
+            {
                 source.CardPileManager.ExhaustPile.AddCardToPile(cardInstance);
+
+                CardContext exhaustContext = new CardContext(
+                    source,
+                    targets ?? Array.Empty<BaseUnitInstance>(),
+                    CardEffectTrigger.OnExhaust,
+                    CardMoveCause.PlayCleanup,
+                    cardInstance,
+                    source.CombatManager);
+
+                ResolveCardEffects(exhaustContext);
+                source.BuffManager.OnCardExhausted(
+                    source,
+                    cardInstance,
+                    this);
+            }
             else
             {
                 source.CardPileManager.DiscardPile.AddCardToPile(cardInstance);
@@ -174,7 +227,8 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void ResolveDiscard(BaseUnitInstance source, IReadOnlyList<BasePlayerUnitInstance> targets, IReadOnlyList<CardInstance> cards)
+    public void ResolveDiscard(BaseUnitInstance source, IReadOnlyList<BasePlayerUnitInstance> targets,
+        IReadOnlyList<CardInstance> cards, CardMoveCause moveCause)
     {
         if (source == null || targets == null) return;
         
@@ -186,18 +240,40 @@ public class CombatSystem : MonoBehaviour
             for (var i = 0; i < cardsToDiscard.Count; i++)
             {
                 var card = cardsToDiscard[i];
-                t.DiscardCard(card);
+                bool moved = t.DiscardCard(card);
+                if (!moved) continue;
                 Debug.Log("Discard Card: " + card.CurrentName);
-                // Trigger on card discarded
-                t.BuffManager.OnCardDiscarded(t, card, this);
+                // Trigger on card discarded on CardEffect move
+                if (moveCause == CardMoveCause.CardEffect)
+                {
+                    CardContext context = new CardContext(
+                        t,
+                        Array.Empty<BaseUnitInstance>(),
+                        CardEffectTrigger.OnDiscard,
+                        moveCause,
+                        card,
+                        t.CombatManager);
+
+                    ResolveCardEffects(context);
+                    t.BuffManager.OnCardDiscarded(t, card, this);
+                }
             }
         }
     }
 
-    public void ResolveExhaust(BasePlayerUnitInstance source, CardInstance card)
+    public void ResolveExhaust(BasePlayerUnitInstance source, CardMoveCause moveCause, CardInstance card)
     {
-        if (source == null || card == null) return;
-        source.ExhaustCard(card);
+        if (source == null || card == null)
+            return;
+
+        if (!source.ExhaustCard(card))
+            return;
+
+        CardContext context = new CardContext(source, Array.Empty<BaseUnitInstance>(),
+            CardEffectTrigger.OnExhaust, moveCause, card,
+            source.CombatManager);
+
+        ResolveCardEffects(context);
         source.BuffManager.OnCardExhausted(source, card, this);
     }
 
