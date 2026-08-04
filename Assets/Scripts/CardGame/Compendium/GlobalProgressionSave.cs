@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 [Serializable]
 public sealed class GlobalProgressionSave
 {
-    public const int CurrentVersion = 1;
+    public const int CurrentVersion = 2;
 
     [SerializeField]
     private int version = CurrentVersion;
@@ -15,7 +15,7 @@ public sealed class GlobalProgressionSave
     private int totalRunWins;
 
     [SerializeField]
-    private List<EnemyUnitData> defeatedBosses = new();         // TODO: change to dict [bossdata, count]
+    private Dictionary<string, int> defeatedBosses = new();         // [bossid, count]
     
     [FormerlySerializedAs("cards")] [SerializeField]
     private List<CardProgressRecord> cardProgress = new();
@@ -34,18 +34,52 @@ public sealed class GlobalProgressionSave
         set => totalRunWins = value;
     }
 
-    public List<EnemyUnitData> DefeatedBosses => defeatedBosses;
+    public IReadOnlyDictionary<string, int> DefeatedBosses => defeatedBosses;
 
     public List<CharacterProgressRecord> CharacterProgress =>
         characterProgress;
     
     public List<RelicProgressRecord> RelicProgress => relicProgress;
 
+    public void RecordBossDefeated(string bossId)
+    {
+        if (string.IsNullOrWhiteSpace(bossId))
+            return;
+
+        defeatedBosses ??= new Dictionary<string, int>();
+        defeatedBosses.TryAdd(bossId, 0);
+        defeatedBosses[bossId]++;
+    }
+
     public void EnsureCollectionsInitialized()
     {
         cardProgress ??= new List<CardProgressRecord>();
-        defeatedBosses ??= new List<EnemyUnitData>();
+        defeatedBosses ??= new Dictionary<string, int>();
         characterProgress ??= new List<CharacterProgressRecord>();
         relicProgress ??= new List<RelicProgressRecord>();
+
+        foreach (CharacterProgressRecord record in characterProgress)
+            record?.EnsureCollectionsInitialized();
+    }
+
+    internal static GlobalProgressionSave FromPersistence(
+        int totalRunWins,
+        Dictionary<string, int> defeatedBosses,
+        List<CardProgressRecord> cardProgress,
+        List<CharacterProgressRecord> characterProgress,
+        List<RelicProgressRecord> relicProgress)
+    {
+        GlobalProgressionSave save = new()
+        {
+            version = CurrentVersion,
+            totalRunWins = totalRunWins,
+            defeatedBosses = defeatedBosses,
+            cardProgress = cardProgress,
+            characterProgress = characterProgress,
+            relicProgress = relicProgress
+        };
+
+        save.EnsureCollectionsInitialized();
+        return save;
     }
 }

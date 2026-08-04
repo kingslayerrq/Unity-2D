@@ -7,6 +7,8 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
 {
     internal const string SaveFileName = "global_progression.json";
 
+    private const int LegacyVersion = 1;
+
     private readonly string primaryPath;
     private readonly string backupPath;
     private readonly string temporaryPath;
@@ -17,45 +19,291 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
     internal string TemporaryPath => temporaryPath;
 
     [Serializable]
-    private sealed class SaveShape
+    private sealed class SaveVersionShape
     {
-        public int version;
-        public List<CardProgressRecord> cards;
-        public List<string> defeatedBossIds;
-        public List<CharacterProgressRecord> characterProgress;
+        public int version = int.MinValue;
+    }
 
-        public SaveShape(string missingFieldMarker)
+    [Serializable]
+    private sealed class BossDefeatData
+    {
+        public string bossId;
+        public int count;
+
+        public BossDefeatData()
         {
-            version = int.MinValue;
-            cards = new List<CardProgressRecord>
-            {
-                new(missingFieldMarker, false)
-            };
-            defeatedBossIds = new List<string>
-            {
-                missingFieldMarker
-            };
-            characterProgress = new List<CharacterProgressRecord>
-            {
-                new(
-                    missingFieldMarker,
-                    default,
-                    false)
-            };
         }
 
-        public bool HasRequiredCollections(string missingFieldMarker)
+        public BossDefeatData(string bossId, int count)
         {
-            return cards != null &&
-                   defeatedBossIds != null &&
-                   characterProgress != null &&
-                   !cards.Exists(
-                       record =>
-                           record?.CardId == missingFieldMarker) &&
-                   !defeatedBossIds.Contains(missingFieldMarker) &&
-                   !characterProgress.Exists(
-                       record =>
-                           record?.CharacterId == missingFieldMarker);
+            this.bossId = bossId;
+            this.count = count;
+        }
+    }
+
+    [Serializable]
+    private sealed class CharacterProgressData
+    {
+        public string characterId;
+        public CardClass cardClass;
+        public bool isUnlocked;
+        public int wins;
+        public int losses;
+        public List<BossDefeatData> defeatedBosses;
+        public int eliteNodeCompleted;
+        public int bossNodeCompleted;
+        public int nonEliteNodeCompleted;
+        public int eventNodeCompleted;
+        public int shopNodeCompleted;
+        public int restsiteNodeCompleted;
+        public int treasureNodeCompleted;
+        public int totalGames;
+
+        public CharacterProgressData()
+        {
+        }
+
+        public CharacterProgressData(CharacterProgressRecord record)
+        {
+            if (record == null)
+            {
+                throw new InvalidDataException(
+                    "Character progression contains a null record.");
+            }
+
+            characterId = record.CharacterId;
+            cardClass = record.CardClass;
+            isUnlocked = record.IsUnlocked;
+            wins = record.Wins;
+            losses = record.Losses;
+            defeatedBosses = CreateBossDefeatData(
+                record.DefeatedBosses);
+            eliteNodeCompleted = record.EliteNodeCompleted;
+            bossNodeCompleted = record.BossNodeCompleted;
+            nonEliteNodeCompleted = record.NonEliteNodeCompleted;
+            eventNodeCompleted = record.EventNodeCompleted;
+            shopNodeCompleted = record.ShopNodeCompleted;
+            restsiteNodeCompleted = record.RestsiteNodeCompleted;
+            treasureNodeCompleted = record.TreasureNodeCompleted;
+            totalGames = record.TotalGames;
+        }
+
+        public bool TryCreateRecord(
+            out CharacterProgressRecord record,
+            out string error)
+        {
+            record = null;
+
+            if (!TryCreateBossCounts(
+                    defeatedBosses,
+                    out Dictionary<string, int> bossCounts,
+                    out error))
+            {
+                return false;
+            }
+
+            record = CharacterProgressRecord.FromPersistence(
+                characterId,
+                cardClass,
+                isUnlocked,
+                wins,
+                losses,
+                bossCounts,
+                eliteNodeCompleted,
+                bossNodeCompleted,
+                nonEliteNodeCompleted,
+                eventNodeCompleted,
+                shopNodeCompleted,
+                restsiteNodeCompleted,
+                treasureNodeCompleted,
+                totalGames);
+
+            return true;
+        }
+    }
+
+    [Serializable]
+    private sealed class ProgressionSaveData
+    {
+        public int version;
+        public int totalRunWins;
+        public List<CardProgressRecord> cardProgress;
+        public List<BossDefeatData> defeatedBosses;
+        public List<CharacterProgressData> characterProgress;
+        public List<RelicProgressRecord> relicProgress;
+
+        public static ProgressionSaveData FromSave(
+            GlobalProgressionSave save)
+        {
+            save.EnsureCollectionsInitialized();
+
+            ProgressionSaveData data = new()
+            {
+                version = GlobalProgressionSave.CurrentVersion,
+                totalRunWins = save.TotalRunWins,
+                cardProgress = new List<CardProgressRecord>(
+                    save.CardProgress),
+                defeatedBosses = CreateBossDefeatData(
+                    save.DefeatedBosses),
+                characterProgress =
+                    new List<CharacterProgressData>(),
+                relicProgress = new List<RelicProgressRecord>(
+                    save.RelicProgress)
+            };
+
+            foreach (CharacterProgressRecord record
+                     in save.CharacterProgress)
+            {
+                data.characterProgress.Add(
+                    new CharacterProgressData(record));
+            }
+
+            return data;
+        }
+
+        public bool TryCreateSave(
+            out GlobalProgressionSave save,
+            out string error)
+        {
+            save = null;
+            error = null;
+
+            if (version != GlobalProgressionSave.CurrentVersion)
+            {
+                error =
+                    $"Unsupported version {version}; expected " +
+                    $"{GlobalProgressionSave.CurrentVersion}.";
+                return false;
+            }
+
+            if (cardProgress == null ||
+                defeatedBosses == null ||
+                characterProgress == null ||
+                relicProgress == null)
+            {
+                error = "Required progression collections are missing.";
+                return false;
+            }
+
+            if (cardProgress.Exists(record => record == null) ||
+                relicProgress.Exists(record => record == null))
+            {
+                error = "Progression contains a null record.";
+                return false;
+            }
+
+            if (!TryCreateBossCounts(
+                    defeatedBosses,
+                    out Dictionary<string, int> globalBossCounts,
+                    out error))
+            {
+                return false;
+            }
+
+            List<CharacterProgressRecord> characterRecords = new();
+
+            foreach (CharacterProgressData data in characterProgress)
+            {
+                if (data == null)
+                {
+                    error =
+                        "Character progression contains a null record.";
+                    return false;
+                }
+
+                if (!data.TryCreateRecord(
+                        out CharacterProgressRecord record,
+                        out error))
+                {
+                    return false;
+                }
+
+                characterRecords.Add(record);
+            }
+
+            save = GlobalProgressionSave.FromPersistence(
+                totalRunWins,
+                globalBossCounts,
+                cardProgress,
+                characterRecords,
+                relicProgress);
+
+            return true;
+        }
+    }
+
+    [Serializable]
+    private sealed class LegacyProgressionSaveData
+    {
+        public int version;
+        public int totalRunWins;
+        public List<CardProgressRecord> cards;
+        public List<CardProgressRecord> cardProgress;
+        public List<string> defeatedBossIds;
+        public List<CharacterProgressRecord> characterProgress;
+        public List<RelicProgressRecord> relicProgress;
+
+        public bool TryCreateSave(
+            out GlobalProgressionSave save,
+            out string error)
+        {
+            save = null;
+            error = null;
+
+            if (version != LegacyVersion)
+            {
+                error =
+                    $"Unsupported legacy version {version}; expected " +
+                    $"{LegacyVersion}.";
+                return false;
+            }
+
+            List<CardProgressRecord> resolvedCards =
+                cardProgress ?? cards;
+
+            if (resolvedCards == null || characterProgress == null)
+            {
+                error = "Required legacy progression collections are missing.";
+                return false;
+            }
+
+            if (resolvedCards.Exists(record => record == null) ||
+                characterProgress.Exists(record => record == null) ||
+                (relicProgress != null &&
+                 relicProgress.Exists(record => record == null)))
+            {
+                error = "Legacy progression contains a null record.";
+                return false;
+            }
+
+            Dictionary<string, int> globalBossCounts = new();
+
+            if (defeatedBossIds != null)
+            {
+                foreach (string bossId in defeatedBossIds)
+                {
+                    if (string.IsNullOrWhiteSpace(bossId))
+                        continue;
+
+                    globalBossCounts.TryAdd(bossId, 0);
+                    globalBossCounts[bossId]++;
+                }
+            }
+
+            foreach (CharacterProgressRecord record
+                     in characterProgress)
+            {
+                record.EnsureCollectionsInitialized();
+            }
+
+            save = GlobalProgressionSave.FromPersistence(
+                totalRunWins,
+                globalBossCounts,
+                resolvedCards,
+                characterProgress,
+                relicProgress ?? new List<RelicProgressRecord>());
+
+            return true;
         }
     }
 
@@ -80,12 +328,13 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
         if (TryLoadFile(
                 primaryPath,
                 out GlobalProgressionSave primarySave,
+                out bool primaryRequiresSave,
                 out string primaryError))
         {
             return new ProgressionLoadResult(
                 primarySave,
                 ProgressionLoadSource.Primary,
-                false);
+                primaryRequiresSave);
         }
 
         if (File.Exists(primaryPath))
@@ -98,6 +347,7 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
         if (TryLoadFile(
                 backupPath,
                 out GlobalProgressionSave backupSave,
+                out bool backupRequiresSave,
                 out string backupError))
         {
             RestoreBackup();
@@ -105,7 +355,7 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
             return new ProgressionLoadResult(
                 backupSave,
                 ProgressionLoadSource.Backup,
-                false);
+                backupRequiresSave);
         }
 
         if (File.Exists(backupPath))
@@ -144,26 +394,30 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
 
         Directory.CreateDirectory(directoryPath);
 
-        string json = JsonUtility.ToJson(save, true);
+        ProgressionSaveData data =
+            ProgressionSaveData.FromSave(save);
+        string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(temporaryPath, json);
 
         if (!TryLoadFile(
                 temporaryPath,
                 out _,
-                out string validationError))
+                out bool temporaryRequiresSave,
+                out string validationError) ||
+            temporaryRequiresSave)
         {
             DeleteIfExists(temporaryPath);
 
             throw new InvalidDataException(
-                $"Temporary progression save failed validation: " +
-                $"{validationError}");
+                "Temporary progression save failed validation: " +
+                validationError);
         }
 
         try
         {
             if (File.Exists(primaryPath))
             {
-                if (TryLoadFile(primaryPath, out _, out _))
+                if (TryLoadFile(primaryPath, out _, out _, out _))
                 {
                     ReplacePrimaryWithTemporary();
                 }
@@ -214,7 +468,11 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
     {
         File.Copy(backupPath, temporaryPath, true);
 
-        if (!TryLoadFile(temporaryPath, out _, out string error))
+        if (!TryLoadFile(
+                temporaryPath,
+                out _,
+                out _,
+                out string error))
         {
             DeleteIfExists(temporaryPath);
 
@@ -231,9 +489,11 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
     private static bool TryLoadFile(
         string path,
         out GlobalProgressionSave save,
+        out bool requiresSave,
         out string error)
     {
         save = null;
+        requiresSave = false;
         error = null;
 
         if (!File.Exists(path))
@@ -252,50 +512,120 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
                 return false;
             }
 
-            string missingFieldMarker =
-                Guid.NewGuid().ToString("N");
-            SaveShape shape = new(missingFieldMarker);
-            JsonUtility.FromJsonOverwrite(json, shape);
+            SaveVersionShape versionShape = new();
+            JsonUtility.FromJsonOverwrite(json, versionShape);
 
-            if (shape.version != GlobalProgressionSave.CurrentVersion)
+            if (versionShape.version ==
+                GlobalProgressionSave.CurrentVersion)
             {
-                error =
-                    $"Unsupported version {shape.version}; expected " +
-                    $"{GlobalProgressionSave.CurrentVersion}.";
-                return false;
+                ProgressionSaveData data =
+                    JsonUtility.FromJson<ProgressionSaveData>(json);
+
+                if (data == null)
+                {
+                    error = "JSON did not contain progression data.";
+                    return false;
+                }
+
+                return data.TryCreateSave(out save, out error);
             }
 
-            if (!shape.HasRequiredCollections(missingFieldMarker))
+            if (versionShape.version == LegacyVersion)
             {
-                error = "Required progression collections are missing.";
-                return false;
+                LegacyProgressionSaveData data =
+                    JsonUtility.FromJson<LegacyProgressionSaveData>(
+                        json);
+
+                if (data == null)
+                {
+                    error = "JSON did not contain legacy progression data.";
+                    return false;
+                }
+
+                if (!data.TryCreateSave(out save, out error))
+                    return false;
+
+                requiresSave = true;
+                return true;
             }
 
-            save = JsonUtility.FromJson<GlobalProgressionSave>(json);
-            if (save == null)
-            {
-                error = "JSON did not contain progression data.";
-                return false;
-            }
-
-            if (save.Version != GlobalProgressionSave.CurrentVersion)
-            {
-                error =
-                    $"Unsupported version {save.Version}; expected " +
-                    $"{GlobalProgressionSave.CurrentVersion}.";
-                save = null;
-                return false;
-            }
-
-            save.EnsureCollectionsInitialized();
-            return true;
+            error =
+                $"Unsupported version {versionShape.version}; expected " +
+                $"{GlobalProgressionSave.CurrentVersion}.";
+            return false;
         }
         catch (Exception exception)
         {
             error = exception.Message;
             save = null;
+            requiresSave = false;
             return false;
         }
+    }
+
+    private static List<BossDefeatData> CreateBossDefeatData(
+        IReadOnlyDictionary<string, int> bossCounts)
+    {
+        List<BossDefeatData> data = new();
+
+        if (bossCounts == null)
+            return data;
+
+        foreach (KeyValuePair<string, int> bossCount in bossCounts)
+        {
+            data.Add(
+                new BossDefeatData(
+                    bossCount.Key,
+                    bossCount.Value));
+        }
+
+        data.Sort(
+            (left, right) =>
+                string.CompareOrdinal(left.bossId, right.bossId));
+
+        return data;
+    }
+
+    private static bool TryCreateBossCounts(
+        List<BossDefeatData> data,
+        out Dictionary<string, int> bossCounts,
+        out string error)
+    {
+        bossCounts = new Dictionary<string, int>();
+        error = null;
+
+        if (data == null)
+        {
+            error = "A defeated-boss collection is missing.";
+            return false;
+        }
+
+        foreach (BossDefeatData entry in data)
+        {
+            if (entry == null ||
+                string.IsNullOrWhiteSpace(entry.bossId))
+            {
+                error = "A defeated-boss entry has no persistent ID.";
+                return false;
+            }
+
+            if (entry.count < 0)
+            {
+                error =
+                    $"Defeated-boss count for '{entry.bossId}' " +
+                    "cannot be negative.";
+                return false;
+            }
+
+            if (!bossCounts.TryAdd(entry.bossId, entry.count))
+            {
+                error =
+                    $"Duplicate defeated-boss ID '{entry.bossId}'.";
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void ArchiveCorruptFile(string path)

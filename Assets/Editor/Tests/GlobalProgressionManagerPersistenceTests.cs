@@ -147,6 +147,119 @@ public sealed class GlobalProgressionManagerPersistenceTests
             Is.EqualTo(2));
     }
 
+    [Test]
+    public void StoreRoundTripPreservesDictionaryBackedProgression()
+    {
+        LocalJsonProgressionStore store =
+            new(testDirectory);
+        GlobalProgressionSave save = new();
+
+        save.TotalRunWins = 3;
+        save.RecordBossDefeated("global-boss");
+        save.RecordBossDefeated("global-boss");
+
+        CardProgressRecord card =
+            new("card-1", unlockedByDefault: false);
+        card.Unlock();
+        card.RecordPlayed();
+        save.CardProgress.Add(card);
+
+        CharacterProgressRecord character =
+            new(
+                "character-1",
+                CardClass.Ironclad,
+                unlockedByDefault: false);
+        character.Unlock();
+        character.RecordGame(won: true);
+        character.RecordBoss("character-boss");
+        character.RecordBoss("character-boss");
+        save.CharacterProgress.Add(character);
+
+        RelicProgressRecord relic =
+            new(
+                "relic-1",
+                isUnlockedByDefault: false,
+                isDiscoveredByDefault: false);
+        relic.Unlock();
+        relic.Discover();
+        save.RelicProgress.Add(relic);
+
+        store.Save(save);
+        ProgressionLoadResult result = store.Load();
+
+        Assert.That(
+            result.Source,
+            Is.EqualTo(ProgressionLoadSource.Primary));
+        Assert.That(result.RequiresSave, Is.False);
+        Assert.That(result.Save.TotalRunWins, Is.EqualTo(3));
+        Assert.That(
+            result.Save.DefeatedBosses["global-boss"],
+            Is.EqualTo(2));
+
+        CardProgressRecord loadedCard =
+            result.Save.CardProgress[0];
+        Assert.That(loadedCard.CardId, Is.EqualTo("card-1"));
+        Assert.That(loadedCard.IsUnlocked, Is.True);
+        Assert.That(loadedCard.TimesPlayed, Is.EqualTo(1));
+
+        CharacterProgressRecord loadedCharacter =
+            result.Save.CharacterProgress[0];
+        Assert.That(loadedCharacter.Wins, Is.EqualTo(1));
+        Assert.That(loadedCharacter.TotalGames, Is.EqualTo(1));
+        Assert.That(loadedCharacter.BossNodeCompleted, Is.EqualTo(2));
+        Assert.That(
+            loadedCharacter.DefeatedBosses["character-boss"],
+            Is.EqualTo(2));
+
+        RelicProgressRecord loadedRelic =
+            result.Save.RelicProgress[0];
+        Assert.That(loadedRelic.RelicId, Is.EqualTo("relic-1"));
+        Assert.That(loadedRelic.IsUnlocked, Is.True);
+        Assert.That(loadedRelic.IsDiscovered, Is.True);
+    }
+
+    [Test]
+    public void VersionOneSaveLoadsAndIsRewrittenAsVersionTwo()
+    {
+        LocalJsonProgressionStore store =
+            new(testDirectory);
+
+        File.WriteAllText(
+            store.Location,
+            "{\"version\":1,\"totalRunWins\":4," +
+            "\"cardProgress\":[{\"cardId\":\"legacy-card\"," +
+            "\"isDiscovered\":true,\"isUnlocked\":true," +
+            "\"timesPlayed\":3}]," +
+            "\"defeatedBossIds\":[\"legacy-boss\"," +
+            "\"legacy-boss\"],\"characterProgress\":[]," +
+            "\"relicProgress\":[]}");
+
+        ProgressionLoadResult migrated = store.Load();
+
+        Assert.That(
+            migrated.Source,
+            Is.EqualTo(ProgressionLoadSource.Primary));
+        Assert.That(migrated.RequiresSave, Is.True);
+        Assert.That(
+            migrated.Save.Version,
+            Is.EqualTo(GlobalProgressionSave.CurrentVersion));
+        Assert.That(migrated.Save.TotalRunWins, Is.EqualTo(4));
+        Assert.That(
+            migrated.Save.DefeatedBosses["legacy-boss"],
+            Is.EqualTo(2));
+        Assert.That(
+            migrated.Save.CardProgress[0].TimesPlayed,
+            Is.EqualTo(3));
+
+        store.Save(migrated.Save);
+        ProgressionLoadResult reloaded = store.Load();
+
+        Assert.That(reloaded.RequiresSave, Is.False);
+        StringAssert.Contains(
+            "\"version\": 2",
+            File.ReadAllText(store.Location));
+    }
+
     private GlobalProgressionManager CreateManager(
         IProgressionStore store,
         CardCatalog cardCatalog,
@@ -166,6 +279,10 @@ public sealed class GlobalProgressionManagerPersistenceTests
             progression,
             "characterCatalog",
             characterCatalog);
+        SetField(
+            progression,
+            "relicCatalog",
+            CreateRelicCatalog());
         SetField(
             progression,
             "persistBetweenScenes",
@@ -222,6 +339,16 @@ public sealed class GlobalProgressionManagerPersistenceTests
             "characters",
             new List<PlayerUnitData>(characters));
 
+        return catalog;
+    }
+
+    private RelicCatalog CreateRelicCatalog()
+    {
+        RelicCatalog catalog = CreateAsset<RelicCatalog>();
+        SetField(
+            catalog,
+            "relics",
+            new List<RelicData>());
         return catalog;
     }
 

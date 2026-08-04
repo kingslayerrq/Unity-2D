@@ -1001,6 +1001,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Runmanager
       objectReference: {fileID: 0}
+    - target: {fileID: 1339102044036534573, guid: d9ffd007cbc1a4242abd892147a4bedd, type: 3}
+      propertyPath: unlockCatalog
+      value: 
+      objectReference: {fileID: 11400000, guid: ffc756a184db839408bb207391721ce1, type: 2}
     - target: {fileID: 6680782260780813173, guid: d9ffd007cbc1a4242abd892147a4bedd, type: 3}
       propertyPath: m_LocalPosition.x
       value: -329.15924
@@ -1041,6 +1045,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7348289301265732101, guid: d9ffd007cbc1a4242abd892147a4bedd, type: 3}
+      propertyPath: relicCatalog
+      value: 
+      objectReference: {fileID: 11400000, guid: e5309236a013fa648b988bd110facf59, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

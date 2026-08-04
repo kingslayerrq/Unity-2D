@@ -21,9 +21,8 @@ public sealed class CharacterProgressRecord
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("loss")]
     private int losses;
-    
-    [SerializeField]
-    private List<EnemyUnitData> defeatedBosses = new();    // TODO: change to dict [bossdata, count]
+
+    [SerializeField] private Dictionary<string, int> defeatedBosses = new();
 
     [FormerlySerializedAs("elitesKilled")] [SerializeField] private int eliteNodeCompleted;
     [SerializeField] private int bossNodeCompleted;
@@ -41,7 +40,7 @@ public sealed class CharacterProgressRecord
     public bool IsUnlocked => isUnlocked;
     public int Wins => wins;
     public int Losses => losses;
-    public List<EnemyUnitData> DefeatedBosses => defeatedBosses;
+    public IReadOnlyDictionary<string, int> DefeatedBosses => defeatedBosses;
     public int EliteNodeCompleted => eliteNodeCompleted;
     public int BossNodeCompleted => bossNodeCompleted;
     public int NonEliteNodeCompleted => nonEliteNodeCompleted;
@@ -91,12 +90,19 @@ public sealed class CharacterProgressRecord
         eliteNodeCompleted++;
     }
 
-    public void RecordBoss(EnemyUnitData bossData)
+    public void RecordBoss(string bossId)
     {
-        if (bossData == null) return;
+        if (string.IsNullOrWhiteSpace(bossId))
+            return;
+
+        EnsureCollectionsInitialized();
         bossNodeCompleted++;
-        if (defeatedBosses.Contains(bossData)) return;
-        defeatedBosses.Add(bossData);
+
+        if (!defeatedBosses.ContainsKey(bossId))
+        {
+            defeatedBosses.Add(bossId, 0);
+        }
+        defeatedBosses[bossId]++;
     }
 
     public void RecordShop()
@@ -146,5 +152,48 @@ public sealed class CharacterProgressRecord
         }
 
         return changed;
+    }
+
+    internal void EnsureCollectionsInitialized()
+    {
+        defeatedBosses ??= new Dictionary<string, int>();
+    }
+
+    internal static CharacterProgressRecord FromPersistence(
+        string characterId,
+        CardClass cardClass,
+        bool isUnlocked,
+        int wins,
+        int losses,
+        Dictionary<string, int> defeatedBosses,
+        int eliteNodeCompleted,
+        int bossNodeCompleted,
+        int nonEliteNodeCompleted,
+        int eventNodeCompleted,
+        int shopNodeCompleted,
+        int restsiteNodeCompleted,
+        int treasureNodeCompleted,
+        int totalGames)
+    {
+        CharacterProgressRecord record = new(
+            characterId,
+            cardClass,
+            isUnlocked)
+        {
+            wins = wins,
+            losses = losses,
+            defeatedBosses = defeatedBosses,
+            eliteNodeCompleted = eliteNodeCompleted,
+            bossNodeCompleted = bossNodeCompleted,
+            nonEliteNodeCompleted = nonEliteNodeCompleted,
+            eventNodeCompleted = eventNodeCompleted,
+            shopNodeCompleted = shopNodeCompleted,
+            restsiteNodeCompleted = restsiteNodeCompleted,
+            treasureNodeCompleted = treasureNodeCompleted,
+            totalGames = totalGames
+        };
+
+        record.EnsureCollectionsInitialized();
+        return record;
     }
 }

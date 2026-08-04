@@ -202,11 +202,12 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     #endregion
 
-    public bool HasDefeatedBossGlobal(EnemyUnitData bossData)
+    public bool HasDefeatedBossGlobal(string bossId)
     {
-        if (bossData == null) return false;
+        if (string.IsNullOrWhiteSpace(bossId))
+            return false;
 
-        return currentSave.DefeatedBosses.Contains(bossData);
+        return currentSave.DefeatedBosses.ContainsKey(bossId) && currentSave.DefeatedBosses[bossId] > 0;
     }
 
     public bool HasDefeatedBossByCharacter(PlayerUnitData character, string bossId)
@@ -215,7 +216,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             return false;
 
         CharacterProgressRecord record = EnsureCharacterRecord(character);
-        return record.DefeatedBossIds.Contains(bossId);
+        return record.DefeatedBosses.ContainsKey(bossId) && record.DefeatedBosses[bossId] > 0;
     }
 
     #region Relic progress
@@ -444,7 +445,24 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             case NodeType.CombatBoss:
                 BossCombatNode bossNode = (BossCombatNode)node;
                 BossCombatNodeConfig bossConfig = (BossCombatNodeConfig)bossNode.NodeConfig;
-                
+                string bossId = bossConfig.BossData.EnemyId;
+                RecordBossDefeated(character, bossId);
+                break;
+            case NodeType.CombatElite:
+                break;
+            case NodeType.CombatNonElite:
+                break;
+            case NodeType.Event:
+                break;
+            case NodeType.Merchant:
+                break;
+            case NodeType.RestSite:
+                break;
+            case NodeType.Treasure:
+                break;
+            default:
+                Debug.LogWarning($"Unknown node type {node.NodeConfig.NodeType}");
+                break;
         }
     }
 
@@ -484,18 +502,15 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     #endregion
 
-    public void RecordBossDefeated(PlayerUnitData character, string bossId)
+    private void RecordBossDefeated(PlayerUnitData character, string bossId)
     {
         if (string.IsNullOrWhiteSpace(bossId))
             return;
-
-        if (currentSave.DefeatedBossIds.Contains(bossId))
-            return;
+        
+        currentSave.RecordBossDefeated(bossId);
 
         CharacterProgressRecord record = EnsureCharacterRecord(character);
         record.RecordBoss(bossId);
-
-        currentSave.DefeatedBossIds.Add(bossId);
 
         MarkDirty();
         ProgressionChanged?.Invoke();

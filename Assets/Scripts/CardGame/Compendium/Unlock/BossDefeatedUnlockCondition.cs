@@ -16,6 +16,6 @@ public sealed class BossDefeatedUnlockCondition : UnlockCondition
     public override bool IsMet(
         GlobalProgressionManager progression)
     {
-        return progression.HasDefeatedBossGlobal(bossData);
+        return progression.HasDefeatedBossGlobal(bossData.EnemyId);
     }
 }
