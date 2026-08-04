@@ -15,7 +15,7 @@ public sealed class GlobalProgressionSave
     private int totalRunWins;
 
     [SerializeField]
-    private List<string> defeatedBossIds = new();
+    private List<EnemyUnitData> defeatedBosses = new();         // TODO: change to dict [bossdata, count]
     
     [FormerlySerializedAs("cards")] [SerializeField]
     private List<CardProgressRecord> cardProgress = new();
@@ -34,7 +34,7 @@ public sealed class GlobalProgressionSave
         set => totalRunWins = value;
     }
 
-    public List<string> DefeatedBossIds => defeatedBossIds;
+    public List<EnemyUnitData> DefeatedBosses => defeatedBosses;
 
     public List<CharacterProgressRecord> CharacterProgress =>
         characterProgress;
@@ -44,7 +44,7 @@ public sealed class GlobalProgressionSave
     public void EnsureCollectionsInitialized()
     {
         cardProgress ??= new List<CardProgressRecord>();
-        defeatedBossIds ??= new List<string>();
+        defeatedBosses ??= new List<EnemyUnitData>();
         characterProgress ??= new List<CharacterProgressRecord>();
         relicProgress ??= new List<RelicProgressRecord>();
     }

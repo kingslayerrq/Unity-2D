@@ -3,6 +3,6 @@ using UnityEngine;
 
 public abstract class BaseCombatNodeConfig : BaseNodeConfig
 {
-    [SerializeField] private List<EnemyUnitData> enemyDatas;
+    [SerializeField] protected List<EnemyUnitData> enemyDatas;
     public IReadOnlyList<EnemyUnitData> EnemyUnitDatas => enemyDatas;
 }

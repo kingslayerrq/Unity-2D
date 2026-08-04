@@ -202,12 +202,20 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     #endregion
 
-    public bool HasDefeatedBoss(string bossId)
+    public bool HasDefeatedBossGlobal(EnemyUnitData bossData)
+    {
+        if (bossData == null) return false;
+
+        return currentSave.DefeatedBosses.Contains(bossData);
+    }
+
+    public bool HasDefeatedBossByCharacter(PlayerUnitData character, string bossId)
     {
         if (string.IsNullOrWhiteSpace(bossId))
             return false;
 
-        return currentSave.DefeatedBossIds.Contains(bossId);
+        CharacterProgressRecord record = EnsureCharacterRecord(character);
+        return record.DefeatedBossIds.Contains(bossId);
     }
 
     #region Relic progress
@@ -428,6 +436,18 @@ public sealed class GlobalProgressionManager : MonoBehaviour
         CommitCharacterChange();
     }
 
+    public void RecordNodeCompleted(PlayerUnitData character, BaseNode node)
+    {
+        CharacterProgressRecord record = EnsureCharacterRecord(character);
+        switch (node.NodeConfig.NodeType)
+        {
+            case NodeType.CombatBoss:
+                BossCombatNode bossNode = (BossCombatNode)node;
+                BossCombatNodeConfig bossConfig = (BossCombatNodeConfig)bossNode.NodeConfig;
+                
+        }
+    }
+
     private CharacterProgressRecord EnsureCharacterRecord(
         PlayerUnitData character)
     {
@@ -464,13 +484,16 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     #endregion
 
-    public void RecordBossDefeated(string bossId)
+    public void RecordBossDefeated(PlayerUnitData character, string bossId)
     {
         if (string.IsNullOrWhiteSpace(bossId))
             return;
 
         if (currentSave.DefeatedBossIds.Contains(bossId))
             return;
+
+        CharacterProgressRecord record = EnsureCharacterRecord(character);
+        record.RecordBoss(bossId);
 
         currentSave.DefeatedBossIds.Add(bossId);
 

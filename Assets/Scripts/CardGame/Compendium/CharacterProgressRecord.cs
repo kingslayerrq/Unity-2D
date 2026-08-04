@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public sealed class CharacterProgressRecord
@@ -19,16 +21,36 @@ public sealed class CharacterProgressRecord
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("loss")]
     private int losses;
-
+    
     [SerializeField]
-    private int totalGames;
+    private List<EnemyUnitData> defeatedBosses = new();    // TODO: change to dict [bossdata, count]
+
+    [FormerlySerializedAs("elitesKilled")] [SerializeField] private int eliteNodeCompleted;
+    [SerializeField] private int bossNodeCompleted;
+    [SerializeField] private int nonEliteNodeCompleted;
+    [SerializeField] private int eventNodeCompleted;
+    [SerializeField] private int shopNodeCompleted;
+    [SerializeField] private int restsiteNodeCompleted;
+    [SerializeField] private int treasureNodeCompleted;
+    
+
+    [SerializeField] private int totalGames;
 
     public string CharacterId => characterId;
     public CardClass CardClass => cardClass;
     public bool IsUnlocked => isUnlocked;
     public int Wins => wins;
     public int Losses => losses;
+    public List<EnemyUnitData> DefeatedBosses => defeatedBosses;
+    public int EliteNodeCompleted => eliteNodeCompleted;
+    public int BossNodeCompleted => bossNodeCompleted;
+    public int NonEliteNodeCompleted => nonEliteNodeCompleted;
+    public int EventNodeCompleted => eventNodeCompleted;
+    public int ShopNodeCompleted => shopNodeCompleted;
+    public int RestsiteNodeCompleted => restsiteNodeCompleted;
+    public int TreasureNodeCompleted => treasureNodeCompleted;
     public int TotalGames => totalGames;
+    
 
     public CharacterProgressRecord(
         string characterId,
@@ -57,6 +79,44 @@ public sealed class CharacterProgressRecord
             wins++;
         else
             losses++;
+    }
+
+    public void RecordNonElite()
+    {
+        nonEliteNodeCompleted++;
+    }
+    
+    public void RecordElite()
+    {
+        eliteNodeCompleted++;
+    }
+
+    public void RecordBoss(EnemyUnitData bossData)
+    {
+        if (bossData == null) return;
+        bossNodeCompleted++;
+        if (defeatedBosses.Contains(bossData)) return;
+        defeatedBosses.Add(bossData);
+    }
+
+    public void RecordShop()
+    {
+        shopNodeCompleted++;
+    }
+
+    public void RecordEvent()
+    {
+        eventNodeCompleted++;
+    }
+
+    public void RecordRestSite()
+    {
+        restsiteNodeCompleted++;
+    }
+
+    public void RecordTreasure()
+    {
+        treasureNodeCompleted++;
     }
 
     public bool ReconcileIdentity(
