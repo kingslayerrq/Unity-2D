@@ -13,9 +13,11 @@ public sealed class GlobalProgressionSave
 
     [SerializeField]
     private int totalRunWins;
-
-    [SerializeField]
+    
     private Dictionary<string, int> defeatedBosses = new();         // [bossid, count]
+    
+    [SerializeField]
+    private int totalElitesDefeated = 0;
     
     [FormerlySerializedAs("cards")] [SerializeField]
     private List<CardProgressRecord> cardProgress = new();
@@ -27,7 +29,7 @@ public sealed class GlobalProgressionSave
 
     public int Version => version;
     public List<CardProgressRecord> CardProgress => cardProgress;
-
+    public int TotalElitesDefeated => totalElitesDefeated;
     public int TotalRunWins
     {
         get => totalRunWins;
@@ -50,6 +52,12 @@ public sealed class GlobalProgressionSave
         defeatedBosses.TryAdd(bossId, 0);
         defeatedBosses[bossId]++;
     }
+
+    public void RecordEliteDefeated()
+    {
+        totalElitesDefeated++;
+    }
+    
 
     public void EnsureCollectionsInitialized()
     {

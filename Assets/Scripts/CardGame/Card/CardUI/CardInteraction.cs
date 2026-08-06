@@ -45,18 +45,25 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private void Update()
     {
+        Mouse mouse = Mouse.current;
+
+        if (mouse == null)
+            return;
+
+        Vector2 mousePosition = mouse.position.ReadValue();
+
         if (isSelected)
         {
-            transform.position = Input.mousePosition;
+            transform.position = mousePosition;
             if (frameDelay)
             {
                 frameDelay = false;
                 return;
             }
-            UpdateReceivers(Input.mousePosition);
+            UpdateReceivers(mousePosition);
         }
         
-        if ((isSelected || isDragging) && Mouse.current.leftButton.wasPressedThisFrame)
+        if ((isSelected || isDragging) && mouse.leftButton.wasPressedThisFrame)
         {
             isSelected = false;
             isDragging = false;

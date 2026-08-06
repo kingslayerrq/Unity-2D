@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Iron_Wave
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 3fa714fd476d4fd40a3241d2d2d764f6
   cardClass: 0
   cardName: Iron Wave
   cardDescription: 'Gain 5 block.
@@ -36,29 +37,33 @@ MonoBehaviour:
   upgradedTargetType: 1
   upgradedKeywords:
   - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238369940701184
     cardEffectConfig:
       rid: 864238369940701185
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238369940701186
     cardEffectConfig:
       rid: 864238369940701187
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238369940701256
     cardEffectConfig:
       rid: 864238369940701257
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238369940701258
     cardEffectConfig:
       rid: 864238369940701259
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:
@@ -68,37 +73,37 @@ MonoBehaviour:
     - rid: 864238369940701185
       type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
-        amount: 5
         secondaryTarget: 0
+        amount: 5
     - rid: 864238369940701186
       type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
       data: 
     - rid: 864238369940701187
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 5
           bonusSource: 0
           bonusMultiplier: 0
         numberOfAttacks: 1
-        secondaryTarget: 6
     - rid: 864238369940701256
       type: {class: BlockCardEffect, ns: , asm: Assembly-CSharp}
       data: 
     - rid: 864238369940701257
       type: {class: BlockCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
-        amount: 7
         secondaryTarget: 0
+        amount: 7
     - rid: 864238369940701258
       type: {class: DmgCardEffect, ns: , asm: Assembly-CSharp}
       data: 
     - rid: 864238369940701259
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 7
           bonusSource: 0
           bonusMultiplier: 0
         numberOfAttacks: 1
-        secondaryTarget: 6

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: True_Grit
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 407e1e261efbe4941a579de694a8aa81
   cardClass: 0
   cardName: True Grit
   cardDescription: 'Gain 7 block.
@@ -36,29 +37,33 @@ MonoBehaviour:
   upgradedTargetType: 0
   upgradedKeywords:
   - {fileID: 11400000, guid: a5e5599ef87e78948847f94cb0c04350, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238740792672264
     cardEffectConfig:
       rid: 864238740792672265
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238740792672266
     cardEffectConfig:
       rid: 864238740792672267
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238740792672268
     cardEffectConfig:
       rid: 864238740792672269
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238740792672270
     cardEffectConfig:
       rid: 864238740792672271
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:

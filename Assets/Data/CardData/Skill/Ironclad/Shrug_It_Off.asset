@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Shrug_It_Off
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 5eca19d2c835c644bba748e967126350
   cardClass: 0
   cardName: Shrug It Off
   cardDescription: 'Gain 8 block.
@@ -36,29 +37,33 @@ MonoBehaviour:
   upgradedTargetType: 0
   upgradedKeywords:
   - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238706542248021
     cardEffectConfig:
       rid: 864238706542248022
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238706542248023
     cardEffectConfig:
       rid: 864238706542248024
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238706542248025
     cardEffectConfig:
       rid: 864238706542248026
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238706542248027
     cardEffectConfig:
       rid: 864238706542248028
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:

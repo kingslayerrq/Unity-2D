@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CursorManager : MonoBehaviour
 {
@@ -32,11 +33,16 @@ public class CursorManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        Mouse mouse = Mouse.current;
+
+        if (mouse == null)
+            return;
+
+        if (mouse.leftButton.wasPressedThisFrame)
         {
             Cursor.SetCursor(clickedCursor, hotSpot, cursorMode);
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (mouse.leftButton.wasReleasedThisFrame)
         {
             Cursor.SetCursor(defaultCursor, hotSpot, cursorMode);
         }

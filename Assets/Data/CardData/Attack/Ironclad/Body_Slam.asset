@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Body_Slam
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 095a1ecd595419d41a33a39e8a573b09
   cardClass: 0
   cardName: Body Slam
   cardDescription: Deal damage equal to your Block.
@@ -32,21 +33,21 @@ MonoBehaviour:
   upgradedTargetType: 1
   upgradedKeywords:
   - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238297542557764
     cardEffectConfig:
       rid: 864238297542557765
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238297542557780
     cardEffectConfig:
       rid: 864238297542557781
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:
@@ -56,6 +57,7 @@ MonoBehaviour:
     - rid: 864238297542557765
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 0
           bonusSource: 1
@@ -67,6 +69,7 @@ MonoBehaviour:
     - rid: 864238297542557781
       type: {class: DmgCardEffectConfig, ns: , asm: Assembly-CSharp}
       data:
+        secondaryTarget: 6
         amount:
           baseValue: 0
           bonusSource: 1

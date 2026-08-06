@@ -376,23 +376,6 @@ public sealed class GlobalProgressionManager : MonoBehaviour
                 : 0;
     }
 
-    public int GetCharacterWins(CardClass cardClass)
-    {
-        int wins = 0;
-
-        foreach (CharacterProgressRecord record
-                 in currentSave.CharacterProgress)
-        {
-            if (record != null &&
-                record.CardClass == cardClass)
-            {
-                wins += record.Wins;
-            }
-        }
-
-        return wins;
-    }
-
     public int GetCharacterTotalGames(CardClass cardClass)
     {
         int totalGames = 0;
@@ -409,6 +392,9 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
         return totalGames;
     }
+    #endregion
+
+    #region Unlock Methods
 
     public void UnlockCharacter(
         PlayerUnitData character)
@@ -420,7 +406,13 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             return;
 
         CommitCharacterChange();
+        Debug.Log($"[GlobalProgressionManager]: unlocked {character.name}");
     }
+
+    #endregion
+
+
+    #region Record Methods
 
     public void RecordRunCompleted(
         PlayerUnitData character,
@@ -435,11 +427,11 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             currentSave.TotalRunWins++;
 
         CommitCharacterChange();
+        Debug.Log("[GlobalProgressionManager]: Record run completed.");
     }
 
     public void RecordNodeCompleted(PlayerUnitData character, BaseNode node)
     {
-        CharacterProgressRecord record = EnsureCharacterRecord(character);
         switch (node.NodeConfig.NodeType)
         {
             case NodeType.CombatBoss:
@@ -449,22 +441,69 @@ public sealed class GlobalProgressionManager : MonoBehaviour
                 RecordBossDefeated(character, bossId);
                 break;
             case NodeType.CombatElite:
+                RecordEliteDefeated(character);
                 break;
             case NodeType.CombatNonElite:
+                Debug.Log("Non elite combat completed");
                 break;
             case NodeType.Event:
+                Debug.Log("Event completed");
                 break;
             case NodeType.Merchant:
+                Debug.Log("Merchant completed");
                 break;
             case NodeType.RestSite:
+                Debug.Log("RestSite completed");
                 break;
             case NodeType.Treasure:
+                Debug.Log("Treasure completed");
                 break;
             default:
-                Debug.LogWarning($"Unknown node type {node.NodeConfig.NodeType}");
+                Debug.LogWarning($"Unknown node type {node.NodeConfig.NodeType} completed");
                 break;
         }
+        Debug.Log("[GlobalProgressionManager]: Record node completed");
     }
+
+    /// <summary>
+    /// record in global save and character progress
+    /// </summary>
+    /// <param name="character"></param>
+    private void RecordEliteDefeated(PlayerUnitData character)
+    {
+        // global save
+        currentSave.RecordEliteDefeated();
+        
+        // character save
+        CharacterProgressRecord record = EnsureCharacterRecord(character);
+        record.RecordElite();
+        
+        CommitCharacterChange();
+        Debug.Log("[GlobalProgressionManager]: Record elite defeated");
+    }
+    
+    /// <summary>
+    /// record in global save and character progress
+    /// </summary>
+    /// <param name="character"></param>
+    /// <param name="bossId"></param>
+    private void RecordBossDefeated(PlayerUnitData character, string bossId)
+    {
+        if (string.IsNullOrWhiteSpace(bossId))
+            return;
+        
+        // global save
+        currentSave.RecordBossDefeated(bossId);
+
+        // save in character specific
+        CharacterProgressRecord record = EnsureCharacterRecord(character);
+        record.RecordBoss(bossId);
+
+        CommitCharacterChange();
+        Debug.Log("[GlobalProgressionManager]: Record boss defeated");
+    }
+    #endregion
+    
 
     private CharacterProgressRecord EnsureCharacterRecord(
         PlayerUnitData character)
@@ -499,23 +538,9 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
         return record;
     }
+    
 
-    #endregion
-
-    private void RecordBossDefeated(PlayerUnitData character, string bossId)
-    {
-        if (string.IsNullOrWhiteSpace(bossId))
-            return;
-        
-        currentSave.RecordBossDefeated(bossId);
-
-        CharacterProgressRecord record = EnsureCharacterRecord(character);
-        record.RecordBoss(bossId);
-
-        MarkDirty();
-        ProgressionChanged?.Invoke();
-        SaveCheckpoint();
-    }
+    #region Commit Changes
 
     private void CommitCardChange(
         CardData card,
@@ -546,6 +571,9 @@ public sealed class GlobalProgressionManager : MonoBehaviour
         ProgressionChanged?.Invoke();
         SaveCheckpoint();
     }
+
+    #endregion
+    
 
     private void ReconcileWithCatalogs()
     {

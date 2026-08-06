@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Anger
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 1d0ef883484ce554aa36397b05705151
   cardClass: 0
   cardName: Anger
   cardDescription: 'Deal 6 damage.
@@ -36,29 +37,33 @@ MonoBehaviour:
   upgradedCardSprite: {fileID: 21300000, guid: 82edb6bece53c0b4591c21f0c45256ee, type: 3}
   upgradedTargetType: 1
   upgradedKeywords: []
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238297542557766
     cardEffectConfig:
       rid: 864238297542557767
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238297542557768
     cardEffectConfig:
       rid: 864238297542557769
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238297542557772
     cardEffectConfig:
       rid: 864238297542557773
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238297542557774
     cardEffectConfig:
       rid: 864238297542557775
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:

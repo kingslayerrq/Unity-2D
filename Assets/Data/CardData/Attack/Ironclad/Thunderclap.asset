@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Thunderclap
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 6844dcb7fd470ee44a4692104a9e0426
   cardClass: 0
   cardName: Thunderclap
   cardDescription: 'Deal 4 damage and apply 1 Vulnerable to ALL enemies. '
@@ -32,29 +33,33 @@ MonoBehaviour:
   upgradedTargetType: 2
   upgradedKeywords:
   - {fileID: 11400000, guid: 93788875c13cbe844800734b0dd2d4a9, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238740792672256
     cardEffectConfig:
       rid: 864238740792672257
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238740792672258
     cardEffectConfig:
       rid: 864238740792672259
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238740792672260
     cardEffectConfig:
       rid: 864238740792672261
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238740792672262
     cardEffectConfig:
       rid: 864238740792672263
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:

@@ -55,8 +55,6 @@ public class RunManager : MonoBehaviour
 
     [Header("Tests")]
     // TODO: Run config
-    [SerializeField] private NonEliteCombatNodeConfig testCombatNodeConfig;
-    [SerializeField] private PlayerUnitData testPlayerUnitData;
     
     [SerializeField] private int currentRunSeed;
     private BaseNode currentNode = null;
@@ -254,6 +252,10 @@ public class RunManager : MonoBehaviour
     public void ExitNode(BaseNode node)
     {
         node.OnExit();
+        if (GlobalProgressionManager.HasInstance)
+        {
+            GlobalProgressionManager.Instance.RecordNodeCompleted(playerUnitData, node);
+        }
         EnterMap();
     }
     #endregion

@@ -37,11 +37,15 @@ MonoBehaviour:
       rid: 7461714063765798979
     cardEffectConfig:
       rid: 7461714063765798980
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238440605286400
     cardEffectConfig:
       rid: 864238440605286401
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:

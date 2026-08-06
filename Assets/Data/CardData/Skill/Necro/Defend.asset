@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Defend
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 8c53485898cd75642abaa2fde697596c
   cardClass: 3
   cardName: Defend
   cardDescription: Gain 5 block
@@ -24,7 +25,16 @@ MonoBehaviour:
   targetType: 0
   keywords:
   - {fileID: 11400000, guid: 1613bcb6b38ced14fbb8de3bf28724ee, type: 2}
+  upgradedCardName: 
+  upgradedCardDescription: 
+  upgradedCardPrice: 0
+  upgradedCardCost: 0
+  upgradedCardSprite: {fileID: 0}
+  upgradedTargetType: 0
+  upgradedKeywords: []
+  isUnlockedByDefault: 0
   cardEffects: []
+  upgradedCardEffects: []
   references:
     version: 2
     RefIds: []

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Twin_Strike
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 3ede8ea553be9f541876a77fe5a5615f
   cardClass: 0
   cardName: Twin Strike
   cardDescription: Deal 5 damage twice.
@@ -30,21 +31,21 @@ MonoBehaviour:
   upgradedCardSprite: {fileID: 21300000, guid: d0c501be96ea348438ca52faccaf81c4, type: 3}
   upgradedTargetType: 1
   upgradedKeywords: []
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 0
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238706542248005
     cardEffectConfig:
       rid: 864238706542248006
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238706542248007
     cardEffectConfig:
       rid: 864238706542248008
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:

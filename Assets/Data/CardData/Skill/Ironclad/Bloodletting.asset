@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0317469eb0c16424dad479a38f5ea217, type: 3}
   m_Name: Bloodletting
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  id: 6590126456345b1419c12c26d73a8a53
   cardClass: 0
   cardName: Bloodletting
   cardDescription: 'Lose 3 HP.
@@ -36,29 +37,33 @@ MonoBehaviour:
   upgradedTargetType: 0
   upgradedKeywords:
   - {fileID: 11400000, guid: e3cdf08ef499b4d4d9bdc2d15102cd40, type: 2}
-  spawnWeight: 0
-  isUpgraded: 0
-  isEnchanted: 0
-  isUnlocked: 1
-  isDiscovered: 1
+  isUnlockedByDefault: 1
   cardEffects:
   - cardEffect:
       rid: 864238706542248013
     cardEffectConfig:
       rid: 864238706542248014
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238706542248015
     cardEffectConfig:
       rid: 864238706542248016
+    trigger: 0
+    conditions: []
   upgradedCardEffects:
   - cardEffect:
       rid: 864238706542248017
     cardEffectConfig:
       rid: 864238706542248018
+    trigger: 0
+    conditions: []
   - cardEffect:
       rid: 864238706542248019
     cardEffectConfig:
       rid: 864238706542248020
+    trigger: 0
+    conditions: []
   references:
     version: 2
     RefIds:
