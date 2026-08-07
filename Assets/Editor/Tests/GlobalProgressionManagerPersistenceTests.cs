@@ -85,7 +85,7 @@ public sealed class GlobalProgressionManagerPersistenceTests
             won: false);
 
         Assert.That(
-            progression.GetCharacterTotalGames(
+            progression.GetTotalGames(
                 startingCharacter),
             Is.EqualTo(1));
         Assert.That(
@@ -101,7 +101,7 @@ public sealed class GlobalProgressionManagerPersistenceTests
                 characterCatalog);
 
         Assert.That(
-            progression.GetCharacterTotalGames(
+            progression.GetTotalGames(
                 startingCharacter),
             Is.EqualTo(1));
         Assert.That(
@@ -154,7 +154,10 @@ public sealed class GlobalProgressionManagerPersistenceTests
             new(testDirectory);
         GlobalProgressionSave save = new();
 
-        save.TotalRunWins = 3;
+        for (int i = 0; i < 3; i++)
+        {
+            save.RecordGame(true);
+        }
         save.RecordBossDefeated("global-boss");
         save.RecordBossDefeated("global-boss");
 
@@ -372,8 +375,8 @@ public sealed class GlobalProgressionManagerPersistenceTests
         PlayerUnitData requiredCharacter,
         PlayerUnitData unlockedCharacter)
     {
-        CharacterGamePlayedUnlockCondition condition =
-            CreateAsset<CharacterGamePlayedUnlockCondition>();
+        CharacterTotalGamesUnlockCondition condition =
+            CreateAsset<CharacterTotalGamesUnlockCondition>();
         SetField(
             condition,
             "requiredCharacter",

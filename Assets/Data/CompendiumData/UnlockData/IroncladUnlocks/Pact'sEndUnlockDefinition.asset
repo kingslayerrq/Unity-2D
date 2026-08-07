@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Pact'sEndUnlockDefinition
   m_EditorClassIdentifier: Assembly-CSharp::CardUnlockDefinition
   card: {fileID: 11400000, guid: f83ff01a09ee0c14c82c943a6ddf8197, type: 2}
-  condition: {fileID: 0}
+  condition: {fileID: 11400000, guid: e05804a197f89a04d97f0395e35bf89c, type: 2}

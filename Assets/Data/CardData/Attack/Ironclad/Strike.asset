@@ -21,14 +21,14 @@ MonoBehaviour:
   cardRarity: 0
   cardLevel: 0
   cardType: 0
-  cardSprite: {fileID: -185629251077234077, guid: 1843a7150ffb7a04b9d0e2e8f836a53a, type: 3}
+  cardSprite: {fileID: 21300000, guid: 8465461cffba6fa47bff3f5ba3d9098a, type: 3}
   targetType: 1
   keywords: []
   upgradedCardName: Strike+
   upgradedCardDescription: Deal 9 damage.
   upgradedCardPrice: 0
   upgradedCardCost: 1
-  upgradedCardSprite: {fileID: 21300000, guid: 7ec496897cdca0848bd5d098c34b8ff9, type: 3}
+  upgradedCardSprite: {fileID: 21300000, guid: 7ca8213c3b541844f80b7dd0c5d8de8c, type: 3}
   upgradedTargetType: 1
   upgradedKeywords: []
   isUnlockedByDefault: 1

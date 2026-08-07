@@ -4,15 +4,16 @@ using UnityEngine;
     menuName = "Progression/Unlock Conditions/Elites killed")]
 public class EliteKilledUnlockCondition : UnlockCondition
 {
-    [SerializeField] private CardClass requiredClass = CardClass.None;
+    [Tooltip("If left null then checks for global elites killed count")]
+    [SerializeField] private PlayerUnitData character;
     
     [SerializeField, Min(1)] private int requiredKills = 1;
     
     public override string Description =>
-        $"Defeat {requiredKills} Elites{(requiredClass == CardClass.None ? "" : $" as {requiredClass}")}.";
+        $"Defeat {requiredKills} Elites{(character == null ? "" : $" as {character.name}")}.";
 
     public override bool IsMet(GlobalProgressionManager progression)
     {
-        throw new System.NotImplementedException();
+        return progression.GetCharacterElitesDefeated(character) >= requiredKills;
     }
 }

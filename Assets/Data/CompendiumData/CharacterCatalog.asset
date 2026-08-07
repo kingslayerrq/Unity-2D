@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CharacterCatalog
   m_EditorClassIdentifier: Assembly-CSharp::CharacterCatalog
   characters:
-  - {fileID: 11400000, guid: 1f423659d77ad2e40b8f21bce527c08f, type: 2}
-  - {fileID: 11400000, guid: 5b79eb43a51228d4e81b293895118eaf, type: 2}
-  - {fileID: 11400000, guid: e9bea87309ec43d4385a117f68b46946, type: 2}
-  - {fileID: 11400000, guid: be04dcadd06c6e8428a721626133373e, type: 2}
   - {fileID: 11400000, guid: a344db01a1771b043902c4d772c9c4b5, type: 2}
+  - {fileID: 11400000, guid: 1f423659d77ad2e40b8f21bce527c08f, type: 2}
+  - {fileID: 11400000, guid: be04dcadd06c6e8428a721626133373e, type: 2}
+  - {fileID: 11400000, guid: e9bea87309ec43d4385a117f68b46946, type: 2}
+  - {fileID: 11400000, guid: 5b79eb43a51228d4e81b293895118eaf, type: 2}

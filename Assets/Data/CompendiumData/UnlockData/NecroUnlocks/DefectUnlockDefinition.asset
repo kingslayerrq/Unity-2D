@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: DefectUnlockDefinition
   m_EditorClassIdentifier: Assembly-CSharp::CharacterUnlockDefinition
   character: {fileID: 11400000, guid: a344db01a1771b043902c4d772c9c4b5, type: 2}
-  condition: {fileID: 11400000, guid: 822ff7584df7baa4598d37484b8f15f3, type: 2}
+  condition: {fileID: 11400000, guid: f8cd2350292871f4383dd1cb356b9895, type: 2}

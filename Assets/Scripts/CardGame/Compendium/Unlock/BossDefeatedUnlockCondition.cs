@@ -4,7 +4,7 @@ using UnityEngine;
     menuName = "Progression/Unlock Conditions/Boss Defeated")]
 public sealed class BossDefeatedUnlockCondition : UnlockCondition
 {
-    [Tooltip("Use a stable ID, not the boss's display name.")] [SerializeField]
+    [SerializeField]
     private EnemyUnitData bossData;
 
     [SerializeField]

@@ -13,6 +13,8 @@ public sealed class GlobalProgressionSave
 
     [SerializeField]
     private int totalRunWins;
+
+    [SerializeField] private int totalGames;
     
     private Dictionary<string, int> defeatedBosses = new();         // [bossid, count]
     
@@ -30,11 +32,8 @@ public sealed class GlobalProgressionSave
     public int Version => version;
     public List<CardProgressRecord> CardProgress => cardProgress;
     public int TotalElitesDefeated => totalElitesDefeated;
-    public int TotalRunWins
-    {
-        get => totalRunWins;
-        set => totalRunWins = value;
-    }
+    public int TotalRunWins => totalRunWins;
+    public int TotalGames => totalGames;
 
     public IReadOnlyDictionary<string, int> DefeatedBosses => defeatedBosses;
 
@@ -42,6 +41,12 @@ public sealed class GlobalProgressionSave
         characterProgress;
     
     public List<RelicProgressRecord> RelicProgress => relicProgress;
+
+    public void RecordGame(bool won)
+    {
+        if (won) totalRunWins++;
+        totalGames++;
+    }
 
     public void RecordBossDefeated(string bossId)
     {

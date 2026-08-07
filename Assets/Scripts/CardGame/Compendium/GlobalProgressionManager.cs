@@ -202,6 +202,8 @@ public sealed class GlobalProgressionManager : MonoBehaviour
 
     #endregion
 
+    #region Global progress
+
     public bool HasDefeatedBossGlobal(string bossId)
     {
         if (string.IsNullOrWhiteSpace(bossId))
@@ -210,14 +212,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
         return currentSave.DefeatedBosses.ContainsKey(bossId) && currentSave.DefeatedBosses[bossId] > 0;
     }
 
-    public bool HasDefeatedBossByCharacter(PlayerUnitData character, string bossId)
-    {
-        if (string.IsNullOrWhiteSpace(bossId))
-            return false;
-
-        CharacterProgressRecord record = EnsureCharacterRecord(character);
-        return record.DefeatedBosses.ContainsKey(bossId) && record.DefeatedBosses[bossId] > 0;
-    }
+    #endregion
 
     #region Relic progress
 
@@ -366,31 +361,25 @@ public sealed class GlobalProgressionManager : MonoBehaviour
                 : 0;
     }
 
-    public int GetCharacterTotalGames(
-        PlayerUnitData character)
+    public int GetTotalGames(PlayerUnitData character)
     {
-        return TryGetProgress(
-            character,
-            out CharacterProgressRecord record)
-                ? record.TotalGames
-                : 0;
+        if (character == null) return currentSave.TotalGames;
+        return TryGetProgress(character, out CharacterProgressRecord record) ? record.TotalGames : 0;
+    }
+    
+    public bool HasDefeatedBossByCharacter(PlayerUnitData character, string bossId)
+    {
+        if (string.IsNullOrWhiteSpace(bossId))
+            return false;
+
+        CharacterProgressRecord record = EnsureCharacterRecord(character);
+        return record.DefeatedBosses.ContainsKey(bossId) && record.DefeatedBosses[bossId] > 0;
     }
 
-    public int GetCharacterTotalGames(CardClass cardClass)
+    public int GetCharacterElitesDefeated(PlayerUnitData character)
     {
-        int totalGames = 0;
-
-        foreach (CharacterProgressRecord record
-                 in currentSave.CharacterProgress)
-        {
-            if (record != null &&
-                record.CardClass == cardClass)
-            {
-                totalGames += record.TotalGames;
-            }
-        }
-
-        return totalGames;
+        if (character == null) return currentSave.TotalElitesDefeated;
+        return TryGetProgress(character, out CharacterProgressRecord record) ? record.EliteNodeCompleted : 0;
     }
     #endregion
 
@@ -410,21 +399,17 @@ public sealed class GlobalProgressionManager : MonoBehaviour
     }
 
     #endregion
-
-
+    
     #region Record Methods
 
-    public void RecordRunCompleted(
-        PlayerUnitData character,
-        bool won)
+    public void RecordRunCompleted(PlayerUnitData character, bool won)
     {
         CharacterProgressRecord record =
             EnsureCharacterRecord(character);
 
         record.RecordGame(won);
 
-        if (won)
-            currentSave.TotalRunWins++;
+        currentSave.RecordGame(won);
 
         CommitCharacterChange();
         Debug.Log("[GlobalProgressionManager]: Record run completed.");

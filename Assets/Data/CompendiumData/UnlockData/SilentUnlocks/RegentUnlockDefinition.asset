@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: RegentUnlockDefinition
   m_EditorClassIdentifier: Assembly-CSharp::CharacterUnlockDefinition
   character: {fileID: 11400000, guid: e9bea87309ec43d4385a117f68b46946, type: 2}
-  condition: {fileID: 11400000, guid: df5818faac1bf1b4583a9970620bcb47, type: 2}
+  condition: {fileID: 11400000, guid: 8023e365d8c14bf41b31ce2660182f9f, type: 2}

@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff0423b822865b4f8bc2269cd9ad656, type: 3}
   m_Name: CardUnlockCatalog
   m_EditorClassIdentifier: Assembly-CSharp::CardUnlockCatalog
-  definitions: []
+  definitions:
+  - {fileID: 11400000, guid: 2a202b80d4bd84871b84f836a08f18d9, type: 2}
+  - {fileID: 11400000, guid: 13319a260d1444b6e8e4a7a25e49d996, type: 2}
+  - {fileID: 11400000, guid: 7bd9a2a64c91a44afb2aefe0bec27b82, type: 2}

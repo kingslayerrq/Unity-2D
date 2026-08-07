@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SilentUnlockDefinition
   m_EditorClassIdentifier: Assembly-CSharp::CharacterUnlockDefinition
   character: {fileID: 11400000, guid: 5b79eb43a51228d4e81b293895118eaf, type: 2}
-  condition: {fileID: 11400000, guid: c27a9262ba748ee499a6858e5b03b4d4, type: 2}
+  condition: {fileID: 11400000, guid: add3d8df36f78cc418f50129c7be4184, type: 2}

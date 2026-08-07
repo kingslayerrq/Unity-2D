@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: NecroUnlockDefinition
   m_EditorClassIdentifier: Assembly-CSharp::CharacterUnlockDefinition
   character: {fileID: 11400000, guid: be04dcadd06c6e8428a721626133373e, type: 2}
-  condition: {fileID: 11400000, guid: aa4c86842f864ba45b6f46786b750179, type: 2}
+  condition: {fileID: 11400000, guid: 1fc860df7a5808846a970f4da9f051dc, type: 2}

@@ -8,10 +8,10 @@ public sealed class CharacterUnlockDefinition : ScriptableObject
     private PlayerUnitData character;
 
     [SerializeField]
-    private CharacterGamePlayedUnlockCondition condition;
+    private CharacterTotalGamesUnlockCondition condition;
 
     public PlayerUnitData Character => character;
-    public CharacterGamePlayedUnlockCondition Condition => condition;
+    public CharacterTotalGamesUnlockCondition Condition => condition;
 
     public string UnlockDescription =>
         condition != null

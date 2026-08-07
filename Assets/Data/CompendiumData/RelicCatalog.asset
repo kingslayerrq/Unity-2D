@@ -12,4 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc624572f022f214587caacf0d114741, type: 3}
   m_Name: RelicCatalog
   m_EditorClassIdentifier: Assembly-CSharp::RelicCatalog
-  relics: []
+  relics:
+  - {fileID: 11400000, guid: 2e96da1e33dc9c043936c0f834f2e512, type: 2}
+  - {fileID: 11400000, guid: a8dceb6473d3cf347a86dc94ff7ade60, type: 2}
+  - {fileID: 11400000, guid: 13627b8d05d87ef4b99461f75a26e128, type: 2}
+  - {fileID: 11400000, guid: 4b76a014142311d41b38f52df547f647, type: 2}
+  - {fileID: 11400000, guid: bb9b74efdf0f0464fbfc6c684189e4a8, type: 2}
