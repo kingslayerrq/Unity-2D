@@ -288,9 +288,11 @@ public sealed class GlobalProgressionManagerPersistenceTests
             "persistBetweenScenes",
             false);
 
+        CharacterUnlockEvaluator evaluator = null;
+
         if (unlockCatalog != null)
         {
-            CharacterUnlockEvaluator evaluator =
+            evaluator =
                 managerObject
                     .AddComponent<CharacterUnlockEvaluator>();
 
@@ -305,6 +307,14 @@ public sealed class GlobalProgressionManagerPersistenceTests
         }
 
         managerObject.SetActive(true);
+
+        // EditMode does not automatically invoke MonoBehaviour lifecycle
+        // methods for objects created directly by a test.
+        InvokeMethod(progression, "Awake");
+
+        if (evaluator != null)
+            InvokeMethod(evaluator, "OnEnable");
+
         return progression;
     }
 
@@ -312,6 +322,12 @@ public sealed class GlobalProgressionManagerPersistenceTests
     {
         if (managerObject == null)
             return;
+
+        GlobalProgressionManager progression =
+            managerObject.GetComponent<GlobalProgressionManager>();
+
+        if (progression != null)
+            InvokeMethod(progression, "OnDestroy");
 
         Object.DestroyImmediate(managerObject);
         managerObject = null;
@@ -456,5 +472,25 @@ public sealed class GlobalProgressionManagerPersistenceTests
         throw new MissingFieldException(
             target.GetType().FullName,
             fieldName);
+    }
+
+    private static void InvokeMethod(
+        object target,
+        string methodName)
+    {
+        MethodInfo method = target.GetType().GetMethod(
+            methodName,
+            BindingFlags.Instance |
+            BindingFlags.NonPublic |
+            BindingFlags.Public);
+
+        if (method == null)
+        {
+            throw new MissingMethodException(
+                target.GetType().FullName,
+                methodName);
+        }
+
+        method.Invoke(target, null);
     }
 }

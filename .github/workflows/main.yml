@@ -3,7 +3,15 @@ name: Build and Deploy to Itch
 on:
   push:
     branches:
-      - main # Change to 'master' if your default branch is master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: itch-webgl-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   buildAndDeploy:
@@ -15,21 +23,38 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet
           docker system prune -af
-      # 1. Checkout the project code
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
 
-      # 2. Cache Unity Library folder to make future builds way faster
       - name: Cache Library
         uses: actions/cache@v4
         with:
           path: Library
-          key: Library-WebGL
-          restore-keys: Library-
+          key: Library-${{ runner.os }}-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-WebGL-
+            Library-${{ runner.os }}-
 
-      # 3. Build the WebGL package using GameCI
+      - name: Run Unity EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: EditMode
+          artifactsPath: test-results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-editmode-test-results
+          path: test-results
+          if-no-files-found: warn
+
       - name: Build Unity WebGL Project
         uses: game-ci/unity-builder@v4
         env:
@@ -40,11 +65,14 @@ jobs:
           targetPlatform: WebGL
           buildsPath: build
 
-      # 4. Install official Butler and Push to Itch.io
+      - name: Validate WebGL output
+        shell: bash
+        run: test -f build/WebGL/WebGL/index.html
+
       - name: Setup Butler 🎩
         uses: jdno/setup-butler@v1
 
       - name: Upload to Itch.io 🚀
-        run: butler push build/WebGL Kingslayerrq/sts-clone:html5
+        run: butler push build/WebGL/WebGL Kingslayerrq/sts-clone:html5
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
