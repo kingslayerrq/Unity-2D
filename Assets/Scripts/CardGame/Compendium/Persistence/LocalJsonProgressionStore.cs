@@ -127,6 +127,8 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
     {
         public int version;
         public int totalRunWins;
+        public int totalGames;
+        public int totalElitesDefeated;
         public List<CardProgressRecord> cardProgress;
         public List<BossDefeatData> defeatedBosses;
         public List<CharacterProgressData> characterProgress;
@@ -141,6 +143,8 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
             {
                 version = GlobalProgressionSave.CurrentVersion,
                 totalRunWins = save.TotalRunWins,
+                totalGames = save.TotalGames,
+                totalElitesDefeated = save.TotalElitesDefeated,
                 cardProgress = new List<CardProgressRecord>(
                     save.CardProgress),
                 defeatedBosses = CreateBossDefeatData(
@@ -223,6 +227,10 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
 
             save = GlobalProgressionSave.FromPersistence(
                 totalRunWins,
+                Math.Max(totalGames, SumTotalGames(characterRecords)),
+                Math.Max(
+                    totalElitesDefeated,
+                    SumElitesDefeated(characterRecords)),
                 globalBossCounts,
                 cardProgress,
                 characterRecords,
@@ -298,6 +306,8 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
 
             save = GlobalProgressionSave.FromPersistence(
                 totalRunWins,
+                SumTotalGames(characterProgress),
+                SumElitesDefeated(characterProgress),
                 globalBossCounts,
                 resolvedCards,
                 characterProgress,
@@ -561,6 +571,34 @@ internal sealed class LocalJsonProgressionStore : IProgressionStore
             requiresSave = false;
             return false;
         }
+    }
+
+    private static int SumTotalGames(
+        List<CharacterProgressRecord> records)
+    {
+        int total = 0;
+
+        foreach (CharacterProgressRecord record in records)
+        {
+            if (record != null)
+                total += record.TotalGames;
+        }
+
+        return total;
+    }
+
+    private static int SumElitesDefeated(
+        List<CharacterProgressRecord> records)
+    {
+        int total = 0;
+
+        foreach (CharacterProgressRecord record in records)
+        {
+            if (record != null)
+                total += record.EliteNodeCompleted;
+        }
+
+        return total;
     }
 
     private static List<BossDefeatData> CreateBossDefeatData(

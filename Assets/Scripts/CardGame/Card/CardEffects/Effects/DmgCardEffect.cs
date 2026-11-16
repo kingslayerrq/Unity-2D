@@ -53,17 +53,8 @@ public class DmgCardEffect : BaseCardEffect
                 );
             }
             
-            context.CombatManager.ActionQueue.Enqueue(damageAction, () => CheckTargetsHealth(context.Targets));
+            // Death is handled inside CombatSystem.ResolveDamage for the units actually hit.
+            context.CombatManager.ActionQueue.Enqueue(damageAction, null);
         }
     }
-
-    private void CheckTargetsHealth(IReadOnlyList<BaseUnitInstance> targets)
-    {
-        foreach (var target in targets)
-        {
-            target.OnDmgResolved();
-        }
-    }
-
-    
 }

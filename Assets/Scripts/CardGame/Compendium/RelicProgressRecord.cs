@@ -48,6 +48,32 @@ public sealed class RelicProgressRecord
     }
 
     /// <summary>
+    /// Folds a duplicate record for the same relic into this one, keeping any
+    /// unlock or discovery either record holds.
+    /// </summary>
+    public bool MergeFrom(RelicProgressRecord other)
+    {
+        if (other == null)
+            return false;
+
+        bool modified = false;
+
+        if (other.isUnlocked && !isUnlocked)
+        {
+            isUnlocked = true;
+            modified = true;
+        }
+
+        if (other.isDiscovered && isUnlocked && !isDiscovered)
+        {
+            isDiscovered = true;
+            modified = true;
+        }
+
+        return modified;
+    }
+
+    /// <summary>
     /// Synchronizes old save data with newly updated ScriptableObject defaults.
     /// </summary>
     public bool Reconcile(bool unlockedByDefault, bool discoveredByDefault)

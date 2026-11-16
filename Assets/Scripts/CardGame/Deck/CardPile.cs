@@ -17,20 +17,21 @@ public class CardPile
     
     public event Action<int> OnCardPileCountChanged;
 
-    public CardPile(List<CardInstance> newCards)
+    public CardPile(List<CardInstance> newCards, CardPileType cardPileType)
     {
         cards = newCards;
+        _cardPileType = cardPileType;
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            SetCardState(cards[i]);
+        }
     }
 
-    public void Refresh()
-    {
-        OnCardPileCountChanged?.Invoke(cards.Count);
-    }
-
-    public void AddCardToPile(CardInstance card)
+    private void SetCardState(CardInstance card)
     {
         if (card == null) return;
-        cards.Add(card);
+
         switch (_cardPileType)
         {
             case CardPileType.Discard:
@@ -45,6 +46,18 @@ public class CardPile
             default:
                 break;
         }
+    }
+
+    public void Refresh()
+    {
+        OnCardPileCountChanged?.Invoke(cards.Count);
+    }
+
+    public void AddCardToPile(CardInstance card)
+    {
+        if (card == null) return;
+        cards.Add(card);
+        SetCardState(card);
         OnCardPileCountChanged?.Invoke(cards.Count);
     }
 
@@ -54,20 +67,7 @@ public class CardPile
         foreach (CardInstance card in newCards)
         {
             cards.Add(card);
-            switch (_cardPileType)
-            {
-                case CardPileType.Discard:
-                    card.CurrentCardState = CardState.InDiscard;
-                    break;
-                case CardPileType.Draw:
-                    card.CurrentCardState = CardState.InDraw;
-                    break;
-                case CardPileType.Exhaust:
-                    card.CurrentCardState = CardState.InExhaust;
-                    break;
-                default:
-                    break;
-            }
+            SetCardState(card);
         }
         OnCardPileCountChanged?.Invoke(cards.Count);
     }

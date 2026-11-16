@@ -24,6 +24,6 @@ public class ExecuteEnemyIntentAction : ICombatAction
 
     public string GetActionDetails()
     {
-        return $"Enemy-{_source.CurrentName} is executing intent-{_source.CurrentIntent.EnemyIntent}";
+        return $"Enemy-{_source?.CurrentName} is executing intent-{_source?.CurrentIntent?.EnemyIntent}";
     }
 }

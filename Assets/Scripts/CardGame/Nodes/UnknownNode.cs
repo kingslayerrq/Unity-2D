@@ -6,6 +6,8 @@ public class UnknownNode : BaseNode
     private UnknownOutcomeType _resolvedOutcome;
     private BaseNode _resolvedInnerNode;
 
+    public override BaseNode ResolvedNode => _resolvedInnerNode ?? this;
+
     public UnknownNode(UnknownNodeConfig config) : base(config)
     {
     }

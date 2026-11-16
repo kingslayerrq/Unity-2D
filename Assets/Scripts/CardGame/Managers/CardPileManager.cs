@@ -31,9 +31,9 @@ public class CardPileManager : MonoBehaviour
             Debug.LogWarning($"{name} deck is empty.");
             return;
         }
-        DrawPile = new CardPile(deck);
-        ExhaustPile = new CardPile(new List<CardInstance>());
-        DiscardPile = new CardPile(new List<CardInstance>());
+        DrawPile = new CardPile(deck, CardPileType.Draw);
+        ExhaustPile = new CardPile(new List<CardInstance>(), CardPileType.Exhaust);
+        DiscardPile = new CardPile(new List<CardInstance>(), CardPileType.Discard);
         
         DrawPile.Shuffle();
         
@@ -73,7 +73,7 @@ public class CardPileManager : MonoBehaviour
         if (DiscardPile.IsEmpty) return;
         var discarded = DiscardPile.GetAllCards();
         DrawPile.AddCardsToPile(discarded);
-        DiscardPile.Shuffle();
+        DrawPile.Shuffle();
         Debug.Log($"{name} reshuffled discard pile into deck.");
     }
 }

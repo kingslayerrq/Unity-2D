@@ -42,7 +42,7 @@ public class EnemyBuffIntent : BaseEnemyIntent
         
         if (validEnemies.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, validEnemies.Count); 
+            int randomIndex = RunManager.Instance.CombatRng.Next(validEnemies.Count); 
             var chosenEnemy = validEnemies[randomIndex];
 
             return chosenEnemy;

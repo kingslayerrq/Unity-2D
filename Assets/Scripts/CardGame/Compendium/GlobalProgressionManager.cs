@@ -30,6 +30,13 @@ public sealed class GlobalProgressionManager : MonoBehaviour
     private bool isDirty;
 
     public event Action<CardData, CardProgressRecord> CardProgressChanged;
+
+    /// <summary>
+    /// Raised only when a card goes from locked to unlocked. Use this, not
+    /// <see cref="CardProgressChanged"/>, for work that depends on the set of
+    /// unlocked cards; that event also fires on every play and discovery.
+    /// </summary>
+    public event Action<CardData, CardProgressRecord> CardUnlocked;
     public event Action<RelicData, RelicProgressRecord> RelicProgressChanged;
 
     private void Awake()
@@ -112,6 +119,8 @@ public sealed class GlobalProgressionManager : MonoBehaviour
             card,
             record,
             saveImmediately: true);
+
+        CardUnlocked?.Invoke(card, record);
     }
 
     public void RecordCardObtained(CardInstance card)
@@ -753,6 +762,7 @@ public sealed class GlobalProgressionManager : MonoBehaviour
     {
         cardProgressById.Clear();
         characterProgressById.Clear();
+        relicProgressById.Clear();
 
         try
         {
@@ -818,6 +828,34 @@ public sealed class GlobalProgressionManager : MonoBehaviour
                     $"Duplicate progression record for " +
                     $"character ID '{record.CharacterId}'.");
             }
+        }
+
+        // Relic records were previously never indexed on load, so each launch
+        // appended a fresh default record for every relic. Index them here and
+        // fold any such duplicates into the first record for that relic.
+        List<RelicProgressRecord> relicRecords = currentSave.RelicProgress;
+        for (int i = 0; i < relicRecords.Count; i++)
+        {
+            RelicProgressRecord record = relicRecords[i];
+
+            if (record == null ||
+                string.IsNullOrWhiteSpace(record.RelicId))
+            {
+                continue;
+            }
+
+            if (relicProgressById.TryGetValue(
+                    record.RelicId,
+                    out RelicProgressRecord existingRecord))
+            {
+                existingRecord.MergeFrom(record);
+                relicRecords.RemoveAt(i);
+                i--;
+                isDirty = true;
+                continue;
+            }
+
+            relicProgressById.Add(record.RelicId, record);
         }
     }
 

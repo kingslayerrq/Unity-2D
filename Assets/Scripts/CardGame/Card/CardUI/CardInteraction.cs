@@ -216,6 +216,9 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private bool TryPlayCard()
     {
         if (_currentReceiver == null) return false;
+        CombatManager combatManager = _view.CardInstance.CurrentOwner.CombatManager;
+        if (combatManager == null || !combatManager.CanPlayCard(_view.CardInstance)) return false;
+
         if (_currentReceiver.CanReceiveCard(_view.CardInstance.CurrentOwner, _view.CardInstance))
         {
             var targets = _currentReceiver.GetReceiverUnitInstance(_view.CardInstance.CurrentOwner, _view.CardInstance);
@@ -224,7 +227,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             // right before the DOTween animation captures it.
             ResetInteractionState(isBeingPlayed: true); 
         
-            _view.CardInstance.CurrentOwner.CombatManager.PlayCard(_view.CardInstance, targets);
+            combatManager.PlayCard(_view.CardInstance, targets);
             return true;
         }
         return false;

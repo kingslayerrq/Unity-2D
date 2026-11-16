@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,6 +35,14 @@ public class CombatManager : MonoBehaviour
     public List<BaseEnemyUnitInstance> Enemies => unitsManager.ActiveEnemyUnitInstances;
     public IReadOnlyList<BaseUnitInstance> AllUnits => unitsManager.AllActiveUnits;
     public List<BasePlayerUnitInstance> Players => unitsManager.ActivePlayerUnitInstances;
+
+    private bool IsCombatOver =>
+        currentCombatState == NodeState.Victory || currentCombatState == NodeState.Defeat;
+
+    public bool IsEnemyTurn =>
+        currentCombatState == NodeState.EnemyTurnStart ||
+        currentCombatState == NodeState.EnemyAction ||
+        currentCombatState == NodeState.EnemyTurnEnd;
 
     private void Awake()
     {
@@ -74,6 +83,8 @@ public class CombatManager : MonoBehaviour
 
     public void EnterPlayerTurnStart()
     {
+        if (IsCombatOver || Player == null) return;
+
         SetState(NodeState.PlayerTurnStart);
         
         // Determine enemy intent
@@ -86,7 +97,10 @@ public class CombatManager : MonoBehaviour
         Player.ResetEnergy();
         Player.BuffManager.OnTurnStart(Player, combatSystem);
         
-        actionQueue.Enqueue(new ResetBlockAction(combatSystem, Player, AllUnits, BlockResetSource.TurnStart), null);
+        // Only the block of the player expires here. Enemy block lasts through
+        // the player turn and expires when the enemy turn starts.
+        actionQueue.Enqueue(new ResetBlockAction(combatSystem, Player, new List<BaseUnitInstance> { Player },
+            BlockResetSource.TurnStart), null);
         actionQueue.Enqueue(new DrawAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, 
                 Player.CurrentDrawAmount),
             OnPlayerTurnStartResolved);
@@ -95,6 +109,8 @@ public class CombatManager : MonoBehaviour
 
     private void OnPlayerTurnStartResolved()
     {
+        if (IsCombatOver || Player == null) return;
+
         playerHandView.UpdateHand();
         playerHandView.RefreshHand(Player.Hand.Cards);
         EnterPlayerAction();
@@ -107,31 +123,98 @@ public class CombatManager : MonoBehaviour
         
     }
 
-    // Spends Energy and Play the card wrapper
-    public void PlayCard(CardInstance card, List<BaseUnitInstance> targets)
+    /// <summary>
+    /// True when the card is in the hand of the player, it is the player action
+    /// phase, and the player can pay for it right now.
+    /// </summary>
+    public bool CanPlayCard(CardInstance card)
     {
-        bool toDiscard = !card.ShouldExhaustAfterPlay();
-        actionQueue.Enqueue(new SpendEnergyAction(combatSystem, Player, new List<BasePlayerUnitInstance>{Player}, card.CurrentCost), null);
+        if (card == null || Player == null) return false;
+        if (currentCombatState != NodeState.PlayerAction) return false;
+        if (!card.CanBePlayed) return false;
+
+        IReadOnlyList<CardInstance> hand = Player.Hand.Cards;
+        for (int i = 0; i < hand.Count; i++)
+        {
+            if (ReferenceEquals(hand[i], card)) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Pays for the card and queues it. Energy is spent immediately, not in a
+    /// queued action, so a card played while earlier actions are still
+    /// animating is checked against the real remaining energy.
+    /// </summary>
+    /// <returns>False if the card could not be played; nothing is spent.</returns>
+    public bool PlayCard(CardInstance card, List<BaseUnitInstance> targets)
+    {
+        if (!CanPlayCard(card)) return false;
+
+        bool toDiscard = !card.ShouldExhaustAfterPlay() && !card.IsPower;
+        combatSystem.ResolveSpendEnergy(Player, new List<BasePlayerUnitInstance> { Player }, card.CurrentCost);
         actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card, toDiscard), null);
+        return true;
     }
 
     public void EndPlayerTurn()
     {
+        if (currentCombatState != NodeState.PlayerAction || Player == null) return;
+
         SetState(NodeState.PlayerTurnEnd);
         
         // remove the card from player's hand
         actionQueue.Enqueue(new DiscardAction(combatSystem, Player, 
             new List<BasePlayerUnitInstance>{Player}, Player.Hand.Cards, CardMoveCause.EndTurn), null);
         
-        actionQueue.Enqueue(new EndTurnAction(combatSystem, Player, AllUnits), null);
-        
-        EnterEnemyTurnStart();
+        // Only the player side ends its turn here. Enemies end theirs after
+        // they have acted, in EnterEnemyTurnEnd.
+        actionQueue.Enqueue(new EndTurnAction(combatSystem, Player, new List<BaseUnitInstance>(Players)), null);
+
+        EnqueuePhaseTransition("EnemyTurnStart", EnterEnemyTurnStart);
     }
-    
+
+    /// <summary>
+    /// Runs <paramref name="next"/> once everything queued so far, and anything
+    /// those actions queue in turn (damage, defeats, animations), has resolved.
+    /// Does nothing if the combat ended in the meantime.
+    /// </summary>
+    private void EnqueuePhaseTransition(string label, Action next)
+    {
+        actionQueue.Enqueue(new PhaseTransitionAction(label), () =>
+        {
+            if (IsCombatOver) return;
+
+            if (actionQueue.Count > 0)
+            {
+                // Follow-up actions were queued behind this marker; wait for them.
+                EnqueuePhaseTransition(label, next);
+                return;
+            }
+
+            next();
+        });
+    }
 
     private void EnterEnemyTurnStart()
     {
+        if (IsCombatOver || Player == null) return;
+
         SetState(NodeState.EnemyTurnStart);
+
+        for (int i = 0; i < Enemies.Count; i++)
+        {
+            BaseEnemyUnitInstance enemy = Enemies[i];
+            if (enemy.IsDead) continue;
+
+            enemy.BuffManager?.OnTurnStart(enemy, combatSystem);
+        }
+
+        // Block the enemies gained on their previous turn expires now.
+        actionQueue.Enqueue(new ResetBlockAction(combatSystem, Player, new List<BaseUnitInstance>(Enemies),
+            BlockResetSource.TurnStart), null);
+
         RunEnemyTurn();
     }
 
@@ -150,14 +233,40 @@ public class CombatManager : MonoBehaviour
     {
         SetState(NodeState.EnemyAction);
         Debug.Log("Enemy Turn Action");
-        for( int i = 0; i < Enemies.Count; i++)
+        for (int i = 0; i < Enemies.Count; i++)
         {
-            if (i == Enemies.Count - 1)
-            {
-                actionQueue.Enqueue(new ExecuteEnemyIntentAction(combatSystem, Enemies[i], null), EnterPlayerTurnStart);
-            }
-            else actionQueue.Enqueue(new ExecuteEnemyIntentAction(combatSystem, Enemies[i], null), null);
+            actionQueue.Enqueue(new ExecuteEnemyIntentAction(combatSystem, Enemies[i], null), null);
         }
+
+        // Intents only queue their effects, so the turn must not end until
+        // those effects (and any defeats they cause) have resolved.
+        EnqueuePhaseTransition("EnemyTurnEnd", EnterEnemyTurnEnd);
+    }
+
+    private void EnterEnemyTurnEnd()
+    {
+        if (IsCombatOver || Player == null) return;
+
+        SetState(NodeState.EnemyTurnEnd);
+
+        if (Enemies.Count > 0)
+        {
+            actionQueue.Enqueue(new EndTurnAction(combatSystem, Enemies[0], new List<BaseUnitInstance>(Enemies)),
+                null);
+        }
+
+        EnqueuePhaseTransition("RoundEnd", EnterRoundEnd);
+    }
+
+    private void EnterRoundEnd()
+    {
+        if (IsCombatOver || Player == null) return;
+
+        // Timed buffs such as Vulnerable count down once per round, after
+        // both sides have acted.
+        combatSystem.ResolveEndRound(new List<BaseUnitInstance>(AllUnits));
+
+        EnqueuePhaseTransition("PlayerTurnStart", EnterPlayerTurnStart);
     }
 
     private void BattleCleanup()
@@ -167,12 +276,14 @@ public class CombatManager : MonoBehaviour
 
     private void EnterWinState()
     {
+        if (IsCombatOver) return;
         BattleCleanup();
         SetState(NodeState.Victory);
     }
 
     private void EnterDefeatState()
     {
+        if (IsCombatOver) return;
         BattleCleanup();
         SetState(NodeState.Defeat);
     }
@@ -192,6 +303,24 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+
+    /// <summary>Empty queue marker used to sequence turn phases.</summary>
+    private sealed class PhaseTransitionAction : ICombatAction
+    {
+        private readonly string _label;
+
+        public PhaseTransitionAction(string label)
+        {
+            _label = label;
+        }
+
+        public IEnumerator ExecuteAction()
+        {
+            yield break;
+        }
+
+        public string GetActionDetails() => $"PhaseTransition: {_label}";
+    }
 
     public enum NodeState
     {
