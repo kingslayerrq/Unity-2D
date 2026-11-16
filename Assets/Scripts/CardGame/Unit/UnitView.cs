@@ -11,7 +11,6 @@ public class UnitView : MonoBehaviour
     private UnitTarget _unitTarget;
     private UnitHighlight _unitHighlight;
     private EndTurnButton _endTurnButton;
-    private BuffManager _buffManager;
 
     [SerializeField] private Image unitImage;
     [SerializeField] private BuffListView buffListView;
@@ -25,7 +24,6 @@ public class UnitView : MonoBehaviour
         _unitTarget = GetComponent<UnitTarget>();
         _unitHighlight = GetComponentInChildren<UnitHighlight>();
         _endTurnButton = GetComponent<EndTurnButton>();
-        _buffManager = GetComponent<BuffManager>();
         if (unitImage == null) unitImage = GetComponentInChildren<Image>();
     }
 
@@ -42,8 +40,8 @@ public class UnitView : MonoBehaviour
         if (_unitHighlight != null) _unitHighlight.Initialize(unitInstance);
         if (_endTurnButton != null && unitInstance is BasePlayerUnitInstance playerInstance)
             _endTurnButton.Initialize(playerInstance);
-        if (buffListView != null && _buffManager != null)
-            buffListView.Initialize(_buffManager);
+        if (buffListView != null)
+            buffListView.Initialize(unitInstance.BuffManager);
 
         if (unitImage != null && unitInstance.CurrentSprite != null)
         {

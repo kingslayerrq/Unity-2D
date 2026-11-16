@@ -18,11 +18,6 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
 
     public event Action<EnemyIntentData> OnEnemyIntentDetermined;
 
-    public override void Initialize(CombatManager combatManager, BuffManager buffManager)
-    {
-        base.Initialize(combatManager, buffManager);
-    }
-    
     public BaseEnemyUnitInstance(EnemyUnitData enemyUnitData)
     {
         this.enemyUnitData = enemyUnitData;
@@ -46,7 +41,7 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
         }
         // TODO: use snapshot to determine intent
         // Seeded combat stream, so the same run seed gives the same enemy moves.
-        int randomIndex = RunManager.Instance.CombatRng.Next(currentAvailableIntentDatas.Count);
+        int randomIndex = snapshot.Rng.Next(currentAvailableIntentDatas.Count);
         currentIntent = currentAvailableIntentDatas[randomIndex];
         // The intent object lives in the shared EnemyUnitData asset, so the chosen
         // targets are stored on this instance. A fresh list each time keeps

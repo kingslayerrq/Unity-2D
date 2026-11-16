@@ -42,10 +42,9 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
         this.isInitialized = false;
     }
 
-    public void Initialize(CombatManager combatManager, BuffManager buffManager, 
-        CardPileManager cardPileManager)
+    public void Initialize(CombatManager combatManager, CardPileManager cardPileManager)
     {
-        base.Initialize(combatManager, buffManager);
+        base.Initialize(combatManager);
         
         this.CardPileManager = cardPileManager;
         if (CardPileManager == null)
@@ -61,7 +60,7 @@ public class BasePlayerUnitInstance : BaseUnitInstance, ICardUser
             OnPlayerDeckInitialized?.Invoke();
         }
         
-        CardPileManager.InitCardPiles(new List<CardInstance>(DeckInstance.CardInstances));
+        CardPileManager.InitCardPiles(new List<CardInstance>(DeckInstance.CardInstances), combatManager.Rng);
         hand = new PlayerHand();
     }
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,11 +16,9 @@ public class HealAction : ICombatAction
         _amount = amount;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveHeal(_source, _targets, _amount);
-        
-        yield return null;
     }
 
     public string GetActionDetails()

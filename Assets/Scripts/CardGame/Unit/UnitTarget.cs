@@ -1,71 +1,90 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Lets a card be dropped on this unit. What the drop means, and whether it
+/// is allowed, is decided by <see cref="CardTargeting"/>; this component only
+/// asks and highlights.
+/// </summary>
 public class UnitTarget : MonoBehaviour, ICardDropReceiver
 {
     private BaseUnitInstance _unitInstance;
+    private IReadOnlyList<BaseUnitInstance> _highlightedTargets;
+
     public int Priority { get; private set; } = CONSTANTS.UNIT_TARGET_PRIORITY;
 
     public void Initialize(BaseUnitInstance unitInstance)
     {
         _unitInstance = unitInstance;
     }
-    
+
     public List<BaseUnitInstance> GetReceiverUnitInstance(BaseUnitInstance source, CardInstance cardInstance)
     {
-        var instances = new List<BaseUnitInstance> { _unitInstance };
-        return instances;
+        return TryResolveDrop(source, cardInstance, out IReadOnlyList<BaseUnitInstance> targets)
+            ? new List<BaseUnitInstance>(targets)
+            : new List<BaseUnitInstance>();
     }
 
     public bool CanReceiveCard(BaseUnitInstance source, CardInstance cardInstance)
     {
-        return ValidateCardTargets(source, cardInstance).Count != 0;
+        return TryResolveDrop(source, cardInstance, out _);
     }
 
     public List<ICardTarget> ValidateCardTargets(BaseUnitInstance source, CardInstance cardInstance)
     {
         List<ICardTarget> targets = new List<ICardTarget>();
-        
-        // early return when dead
-        if (_unitInstance.IsDead) return targets;
-        
-        switch (cardInstance.CurrentTargetType)
+
+        if (TryResolveDrop(source, cardInstance, out IReadOnlyList<BaseUnitInstance> resolved))
         {
-            case TargetType.AllPlayer:
-                if (_unitInstance.UnitType == UnitType.Player) targets.Add(_unitInstance);
-                break;
-            case TargetType.Player:
-                if (_unitInstance.UnitType == UnitType.Player) targets.Add(_unitInstance);
-                break;
-            case TargetType.AllEnemy:
-                if (_unitInstance.UnitType == UnitType.Enemy) targets.Add(_unitInstance);
-                break;
-            case TargetType.Enemy:
-                if (_unitInstance.UnitType == UnitType.Enemy) targets.Add(_unitInstance);
-                break;
-            case TargetType.None:
-                break;
-            case TargetType.Any:
-                targets.Add(_unitInstance);
-                break;
-            case TargetType.Self:
-                if (_unitInstance == source) targets.Add(_unitInstance);
-                break;
-            default:
-                break;
+            targets.AddRange(resolved);
         }
+
         return targets;
     }
 
     public void OnHoverEnter(BaseUnitInstance source, CardInstance cardInstance)
     {
-        // highlight validate targets
-        if (CanReceiveCard(source, cardInstance)) _unitInstance.TriggerHighlight(true);
+        ClearHighlight();
+
+        // Highlight everything the card would hit, which for a card that
+        // targets a whole side is more than this unit.
+        if (!TryResolveDrop(source, cardInstance, out IReadOnlyList<BaseUnitInstance> targets)) return;
+
+        _highlightedTargets = targets;
+        foreach (BaseUnitInstance target in targets)
+        {
+            target.TriggerHighlight(true);
+        }
     }
 
     public void OnHoverExit(BaseUnitInstance source, CardInstance cardInstance)
     {
-        _unitInstance.TriggerHighlight(false);
+        ClearHighlight();
+        _unitInstance?.TriggerHighlight(false);
+    }
+
+    private void ClearHighlight()
+    {
+        if (_highlightedTargets == null) return;
+
+        foreach (BaseUnitInstance target in _highlightedTargets)
+        {
+            target.TriggerHighlight(false);
+        }
+
+        _highlightedTargets = null;
+    }
+
+    private bool TryResolveDrop(
+        BaseUnitInstance source,
+        CardInstance cardInstance,
+        out IReadOnlyList<BaseUnitInstance> targets)
+    {
+        targets = null;
+
+        UnitsManager units = _unitInstance?.CombatManager?.UnitsManager;
+        if (units == null) return false;
+
+        return CardTargeting.TryResolveDrop(cardInstance, source, units, _unitInstance, out targets);
     }
 }

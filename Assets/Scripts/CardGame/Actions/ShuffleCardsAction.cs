@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,10 +23,9 @@ public class ShuffleCardsAction : ICombatAction
         _targets = targets;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveShuffleCardsToPile(_source, _targets, _sourceCard,  _cardInstances, _targetCardPilesTypes);
-        yield return null;
     }
 
     public string GetActionDetails()

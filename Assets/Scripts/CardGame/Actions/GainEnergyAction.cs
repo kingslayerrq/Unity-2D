@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 
 public class GainEnergyAction : ICombatAction
@@ -16,10 +15,9 @@ public class GainEnergyAction : ICombatAction
         _amount = amount;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveGainEnergy(_source, _targets, _amount);
-        yield return null;
     }
 
     public string GetActionDetails()

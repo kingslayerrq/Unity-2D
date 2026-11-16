@@ -8,14 +8,28 @@ public class UnknownNode : BaseNode
 
     public override BaseNode ResolvedNode => _resolvedInnerNode ?? this;
 
+    private NodeConfigLibrary _library;
+    private int _runSeed;
+
     public UnknownNode(UnknownNodeConfig config) : base(config)
     {
+    }
+
+    /// <summary>
+    /// Gives the node what it needs to decide, when it is entered, what it
+    /// turns into. The outcome depends only on the run seed and the node's
+    /// place on the map.
+    /// </summary>
+    public void Configure(NodeConfigLibrary library, int runSeed)
+    {
+        _library = library;
+        _runSeed = runSeed;
     }
 
     public override void OnEnter()
     {
         if (!_resolved)
-            ResolveUnknown(RunManager.Instance);
+            ResolveUnknown();
 
         _resolvedInnerNode.OnEnter();
     }
@@ -25,10 +39,16 @@ public class UnknownNode : BaseNode
         _resolvedInnerNode?.OnExit();
     }
 
-    private void ResolveUnknown(RunManager runManager)
+    private void ResolveUnknown()
     {
+        if (_library == null)
+        {
+            throw new InvalidOperationException(
+                "UnknownNode was entered before Configure gave it a node config library.");
+        }
+
         int outcomeSeed = SeedUtility.DeriveNodeSeed(
-            runManager.CurrentRunSeed,
+            _runSeed,
             Act,
             Floor,
             Index,
@@ -36,7 +56,7 @@ public class UnknownNode : BaseNode
         );
 
         int contentSeed = SeedUtility.DeriveNodeSeed(
-            runManager.CurrentRunSeed,
+            _runSeed,
             Act,
             Floor,
             Index,
@@ -48,7 +68,7 @@ public class UnknownNode : BaseNode
 
         _resolvedOutcome = RollOutcome(outcomeRng);
 
-        NodeConfigLibrary library = runManager.NodeConfigLibrary;
+        NodeConfigLibrary library = _library;
 
         _resolvedInnerNode = _resolvedOutcome switch
         {

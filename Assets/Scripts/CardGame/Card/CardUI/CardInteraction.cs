@@ -227,7 +227,7 @@ public class CardInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
             // right before the DOTween animation captures it.
             ResetInteractionState(isBeingPlayed: true); 
         
-            combatManager.PlayCard(_view.CardInstance, targets);
+            combatManager.Submit(new PlayCardCommand(_view.CardInstance, targets));
             return true;
         }
         return false;

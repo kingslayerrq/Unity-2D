@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class PlayCardAction : ICombatAction
 {
@@ -8,34 +6,31 @@ public class PlayCardAction : ICombatAction
     private readonly BasePlayerUnitInstance _source;
     private readonly List<BaseUnitInstance> _targets;
     private readonly CardInstance _card;
-    private readonly bool _toDiscard;
 
-    public PlayCardAction(CombatSystem combatSystem, BasePlayerUnitInstance source, List<BaseUnitInstance> targets, CardInstance card, bool toDiscard = true)
+    public PlayCardAction(CombatSystem combatSystem, BasePlayerUnitInstance source, List<BaseUnitInstance> targets, CardInstance card)
     {
         _combatSystem = combatSystem;
         _source = source;
         _targets = targets;
         _card = card;
-        _toDiscard = toDiscard;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
-        _source.CombatManager.PlayerHandView.TryBeginAnimateOut(_card, out CardView view);
+        CombatActionQueue queue = _source.CombatManager.ActionQueue;
+
+        queue.Publish(new CardsLeavingHandEvent(_source, new[] { _card }));
 
         _combatSystem.ResolvePlayCard(_source, _targets, _card);
 
-        if (_toDiscard)
-            _source.CombatManager.ActionQueue.Enqueue(new PlayToDiscardAction(_combatSystem, _source, _targets, _card), null);
-        else
-            _source.CombatManager.ActionQueue.Enqueue(new PlayToExhaustAction(_source, _card), null);
-
-        yield return null;
+        // Queued behind the effects the card just queued, so listeners see the
+        // card finish only after those effects have resolved.
+        queue.Enqueue(new PublishEventAction(queue, new CardPlayResolvedEvent(_source, _card)), null);
     }
 
     public string GetActionDetails()
     {
-        return $"PlayCardAction: Source-{_source} | Targets-{string.Join(", ", _targets)}" +
-               $" | Card-{string.Join(", ", _card.CurrentName)}";
+        return $"PlayCardAction: Source-{_source} | Targets-{(_targets == null ? "none" : string.Join(", ", _targets))}" +
+               $" | Card-{_card?.CurrentName}";
     }
 }

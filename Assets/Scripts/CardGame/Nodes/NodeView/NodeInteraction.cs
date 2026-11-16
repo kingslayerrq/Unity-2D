@@ -24,7 +24,7 @@ public class NodeInteraction : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (_view != null && _view.Data.RuntimeNode != null && _view.Data.RuntimeNode.IsNext)
+        if (_view != null && _view.Data.RuntimeNode != null && RunManager.Instance.IsNodeAvailable(_view.Data.RuntimeNode))
         {
             Debug.Log($"Click {_view.name}");
             RunManager.Instance.EnterNode(_view.Data.RuntimeNode);

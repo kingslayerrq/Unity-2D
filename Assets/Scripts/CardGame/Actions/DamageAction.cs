@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,11 +18,9 @@ public class DamageAction : ICombatAction
         _cardType = cardType;
     }
     
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveDamage(_source, _targets, _amount, _cardType);
-        
-        yield return null;
     }
 
     public string GetActionDetails()

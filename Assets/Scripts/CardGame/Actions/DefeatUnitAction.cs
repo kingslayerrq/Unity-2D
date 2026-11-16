@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class DefeatUnitAction : ICombatAction
@@ -14,10 +13,9 @@ public class DefeatUnitAction : ICombatAction
         _defeated = defeated;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveDefeatUnit(_defeatedBy, _defeated);
-        yield return null;
     }
 
     public string GetActionDetails()

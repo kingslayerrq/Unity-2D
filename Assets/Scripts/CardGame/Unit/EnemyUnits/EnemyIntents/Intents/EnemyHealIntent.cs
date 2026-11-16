@@ -38,7 +38,7 @@ public class EnemyHealIntent : BaseEnemyIntent
         
         if (validEnemies.Count > 0)
         {
-            int randomIndex = RunManager.Instance.CombatRng.Next(validEnemies.Count); 
+            int randomIndex = snapshot.Rng.Next(validEnemies.Count); 
             var chosenEnemy = validEnemies[randomIndex];
 
             return chosenEnemy;

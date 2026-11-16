@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,10 +13,9 @@ public class EndTurnAction : ICombatAction
         _source = source;
         _allUnits = allUnits;
     }
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveEndTurn(_source, _allUnits);
-        yield return null;
     }
 
     public string GetActionDetails()

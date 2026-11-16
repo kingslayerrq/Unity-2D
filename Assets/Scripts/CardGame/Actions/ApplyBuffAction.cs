@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,11 +18,9 @@ public class ApplyBuffAction : ICombatAction
         _buffData = buffData;
         _stacks = stacks;
     }
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveBuffs(_source, _targets, _buffData, _stacks);
-
-        yield return null;
     }
 
     public string GetActionDetails()

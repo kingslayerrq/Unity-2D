@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class DiscardAction : ICombatAction
 {
@@ -11,7 +9,7 @@ public class DiscardAction : ICombatAction
     private readonly IReadOnlyList<CardInstance> _cards;
     private CardMoveCause _moveCause;
 
-    public DiscardAction(CombatSystem combatSystem, BasePlayerUnitInstance source, 
+    public DiscardAction(CombatSystem combatSystem, BasePlayerUnitInstance source,
         List<BasePlayerUnitInstance> targets, IReadOnlyList<CardInstance> cards,
         CardMoveCause moveCause)
     {
@@ -22,24 +20,17 @@ public class DiscardAction : ICombatAction
         _moveCause = moveCause;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
-        if (_cards == null || _cards.Count == 0) yield break;
+        if (_cards == null || _cards.Count == 0) return;
 
-        foreach (var card in _cards)
-        {
-            _source.CombatManager.PlayerHandView.TryBeginAnimateOut(card, out var view);
-        }
-        
+        CombatActionQueue queue = _source.CombatManager.ActionQueue;
+
+        queue.Publish(new CardsLeavingHandEvent(_source, _cards));
+
         _combatSystem.ResolveDiscard(_source, _targets, _cards, _moveCause);
-        
-        yield return _source.CombatManager.PlayerHandView.DiscardCardsAnimation(_cards);
 
-        foreach (var card in _cards)
-        {
-            _source.CombatManager.PlayerHandView.CompleteAnimateOut(card);
-        }
-        _source.CombatManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
+        queue.Publish(new CardsDiscardedEvent(_source, _cards, _moveCause));
     }
 
     public string GetActionDetails()

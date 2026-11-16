@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class NodeFactory
 {
-    public static BaseNode CreateNode(MapNodeData mapNode, System.Random rng, NodeConfigLibrary library)
+    public static BaseNode CreateNode(MapNodeData mapNode, System.Random rng, NodeConfigLibrary library, int runSeed)
     {
         BaseNode node = mapNode.AssignedType switch
         {
@@ -18,6 +18,12 @@ public static class NodeFactory
             _ => throw new ArgumentOutOfRangeException(nameof(mapNode.AssignedType), mapNode.AssignedType, null)
         };
         node.SetNodeData(mapNode);
+
+        if (node is UnknownNode unknownNode)
+        {
+            unknownNode.Configure(library, runSeed);
+        }
+
         return node;
     }
     

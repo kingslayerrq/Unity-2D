@@ -1,35 +1,62 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CombatManager : MonoBehaviour
+/// <summary>
+/// One combat: its units, its turn flow, the queue of actions being resolved
+/// and the decisions it waits on.
+///
+/// Plain C#. It needs no scene: create one, add units, begin the battle, then
+/// read <see cref="PendingDecision"/> and answer with <see cref="Submit"/>.
+/// In the game, <see cref="CombatPresenter"/> owns one and shows it on screen.
+/// </summary>
+public class CombatManager
 {
-    [SerializeField] private CombatSystem combatSystem;
-    [SerializeField] private UnitsManager unitsManager;
-    
-    public BaseCombatNode currentCombatNode;
+    private readonly CombatContext context;
+    private readonly CombatSystem combatSystem;
+    private readonly UnitsManager unitsManager = new UnitsManager();
+    private readonly CombatActionQueue actionQueue = new CombatActionQueue();
 
-    [SerializeField] private int currentTurn;
-    [SerializeField] private NodeState currentCombatState = NodeState.None;
-    
-    [Header("Canvas UI")]
-    [SerializeField] private PlayerHandView playerHandView;
-    [SerializeField] private EndTurnButton endTurnButton;
-    [SerializeField] private UnitEnergyView unitEnergyView;
-    
-    private CombatActionQueue actionQueue = new CombatActionQueue();
+    private int currentTurn;
+    private NodeState currentCombatState = NodeState.None;
+
+    private PlayerTurnDecision playerTurnDecision;
+    private CardChoiceDecision pendingCardChoice;
+
+    /// <summary>
+    /// Raised when combat starts waiting on a decision. The answer does not
+    /// have to come from a listener; anyone may call <see cref="Submit"/>.
+    /// </summary>
+    public event Action<ICombatDecision> DecisionRequested;
+
+    /// <summary>
+    /// What combat is waiting for the player to decide. Null while actions are
+    /// still resolving towards the next decision, during the enemy turn, and
+    /// once the combat is over.
+    /// </summary>
+    public ICombatDecision PendingDecision
+    {
+        get
+        {
+            if (IsCombatOver) return null;
+            if (pendingCardChoice != null) return pendingCardChoice;
+            if (currentCombatState == NodeState.PlayerAction) return playerTurnDecision;
+            return null;
+        }
+    }
 
 
     public event Action<NodeState> OnStateChange;
     public event Action<int> OnPlayerNewTurnStart;
     
-    public PlayerHandView PlayerHandView => playerHandView;
     public int CurrentTurn => currentTurn;
     public NodeState CurrentCombatState => currentCombatState;
     public CombatActionQueue ActionQueue => actionQueue;
     public CombatSystem CombatSystem => combatSystem;
     public UnitsManager UnitsManager => unitsManager;
+
+    /// <summary>The source of every random choice made in this combat.</summary>
+    public System.Random Rng => context.Rng;
     
     public BasePlayerUnitInstance Player => unitsManager.ActivePlayerUnitInstance;
     public List<BaseEnemyUnitInstance> Enemies => unitsManager.ActiveEnemyUnitInstances;
@@ -44,42 +71,235 @@ public class CombatManager : MonoBehaviour
         currentCombatState == NodeState.EnemyAction ||
         currentCombatState == NodeState.EnemyTurnEnd;
 
-    private void Awake()
+    /// <param name="context">
+    /// What the combat is given from outside. Null gives an unseeded combat
+    /// that records no progression.
+    /// </param>
+    public CombatManager(CombatContext context = null)
     {
-        RunManager.Instance.RegisterCombatManager(this);
-        if (combatSystem == null)
-        {
-            Debug.LogError("Combat system isn't set");
-            return;
-        }
-        if (unitsManager == null)
-        {
-            Debug.LogError("Units Manager isn't set");
-            return;
-        }
+        this.context = context ?? new CombatContext();
+        combatSystem = new CombatSystem(this.context.Progress);
 
         unitsManager.OnAllEnemiesDefeated += EnterWinState;
         unitsManager.OnAllPlayersDefeated += EnterDefeatState;
-
     }
 
-    public void StartBattle(BaseCombatNode combatNode)
+    #region Decisions and commands
+
+    /// <summary>
+    /// Carries out a player's command if it is a legal answer to
+    /// <see cref="PendingDecision"/>. Bots act on a combat only through this
+    /// call, and the UI's card plays and card choices come through it too.
+    ///
+    /// Without a scene attached, the call returns only when combat has
+    /// resolved up to its next decision or its end.
+    /// </summary>
+    public CommandResult Submit(ICombatCommand command)
     {
-        SetState(NodeState.BattleSetup);
+        if (command == null) return CommandResult.Rejected("No command was given.");
+        if (IsCombatOver) return CommandResult.Rejected("The combat is over.");
 
-        unitsManager.RegisterExistingPlayerUnit(RunManager.Instance.PlayerUnitInstance);
-        unitsManager.SpawnAndBindPlayerView();
-        
-        if (endTurnButton != null) endTurnButton.Initialize(Player);
-        if (unitEnergyView != null) unitEnergyView.Initialize(Player);
+        switch (command)
+        {
+            case ChooseCardsCommand choose:
+                return SubmitCardChoice(choose);
+            case PlayCardCommand play:
+                return SubmitPlayCard(play);
+            case EndTurnCommand _:
+                return SubmitEndTurn();
+            default:
+                return CommandResult.Rejected($"Unknown command {command.GetType().Name}.");
+        }
+    }
 
-        IReadOnlyList<EnemyUnitData> enemyUnitDatas = combatNode.EnemyUnitDatas;
+    private CommandResult SubmitPlayCard(PlayCardCommand play)
+    {
+        if (pendingCardChoice != null)
+            return CommandResult.Rejected("A card choice must be answered first.");
+        if (currentCombatState != NodeState.PlayerAction)
+            return CommandResult.Rejected("It is not the player's action phase.");
+        if (play.Card == null)
+            return CommandResult.Rejected("No card was given.");
+        if (!CanPlayCard(play.Card))
+            return CommandResult.Rejected("That card cannot be played right now.");
+        if (!IsLegalTargets(play.Card, play.Targets))
+            return CommandResult.Rejected("Those are not legal targets for that card.");
 
-        unitsManager.CreateAndSpawnEnemyUnits(enemyUnitDatas);
+        return PlayCard(play.Card, new List<BaseUnitInstance>(play.Targets))
+            ? CommandResult.Ok()
+            : CommandResult.Rejected("That card cannot be played right now.");
+    }
 
+    private CommandResult SubmitEndTurn()
+    {
+        if (pendingCardChoice != null)
+            return CommandResult.Rejected("A card choice must be answered first.");
+        if (currentCombatState != NodeState.PlayerAction)
+            return CommandResult.Rejected("It is not the player's action phase.");
+
+        EndPlayerTurn();
+        return CommandResult.Ok();
+    }
+
+    private CommandResult SubmitCardChoice(ChooseCardsCommand choose)
+    {
+        CardChoiceDecision decision = pendingCardChoice;
+        if (decision == null)
+            return CommandResult.Rejected("No card choice is pending.");
+        if (!decision.IsValid(choose.Cards, out string reason))
+            return CommandResult.Rejected(reason);
+
+        pendingCardChoice = null;
+        try
+        {
+            decision.Resolve(choose.Cards);
+        }
+        finally
+        {
+            actionQueue.Resume();
+        }
+
+        return CommandResult.Ok();
+    }
+
+    /// <summary>
+    /// Called by combat logic when the player must pick cards. The queue is
+    /// suspended until a <see cref="ChooseCardsCommand"/> answers the choice.
+    /// </summary>
+    public void RequestCardChoice(CardChoiceDecision decision)
+    {
+        if (decision == null) return;
+
+        if (decision.MaxCount == 0)
+        {
+            // Nothing can be picked, so there is nothing to wait for.
+            decision.Resolve(Array.Empty<CardInstance>());
+            return;
+        }
+
+        if (pendingCardChoice != null)
+        {
+            Debug.LogError("A card choice was requested while another is still pending. Ignoring the new one.");
+            return;
+        }
+
+        pendingCardChoice = decision;
+        actionQueue.Suspend();
+        RaiseDecisionRequested(decision);
+    }
+
+    private void RaiseDecisionRequested(ICombatDecision decision)
+    {
+        try
+        {
+            DecisionRequested?.Invoke(decision);
+        }
+        catch (Exception exception)
+        {
+            // A listener that fails to show the decision must not break combat.
+            Debug.LogException(exception);
+        }
+    }
+
+    #endregion
+
+    #region Targeting
+
+    /// <summary>
+    /// Every legal way for the active player to target the card right now.
+    /// Each entry is the full list of units one play would be aimed at.
+    /// </summary>
+    public List<IReadOnlyList<BaseUnitInstance>> GetTargetOptions(CardInstance card)
+    {
+        return CardTargeting.GetTargetOptions(card, Player, unitsManager);
+    }
+
+    /// <summary>True when the targets are exactly one of the card's legal options.</summary>
+    public bool IsLegalTargets(CardInstance card, IReadOnlyList<BaseUnitInstance> targets)
+    {
+        return CardTargeting.IsLegal(card, Player, unitsManager, targets);
+    }
+
+    #endregion
+
+    #region Battle setup
+
+    /// <summary>
+    /// Clears the previous battle and adds the units for a new one. Views, if
+    /// there are any, should be bound to the units after this call and before
+    /// <see cref="BeginBattle"/>, so they see the opening health and energy.
+    /// </summary>
+    public void SetUpBattle(
+        BasePlayerUnitInstance player,
+        CardPileManager cardPiles,
+        IReadOnlyList<EnemyUnitData> enemies)
+    {
+        ResetForBattle();
+        AddPlayer(player, cardPiles);
+
+        if (enemies == null) return;
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            AddEnemy(enemies[i]);
+        }
+    }
+
+    /// <summary>Starts the battle and the first player turn.</summary>
+    public void BeginBattle()
+    {
         SetState(NodeState.BattleStart);
         EnterPlayerTurnStart();
     }
+
+    /// <summary>
+    /// Brings the player into this combat with the given piles. The player
+    /// unit lives across combats; its deck is dealt into the piles afresh.
+    /// </summary>
+    public void AddPlayer(BasePlayerUnitInstance player, CardPileManager cardPiles)
+    {
+        if (player == null)
+        {
+            Debug.LogError("Cannot add a null player to the combat.");
+            return;
+        }
+
+        unitsManager.RegisterExistingPlayerUnit(player);
+        player.Initialize(this, cardPiles);
+    }
+
+    public BaseEnemyUnitInstance AddEnemy(EnemyUnitData data)
+    {
+        if (data == null)
+        {
+            Debug.LogError("Cannot add an enemy without data.");
+            return null;
+        }
+
+        BaseEnemyUnitInstance enemy = new BaseEnemyUnitInstance(data);
+        enemy.Initialize(this);
+        unitsManager.AddUnit(enemy);
+        return enemy;
+    }
+
+    private void ResetForBattle()
+    {
+        playerTurnDecision = null;
+        if (pendingCardChoice != null)
+        {
+            // A choice left over from an abandoned combat would keep the
+            // queue suspended forever.
+            pendingCardChoice = null;
+            actionQueue.Clear();
+            actionQueue.Resume();
+        }
+
+        currentTurn = 0;
+        SetState(NodeState.BattleSetup);
+        unitsManager.Clear();
+    }
+
+    #endregion
 
     public void EnterPlayerTurnStart()
     {
@@ -111,26 +331,27 @@ public class CombatManager : MonoBehaviour
     {
         if (IsCombatOver || Player == null) return;
 
-        playerHandView.UpdateHand();
-        playerHandView.RefreshHand(Player.Hand.Cards);
+        actionQueue.Publish(new HandChangedEvent(Player));
         EnterPlayerAction();
     }
 
     public void EnterPlayerAction()
     {
         SetState(NodeState.PlayerAction);
-        
-        
+
+        playerTurnDecision = new PlayerTurnDecision(this, Player, currentTurn);
+        RaiseDecisionRequested(playerTurnDecision);
     }
 
     /// <summary>
     /// True when the card is in the hand of the player, it is the player action
-    /// phase, and the player can pay for it right now.
+    /// phase, no card choice is waiting, and the player can pay for it right now.
     /// </summary>
     public bool CanPlayCard(CardInstance card)
     {
         if (card == null || Player == null) return false;
         if (currentCombatState != NodeState.PlayerAction) return false;
+        if (pendingCardChoice != null) return false;
         if (!card.CanBePlayed) return false;
 
         IReadOnlyList<CardInstance> hand = Player.Hand.Cards;
@@ -152,16 +373,21 @@ public class CombatManager : MonoBehaviour
     {
         if (!CanPlayCard(card)) return false;
 
-        bool toDiscard = !card.ShouldExhaustAfterPlay() && !card.IsPower;
+        // The targets must be one of the card's legal options. Refuse
+        // anything else before any energy is spent.
+        if (!IsLegalTargets(card, targets)) return false;
+
         combatSystem.ResolveSpendEnergy(Player, new List<BasePlayerUnitInstance> { Player }, card.CurrentCost);
-        actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card, toDiscard), null);
+        actionQueue.Enqueue(new PlayCardAction(combatSystem, Player, targets, card), null);
         return true;
     }
 
     public void EndPlayerTurn()
     {
         if (currentCombatState != NodeState.PlayerAction || Player == null) return;
+        if (pendingCardChoice != null) return;
 
+        playerTurnDecision = null;
         SetState(NodeState.PlayerTurnEnd);
         
         // remove the card from player's hand
@@ -223,7 +449,7 @@ public class CombatManager : MonoBehaviour
         foreach (var enemy in Enemies)
         {
             if (enemy.IsDead) continue;
-             CombatSnapshot snapshot = new CombatSnapshot(enemy, Enemies, Players, currentTurn);
+             CombatSnapshot snapshot = new CombatSnapshot(enemy, Enemies, Players, currentTurn, Rng);
              
              enemy.DetermineIntent(snapshot);
         }
@@ -294,16 +520,6 @@ public class CombatManager : MonoBehaviour
         OnStateChange?.Invoke(currentCombatState);
     }
 
-    private void OnDestroy()
-    {
-        if (unitsManager != null)
-        {
-            unitsManager.OnAllEnemiesDefeated -= EnterWinState;
-            unitsManager.OnAllPlayersDefeated -= EnterDefeatState;
-        }
-    }
-
-
     /// <summary>Empty queue marker used to sequence turn phases.</summary>
     private sealed class PhaseTransitionAction : ICombatAction
     {
@@ -314,9 +530,8 @@ public class CombatManager : MonoBehaviour
             _label = label;
         }
 
-        public IEnumerator ExecuteAction()
+        public void Execute()
         {
-            yield break;
         }
 
         public string GetActionDetails() => $"PhaseTransition: {_label}";

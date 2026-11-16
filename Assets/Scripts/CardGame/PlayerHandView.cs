@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class PlayerHandView : MonoBehaviour
+public class PlayerHandView : MonoBehaviour, ICombatEventPresenter
 {
     [SerializeField] private Transform cardContainer;
     [SerializeField] private CardView cardViewPrefab;
@@ -299,6 +299,70 @@ public class PlayerHandView : MonoBehaviour
             return true;
         });
     }
+
+    #region Combat events
+
+    /// <summary>
+    /// Shows combat events that concern the hand. Combat waits for the
+    /// returned animation before running its next action.
+    /// </summary>
+    public IEnumerator Present(ICombatEvent combatEvent)
+    {
+        switch (combatEvent)
+        {
+            case CardsLeavingHandEvent leaving:
+                // Mark the views now, so a hand refresh before their
+                // animation plays does not pool them.
+                foreach (CardInstance card in leaving.Cards)
+                {
+                    TryBeginAnimateOut(card, out _);
+                }
+                return null;
+
+            case CardPlayResolvedEvent played:
+                return AnimateOutThenRefresh(
+                    PlayToDiscardAnimation(played.Card),
+                    new[] { played.Card },
+                    played.Player);
+
+            case CardsDiscardedEvent discarded:
+                return AnimateOutThenRefresh(
+                    DiscardCardsAnimation(discarded.Cards),
+                    discarded.Cards,
+                    discarded.Player);
+
+            case CardExhaustedEvent exhausted:
+                return AnimateOutThenRefresh(
+                    ExhaustCardsAnimation(new[] { exhausted.Card }),
+                    new[] { exhausted.Card },
+                    exhausted.Player);
+
+            case HandChangedEvent changed:
+                UpdateHand();
+                RefreshHand(changed.Player.Hand.Cards);
+                return null;
+
+            default:
+                return null;
+        }
+    }
+
+    private IEnumerator AnimateOutThenRefresh(
+        IEnumerator animation,
+        IReadOnlyList<CardInstance> cards,
+        BasePlayerUnitInstance player)
+    {
+        yield return animation;
+
+        foreach (CardInstance card in cards)
+        {
+            CompleteAnimateOut(card);
+        }
+
+        RefreshHand(player.Hand.Cards);
+    }
+
+    #endregion
 
     private void OnDestroy()
     {

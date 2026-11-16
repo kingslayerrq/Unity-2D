@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,11 +16,9 @@ public class ResetBlockAction: ICombatAction
         _resetSource = resetSource;
     }
     
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveBlockReset(_source, _targets, _resetSource);
-        
-        yield return null;
     }
 
     public string GetActionDetails()

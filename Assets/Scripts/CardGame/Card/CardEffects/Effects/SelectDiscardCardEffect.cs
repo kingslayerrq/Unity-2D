@@ -25,7 +25,7 @@ public class SelectDiscardCardEffect : BaseCardEffect
         {
             case DiscardMode.RandomHandCard:
             {
-                var picks = PickRandom(hand, cfg, context.CardInstance);
+                var picks = PickRandom(hand, cfg, context.CardInstance, context.CombatManager.Rng);
                 if (picks.Count == 0) return;
                 context.CombatManager.ActionQueue.Enqueue(
                     new DiscardAction(context.CombatManager.CombatSystem,
@@ -51,9 +51,9 @@ public class SelectDiscardCardEffect : BaseCardEffect
             }
             case DiscardMode.SelectHandCard:
             {
-                // Wrap the prompt in a queued action so the coroutine pauses the queue
-                // (via WaitUntil) until the player confirms. The action then enqueues
-                // the actual DiscardAction with the chosen list.
+                // Ask in a queued action, so the choice comes up in order. The action
+                // suspends the queue on a CardChoiceDecision and queues the actual
+                // DiscardAction once the choice has been answered.
                 context.CombatManager.ActionQueue.Enqueue(
                     new RequestDiscardSelectionAction(context.CombatManager, source,
                         context.CardInstance, cfg),
@@ -64,7 +64,7 @@ public class SelectDiscardCardEffect : BaseCardEffect
     }
 
     private static List<CardInstance> PickRandom(IReadOnlyList<CardInstance> hand,
-        SelectDiscardCardEffectConfig cfg, CardInstance self)
+        SelectDiscardCardEffectConfig cfg, CardInstance self, System.Random rng)
     {
         var pool = new List<CardInstance>();
         for (int i = 0; i < hand.Count; i++)
@@ -76,7 +76,6 @@ public class SelectDiscardCardEffect : BaseCardEffect
 
         int picksCount = Mathf.Min(cfg.Count, pool.Count);
         var result = new List<CardInstance>(picksCount);
-        var rng = RunManager.Instance.CombatRng;
         for (int i = 0; i < picksCount; i++)
         {
             int idx = rng.Next(pool.Count);

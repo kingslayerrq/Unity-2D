@@ -4,7 +4,8 @@ using CardScene.Combat.Hooks;
 using UnityEngine;
 
 /// <summary>
-/// Holds and manages all active buff instances on a unit.
+/// Holds and manages all active buff instances on a unit. Plain C#: each unit
+/// owns one, with or without a view on screen.
 /// 
 /// Responsibilities:
 /// 1. Apply new buffs
@@ -16,7 +17,7 @@ using UnityEngine;
 /// Each BuffInstance implements its own behavior through small hook interfaces
 /// like IOnTurnEnd, IOnBeforeDealDamage, etc.
 /// </summary>
-public class BuffManager : MonoBehaviour
+public class BuffManager
 {
     /// <summary>
     /// Runtime list of buffs currently active on this unit.

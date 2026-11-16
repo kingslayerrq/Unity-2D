@@ -2,6 +2,12 @@
 
 This project uses Unity `6000.3.10f1`.
 
+## Code structure
+
+Game rules are plain C# classes and are kept apart from the MonoBehaviours
+that show them. Read [ARCHITECTURE.md](ARCHITECTURE.md) before adding a
+feature; it says where each kind of code goes and has step-by-step recipes.
+
 ## WebGL deployment
 
 Pushes to `main` run the EditMode test suite, build the WebGL player with

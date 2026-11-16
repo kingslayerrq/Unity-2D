@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Queued action that pauses the combat queue (via WaitUntil) while the player
-/// picks N cards from hand to exhaust. On confirm it enqueues one ExhaustAction
-/// per chosen card so each card flows through the existing exhaust animation
-/// pipeline (TryBeginAnimateOut → DiscardCardsAnimation → CompleteAnimateOut).
+/// Asks the player to pick N cards from hand to exhaust. The combat queue is
+/// suspended until the choice is made; one ExhaustAction per chosen card is
+/// then queued, so each card goes through the normal exhaust path.
 /// </summary>
 public class RequestExhaustSelectionAction : ICombatAction
 {
@@ -26,40 +23,30 @@ public class RequestExhaustSelectionAction : ICombatAction
         _cfg = cfg;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         var hand = _source.Hand.Cards;
         var pool = _cfg.ExcludeSelf
             ? hand.Where(c => c != _selfCard).ToList()
             : hand.ToList();
 
-        if (pool.Count == 0) yield break;
+        if (pool.Count == 0) return;
 
-        if (CardSelectionCanvas.Instance == null)
-        {
-            Debug.LogError("RequestExhaustSelectionAction: CardSelectionCanvas.Instance is null. " +
-                           "Make sure the CardSelectionCanvas component is present on the combat scene's canvas.");
-            yield break;
-        }
+        int maxCount = Mathf.Min(_cfg.Count, pool.Count);
+        int minCount = _cfg.IsOptional ? 0 : maxCount;
 
-        bool done = false;
-        IReadOnlyList<CardInstance> chosen = null;
+        _cm.RequestCardChoice(new CardChoiceDecision(
+            _source,
+            CardChoiceKind.Exhaust,
+            pool,
+            minCount,
+            maxCount,
+            QueueExhausts));
+    }
 
-        CardSelectionCanvas.Instance.Prompt(new CardSelectionRequest
-        {
-            SourceCards  = pool,
-            MinCount     = _cfg.IsOptional ? 0 : Mathf.Min(_cfg.Count, pool.Count),
-            MaxCount     = Mathf.Min(_cfg.Count, pool.Count),
-            PromptText   = $"Exhaust {_cfg.Count} card(s)",
-            ConfirmLabel = "Exhaust",
-            CanCancel    = _cfg.IsOptional,
-            OnConfirm    = picks => { chosen = picks; done = true; },
-            OnCancel     = ()    => { chosen = Array.Empty<CardInstance>(); done = true; },
-        });
-
-        yield return new WaitUntil(() => done);
-
-        if (chosen == null || chosen.Count == 0) yield break;
+    private void QueueExhausts(IReadOnlyList<CardInstance> chosen)
+    {
+        if (chosen == null) return;
 
         for (int i = 0; i < chosen.Count; i++)
         {
