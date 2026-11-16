@@ -1,28 +1,18 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitsManager : MonoBehaviour
+/// <summary>
+/// The units taking part in a combat, and the checks for one side being wiped
+/// out. Plain C#; <see cref="UnitSpawner"/> puts their views on screen.
+/// </summary>
+public class UnitsManager
 {
-    [Header("Dependencies")]
-    [SerializeField] private CombatManager combatManager;
-    [SerializeField] private CardPileManager cardPileManager; 
-    
-
-    [Header("Prefabs")]
-    [SerializeField] private UnitView playerPrefab;
-    [SerializeField] private UnitView enemyPrefab; 
-
-    [Header("Spawn Points")]
-    [SerializeField] private Transform playerSpawnPoint;
-    [SerializeField] private Transform[] enemySpawnPoints;
-    
     public event Action OnAllEnemiesDefeated;
     public event Action OnAllPlayersDefeated;
 
     public BasePlayerUnitInstance ActivePlayerUnitInstance { get; private set; } = null;
-    public List<BasePlayerUnitInstance> ActivePlayerUnitInstances { get; private set; } = 
+    public List<BasePlayerUnitInstance> ActivePlayerUnitInstances { get; private set; } =
         new List<BasePlayerUnitInstance>();
 
     public List<BaseEnemyUnitInstance> ActiveEnemyUnitInstances { get; private set; } =
@@ -30,13 +20,20 @@ public class UnitsManager : MonoBehaviour
     private List<BaseUnitInstance> _allActiveUnits = new List<BaseUnitInstance>();
     public IReadOnlyList<BaseUnitInstance> AllActiveUnits => _allActiveUnits;
 
-    private void Awake()
+    /// <summary>
+    /// Forgets every unit, ready for a new battle. Raises no defeat events.
+    /// </summary>
+    public void Clear()
     {
-        RunManager.Instance.RegisterUnitsManager(this);
+        _allActiveUnits.Clear();
+        ActivePlayerUnitInstances.Clear();
+        ActiveEnemyUnitInstances.Clear();
+        ActivePlayerUnitInstance = null;
     }
 
     /// <summary>
-    /// RunManager calls RegisterExistingPlayerUnit on subsequent combats.
+    /// Adds the player unit, which lives across combats, and makes it the
+    /// active one.
     /// </summary>
     /// <param name="existing"></param>
     public void RegisterExistingPlayerUnit(BasePlayerUnitInstance existing)
@@ -44,16 +41,16 @@ public class UnitsManager : MonoBehaviour
         ActivePlayerUnitInstance = existing;
         AddUnit(existing);
     }
-    
+
     public void AddUnit(BaseUnitInstance unit)
     {
         _allActiveUnits.Add(unit);
-        
+
         if (unit is BaseEnemyUnitInstance enemy)
         {
             ActiveEnemyUnitInstances.Add(enemy);
         }
-        else if (unit is BasePlayerUnitInstance player) 
+        else if (unit is BasePlayerUnitInstance player)
         {
             ActivePlayerUnitInstances.Add(player);
         }
@@ -65,7 +62,7 @@ public class UnitsManager : MonoBehaviour
         if (unit is BaseEnemyUnitInstance enemy)
         {
             ActiveEnemyUnitInstances.Remove(enemy);
-        
+
             // Check win condition
             if (ActiveEnemyUnitInstances.Count == 0)
             {
@@ -86,91 +83,6 @@ public class UnitsManager : MonoBehaviour
             }
         }
     }
-    
-
-    public void CreatePlayerUnitInstance(PlayerUnitData data)
-    {
-        ActivePlayerUnitInstance = new BasePlayerUnitInstance(data);
-        AddUnit(ActivePlayerUnitInstance);
-    }
-
-    public void SpawnAndBindPlayerView()
-    {
-        if (ActivePlayerUnitInstance == null)
-        {
-            Debug.LogError("No active player unit");
-            return;
-        }
-        foreach (Transform child in playerSpawnPoint)
-            Destroy(child.gameObject);
-
-        UnitView playerUnitView = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity, playerSpawnPoint);
-        
-    
-        // Fetch local components attached to the new view
-        BuffManager buffManager = playerUnitView.GetComponent<BuffManager>();
-    
-        // Inject the current combat's managers into our persistent player model
-        ActivePlayerUnitInstance.Initialize(combatManager, buffManager, cardPileManager);
-    
-        // Link the view to the model
-        playerUnitView.Initialize(ActivePlayerUnitInstance);
-    }
-    
-
-    /// <summary>
-    /// Use the data to create enemy instances and instantiate prefabs
-    /// </summary>
-    /// <param name="datas">Enemy datas</param>
-    public void CreateAndSpawnEnemyUnits(IReadOnlyList<EnemyUnitData> datas)
-    {
-        foreach (Transform spawnPoint in enemySpawnPoints)
-            foreach (Transform child in spawnPoint)
-                Destroy(child.gameObject);
-
-        ActiveEnemyUnitInstances.Clear();
-
-        for (int i = 0; i < datas.Count; i++)
-        {
-            // TODO: Decide spawnpoint logic
-            Transform spawnPoint = (i < enemySpawnPoints.Length) ? enemySpawnPoints[i] : transform;
-            
-            UnitView enemyView = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity, spawnPoint);
-            
-            BuffManager buffManager = enemyView.GetComponent<BuffManager>();
-
-            // Create and initialize logic
-            BaseEnemyUnitInstance enemyModel = new BaseEnemyUnitInstance(datas[i]);
-            enemyModel.Initialize(combatManager, buffManager);
-            
-            enemyView.Initialize(enemyModel);
-            AddUnit(enemyModel);
-        }
-    }
-
-    private void Start()
-    {
-        if (combatManager != null)
-        {
-            combatManager.OnStateChange += HandleStateChange;
-        }
-    }
-    
-
-    private void HandleStateChange(CombatManager.NodeState combatState)
-    {
-        switch (combatState)
-        {
-            case CombatManager.NodeState.BattleSetup:
-                _allActiveUnits.Clear();
-                ActivePlayerUnitInstances.Clear();
-                ActivePlayerUnitInstance = null;
-                break;
-            default:
-                break;
-        }
-    }
-    
 
     public void SetActivePlayerUnitInstance(BasePlayerUnitInstance unitInstance = null)
     {
@@ -197,13 +109,5 @@ public class UnitsManager : MonoBehaviour
         }
 
         return units;
-    }
-
-    private void OnDestroy()
-    {
-        if (combatManager != null)
-        {
-            combatManager.OnStateChange -= HandleStateChange;
-        }
     }
 }

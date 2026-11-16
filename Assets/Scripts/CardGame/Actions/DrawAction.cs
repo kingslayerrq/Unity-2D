@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,11 +16,9 @@ public class DrawAction : ICombatAction
         _amount = amount;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveDrawCards(_source, _targets, _amount);
-        
-        yield return null;
     }
 
     public string GetActionDetails()

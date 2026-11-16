@@ -95,11 +95,13 @@ public class CardPile
         return allCards;
     }
 
-    public void Shuffle()
+    public void Shuffle(Random rng)
     {
+        if (rng == null) throw new ArgumentNullException(nameof(rng));
+
         for (int i = cards.Count - 1; i > 0; i--)
         {
-            int j = RunManager.Instance.CombatRng.Next(i + 1);
+            int j = rng.Next(i + 1);
             (cards[i], cards[j]) = (cards[j], cards[i]);
         }
     }

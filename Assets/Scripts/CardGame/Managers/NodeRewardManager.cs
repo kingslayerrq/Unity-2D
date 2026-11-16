@@ -38,12 +38,6 @@ public class NodeRewardManager : MonoBehaviour
     [SerializeField] private Transform cardRewardContainer;
     private List<CardView> _spawnedRewardCards = new List<CardView>();
 
-    private List<CardData> _cachedRewardCards = null;
-    private List<CardData> _cachedOverridePool = null;
-
-    private int _rareChanceOffset = -5;
-    
-    private Dictionary<CardClass, List<CardData>> _cardRewardDict = new Dictionary<CardClass, List<CardData>>();
 
     private void Awake()
     {
@@ -156,7 +150,7 @@ public class NodeRewardManager : MonoBehaviour
     {
         _winPanel.SetActive(false);
         _losePanel.SetActive(false);
-        RunManager.Instance.ExitNode(RunManager.Instance.CurrentNode);
+        RunManager.Instance.Run.CompleteNode();
     }
 
     public void Initialize()
@@ -170,13 +164,23 @@ public class NodeRewardManager : MonoBehaviour
             return;
         }
         
-        _cardRewardDict.Clear();
-        _cardRewardDict.Add(CardClass.Ironclad, ironcladReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
-        _cardRewardDict.Add(CardClass.Silent, silentReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
-        _cardRewardDict.Add(CardClass.Necro, necroReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
-        _cardRewardDict.Add(CardClass.Regent, regentReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
-        _cardRewardDict.Add(CardClass.None, neutralReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
-        _cachedOverridePool = null;
+        // The run rolls the rewards. This screen only tells it which cards
+        // are unlocked and may be offered.
+        Dictionary<CardClass, List<CardData>> pools = new Dictionary<CardClass, List<CardData>>
+        {
+            { CardClass.Ironclad, UnlockedCards(ironcladReward) },
+            { CardClass.Silent, UnlockedCards(silentReward) },
+            { CardClass.Necro, UnlockedCards(necroReward) },
+            { CardClass.Regent, UnlockedCards(regentReward) },
+            { CardClass.None, UnlockedCards(neutralReward) },
+        };
+
+        RunManager.Instance.Run.Rewards.SetPools(pools);
+    }
+
+    private List<CardData> UnlockedCards(CardRewardData rewardData)
+    {
+        return rewardData.availableCards.Where(card => progression.IsUnlocked(card)).ToList();
     }
 
     public void DisplayResultCanvas(bool isWin)
@@ -187,7 +191,6 @@ public class NodeRewardManager : MonoBehaviour
 
         if (isWin)
         {
-            _cachedRewardCards = null;
             if (_cardRewardButton != null) _cardRewardButton.gameObject.SetActive(true);
         }
 
@@ -220,15 +223,12 @@ public class NodeRewardManager : MonoBehaviour
 
     public void GetCardRewardButton()
     {
-        if (_cachedRewardCards == null)
-        {
-            _cachedRewardCards = GetCardReward(RunManager.Instance.PlayerUnitInstance.PlayerUnitData.PlayerCardClass,
-                RunManager.Instance.CardRewardAmountAfterCombat,
-                RunManager.Instance.CurrentNode.ResolvedNode.Type == NodeType.CombatElite,
-                RunManager.Instance.AllowCardClassOverride);
-        }
+        // Rolled by the run the first time they are asked for, and the same
+        // cards every time after that until the node is left.
+        IReadOnlyList<CardData> offers = RunManager.Instance.Run.GetRewardOffers();
+
         ShowSelectionCanvasGroup();
-        DisplayCardRewards(_cachedRewardCards);
+        DisplayCardRewards(offers);
     }
 
     private void ShowSelectionCanvasGroup()
@@ -255,7 +255,7 @@ public class NodeRewardManager : MonoBehaviour
         _spawnedRewardCards.Clear();
     }
     
-    private void DisplayCardRewards(List<CardData> cardDatas)
+    private void DisplayCardRewards(IReadOnlyList<CardData> cardDatas)
     {
         foreach (var spawned in _spawnedRewardCards)
         {
@@ -267,8 +267,7 @@ public class NodeRewardManager : MonoBehaviour
         for (int i = 0; i < cardDatas.Count; i++)
         {
             CardData cd = cardDatas[i];
-            
-            progression.DiscoverCard(cd);
+
             CardView cv = CardPileUI.GetOrCreateRewardView(cardRewardPrefab, cardRewardContainer);
             Canvas parentCanvas = _cardsSelectionCanvasGroup.GetComponentInParent<Canvas>();
             cv.SetSortingOrder(parentCanvas.sortingOrder+1);
@@ -280,17 +279,17 @@ public class NodeRewardManager : MonoBehaviour
             // cv.GetComponent<Button>().onClick.AddListener(() => SelectCardReward(cv.CardInstance));
             _spawnedRewardCards.Add(cv);
         }
-
-        progression.SaveCheckpoint();
     }
 
     private void SelectCardReward(CardInstance cardInstance)
     {
-        cardInstance.SetOwner(RunManager.Instance.PlayerUnitInstance);
-        RunManager.Instance.PlayerUnitInstance.DeckInstance.AddCardToDeck(cardInstance);
-        
-        progression.RecordCardObtained(cardInstance);
-        progression.SaveCheckpoint();
+        // The card on screen is only a preview. The run adds its own copy
+        // to the deck and reports it.
+        if (!RunManager.Instance.Run.TakeReward(cardInstance.Data))
+        {
+            Debug.LogWarning("That card is no longer on offer.", this);
+            return;
+        }
 
         foreach (var spawned in _spawnedRewardCards)
             CardPileUI.ReturnViewToRewardPool(spawned);
@@ -298,117 +297,6 @@ public class NodeRewardManager : MonoBehaviour
         
         HideSelectionCanvasGroup();
         _cardRewardButton.gameObject.SetActive(false);
-        _cachedRewardCards = null;
-    }
-
-    public List<CardData> GetCardReward(CardClass cardClass, int amount, bool isElite, 
-        bool allowClassOverride = false)
-    {
-        List<CardData> rewardPool;
-
-        if (allowClassOverride)
-        {
-            if (_cachedOverridePool == null)
-            {
-                _cachedOverridePool = new List<CardData>();
-                foreach (var pool in _cardRewardDict.Values)
-                {
-                    _cachedOverridePool.AddRange(pool);
-                }
-            }
-            rewardPool = _cachedOverridePool;
-        }
-        else
-        {
-            if (_cardRewardDict.TryGetValue(cardClass, out List<CardData> pool))
-            {
-                rewardPool = pool;
-            }
-            else
-            {
-                Debug.LogError($"Reward pool for class {cardClass} not found");
-                return new List<CardData>();
-            }
-        }
-        return GenerateCardRewardsFromPool(rewardPool, amount, isElite);
-    }
-
-   
-
-    private List<CardData> GenerateCardRewardsFromPool(List<CardData> pool, int amount, bool isElite)
-    {
-        List<CardData> selectedCards = new List<CardData>();
-        // Copy the pool so we can remove cards and prevent duplicates
-        List<CardData> availablePool = new List<CardData>(pool);
-        
-        // Rewards come from the run's seeded loot stream so a seed reproduces them.
-        System.Random rng = RunManager.Instance.LootRng;
-
-        int baseRareChance = isElite ? 10 : 3;
-        int baseUncommonChance = isElite ? 40 : 37;
-
-        for (int i = 0; i < amount; i++)
-        {
-            int actualRareChance = baseRareChance + _rareChanceOffset;
-            actualRareChance = Mathf.Clamp(actualRareChance, 0, 100);
-
-            int roll = rng.Next(0, 100);
-            CardRarity rarity;
-
-            if (roll < actualRareChance)
-            {
-                rarity = CardRarity.Rare;
-                // reset pity
-                _rareChanceOffset = -5;
-            }
-            else if (roll < actualRareChance + baseUncommonChance)
-            {
-                rarity = CardRarity.Uncommon;
-            }
-            else
-            {
-                rarity = CardRarity.Common;
-                _rareChanceOffset += 1;
-            }
-            
-            List<CardData> cardsOfRarity = availablePool.Where(cd => cd.CardRarity == rarity).ToList();
-
-            if (cardsOfRarity.Count == 0)
-            {
-                Debug.LogWarning($"Ran out of {rarity} cards! Falling back to general pool.");
-                cardsOfRarity = availablePool;
-            }
-            
-            int randomInd = rng.Next(cardsOfRarity.Count);
-            CardData chosenCard = cardsOfRarity[randomInd];
-            
-            selectedCards.Add(chosenCard);
-            
-            availablePool.Remove(chosenCard);
-        }
-        return selectedCards;
-    }
-
-    private CardData GetWeightedRandomCard(List<CardData> pool)
-    {
-        int totalWeight = 0;
-        foreach (var cd in pool)
-        {
-            totalWeight += cd.SpawnWeight;
-        }
-        
-        int randValue = RunManager.Instance.LootRng.Next(Mathf.Max(totalWeight, 0));
-        int currentWeight = 0;
-        foreach (var cd in pool)
-        {
-            currentWeight += cd.SpawnWeight;
-            if (randValue < currentWeight)
-            {
-                return cd;
-            }
-        }
-        Debug.LogWarning("Weighted random fallback triggered. Check your card weights.");
-        return pool[0];
     }
 
     private void OnDestroy()

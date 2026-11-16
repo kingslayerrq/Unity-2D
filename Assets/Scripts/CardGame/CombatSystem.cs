@@ -4,8 +4,20 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
-public class CombatSystem : MonoBehaviour
+/// <summary>
+/// The rules for resolving what happens in combat: damage, block, buffs, card
+/// movement. Plain C#, with no scene object behind it.
+/// </summary>
+public class CombatSystem
 {
+    private readonly ICombatProgressRecorder progress;
+
+    /// <param name="progress">Where card plays are reported. Null records nothing.</param>
+    public CombatSystem(ICombatProgressRecorder progress = null)
+    {
+        this.progress = progress;
+    }
+
     
     public void ResolveEnemyIntent(BaseEnemyUnitInstance source, List<CardInstance> cards)
     {
@@ -87,7 +99,7 @@ public class CombatSystem : MonoBehaviour
         {
             if (condition == null)
             {
-                Debug.LogError($"Condition is null!", this);
+                Debug.LogError("Condition is null!");
                 return false;
             }
             if (!condition.IsMet(context)) return false;
@@ -111,10 +123,14 @@ public class CombatSystem : MonoBehaviour
         source.BuffManager.OnCardPlayed(source, cardInstance, this);
         
         // Record progression only after the card resolves successfully.
-        if (GlobalProgressionManager.HasInstance)
+        // A recorder that fails must not stop the card from finishing.
+        try
         {
-            GlobalProgressionManager.Instance.RecordCardPlayed(
-                cardInstance);
+            progress?.RecordCardPlayed(cardInstance);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
         }
         
         if (source.Hand.RemoveCard(cardInstance))

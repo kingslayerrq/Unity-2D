@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,11 +18,9 @@ public class BlockAction : ICombatAction
         _isFromCard = isFromCard;
     }
     
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         _combatSystem.ResolveBlocks(_source, _targets, _amount,  _isFromCard);
-        
-        yield return null;
     }
 
     public string GetActionDetails()

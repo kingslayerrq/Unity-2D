@@ -11,8 +11,17 @@ public class BuffListView : MonoBehaviour
 
     public void Initialize(BuffManager buffManager)
     {
+        if (_buffManager != null)
+            _buffManager.OnBuffsChanged -= Refresh;
+
         _buffManager = buffManager;
+        if (_buffManager == null) return;
+
         _buffManager.OnBuffsChanged += Refresh;
+
+        // The buffs belong to the unit, so they may already hold something
+        // by the time this view is bound.
+        Refresh();
     }
 
     private void Refresh()

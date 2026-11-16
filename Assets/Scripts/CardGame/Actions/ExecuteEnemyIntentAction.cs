@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,11 +14,10 @@ public class ExecuteEnemyIntentAction : ICombatAction
         _cards = cards;
     }
     
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
         // TODO:  
         _combatSystem.ResolveEnemyIntent(_source, _cards);
-        yield return null;
     }
 
     public string GetActionDetails()

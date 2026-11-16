@@ -5,24 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardSelectionRequest
-{
-    /// <summary>
-    /// The cards the player may pick from. Must currently be in hand and have
-    /// live CardViews registered with PlayerHandView. Typically this is the
-    /// hand minus the played card (when ExcludeSelf is true).
-    /// </summary>
-    public IReadOnlyList<CardInstance> SourceCards;
-
-    public int MinCount;
-    public int MaxCount;
-    public string PromptText;
-    public string ConfirmLabel;
-    public bool CanCancel;
-    public Action<IReadOnlyList<CardInstance>> OnConfirm;
-    public Action OnCancel;
-}
-
 /// <summary>
 /// In-hand selection canvas. The hand stays visible; a click on a hand card
 /// during a prompt reparents that card's live view to <see cref="selectedTray"/>.

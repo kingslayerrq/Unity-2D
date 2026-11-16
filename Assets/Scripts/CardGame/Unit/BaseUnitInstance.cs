@@ -8,7 +8,11 @@ using UnityEngine.Serialization;
 public abstract class BaseUnitInstance :  ICardTarget
 {
     
-    public BuffManager BuffManager { get; protected set; }
+    /// <summary>
+    /// The buffs on this unit. Owned by the unit, so they exist with or
+    /// without a view, and views bind to them like any other unit state.
+    /// </summary>
+    public BuffManager BuffManager { get; } = new BuffManager();
     
     public CombatManager CombatManager { get; protected set; }
 
@@ -55,15 +59,16 @@ public abstract class BaseUnitInstance :  ICardTarget
     /// Initialize should be called on each battle start
     /// </summary>
     /// <param name="combatManager"></param>
-    /// <param name="buffManager"></param>
-    public virtual void Initialize(CombatManager combatManager, BuffManager buffManager)
+    public virtual void Initialize(CombatManager combatManager)
     {
         if (CombatManager != null)
         {
             CombatManager.OnStateChange -= HandleCombatStateChange;
         }
         CombatManager = combatManager;
-        BuffManager = buffManager;
+
+        // Nothing carries over from an earlier combat.
+        if (BuffManager.ActiveBuffs.Count > 0) BuffManager.ClearAllBuffs();
         if (this.CombatManager != null)
         {
             this.CombatManager.OnStateChange += HandleCombatStateChange;

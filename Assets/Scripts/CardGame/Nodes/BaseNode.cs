@@ -9,17 +9,6 @@ public abstract class BaseNode
     public int Floor => NodeData?.Floor ?? 0;
     public int Index => NodeData?.Index ?? 0;
 
-    public bool IsNext
-    {
-        get
-        {
-            if (RunManager.Instance.CurrentAct != Act || RunManager.Instance.CurrentFloor != Floor) return false;
-            var currentNode = RunManager.Instance.CurrentNode;
-            if (currentNode == null) return NodeData.IsReachable;
-            return currentNode.NodeData.Children.Contains(this.NodeData);
-        }
-    }
-
     public NodeType Type => NodeConfig.NodeType;
 
     /// <summary>

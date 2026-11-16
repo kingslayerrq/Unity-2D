@@ -14,14 +14,15 @@ public class ExhaustCardEffect : BaseCardEffect
 
         if (context.Source is not BasePlayerUnitInstance sourcePlayer) return;
 
-        // No config or ThisCard → routing is handled by PlayToExhaustAction via CombatManager.PlayCard
+        // No config or ThisCard → CombatSystem.ResolvePlayCard exhausts the card itself
         if (effectData.CardEffectConfig is not ExhaustCardEffectConfig exhaustConfig) return;
         if (exhaustConfig.ExhaustMode == ExhaustMode.ThisCard) return;
 
         if (exhaustConfig.ExhaustMode == ExhaustMode.SelectHandCard)
         {
-            // Wrap the prompt in a queued action so the queue pauses (via WaitUntil)
-            // until the player confirms. The action then enqueues one ExhaustAction per chosen card.
+            // Ask in a queued action, so the choice comes up in order. The action
+            // suspends the queue on a CardChoiceDecision and queues one
+            // ExhaustAction per chosen card once it has been answered.
             context.CombatManager.ActionQueue.Enqueue(
                 new RequestExhaustSelectionAction(context.CombatManager, sourcePlayer,
                     context.CardInstance, exhaustConfig),
@@ -53,7 +54,7 @@ public class ExhaustCardEffect : BaseCardEffect
                     if (c != context.CardInstance) candidates.Add(c);
                 }
                 if (candidates.Count == 0) return null;
-                return candidates[RunManager.Instance.CombatRng.Next(candidates.Count)];
+                return candidates[context.CombatManager.Rng.Next(candidates.Count)];
 
             case ExhaustMode.SelectHandCard:
                 // Handled in Execute() before this method is called.

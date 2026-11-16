@@ -54,7 +54,14 @@ public class NodeView : MonoBehaviour
     private void OnEnable()
     {
         if (Data?.RuntimeNode != null)
-            ToggleBreathing(Data.RuntimeNode.IsNext);
+            ToggleBreathing(IsNextNode(Data.RuntimeNode));
+    }
+
+    /// <summary>Asks the run whether the player may enter this node next.</summary>
+    private static bool IsNextNode(BaseNode node)
+    {
+        RunManager runManager = RunManager.Instance;
+        return runManager != null && runManager.IsNodeAvailable(node);
     }
 
     private void ToggleBreathing(bool isNextNode)
@@ -111,7 +118,7 @@ public class NodeView : MonoBehaviour
 
         ToggleBreathing(
             data.RuntimeNode != null &&
-            data.RuntimeNode.IsNext);
+            IsNextNode(data.RuntimeNode));
     }
 
     public void RefreshNodeState()
@@ -122,9 +129,9 @@ public class NodeView : MonoBehaviour
             _nodeImage.sprite = Data.RuntimeNode.NodeConfig.NodeSprite;
         }
         
-        ToggleBreathing(Data.RuntimeNode.IsNext);
+        ToggleBreathing(IsNextNode(Data.RuntimeNode));
     }
-    
+
     private void OnDisable()
     {
         transform.DOKill();

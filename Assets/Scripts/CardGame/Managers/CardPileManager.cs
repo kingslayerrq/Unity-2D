@@ -3,40 +3,40 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-public class CardPileManager : MonoBehaviour
+/// <summary>
+/// A player's draw, discard and exhaust piles for one combat. Plain C#; the
+/// pile counters on screen are bound to it by <see cref="CardPilePresenter"/>.
+/// </summary>
+public class CardPileManager
 {
-    [Header("UI References")]
-    [SerializeField] private DrawPileUI drawPileUI;
-    [SerializeField] private DiscardPileUI discardPileUI;
-    public CardPile DrawPile { get; private set; } 
+    public CardPile DrawPile { get; private set; }
     public CardPile DiscardPile { get; private set;}
     public CardPile ExhaustPile { get; private set;}
 
     public event Action OnCardPilesInitialized;
 
-    private void Awake()
-    {
-        if (drawPileUI != null) drawPileUI.Initialize(this);
-        if (discardPileUI != null) discardPileUI.Initialize(this);
-    }
+    // The combat's random stream, kept for reshuffles later in the combat.
+    private System.Random rng;
 
     /**
      * Initialize draw pile with deck(List<CardInstance>)
      * Initialize discard/exhaust pile
      */
-    public void InitCardPiles(List<CardInstance> deck)
+    public void InitCardPiles(List<CardInstance> deck, System.Random rng)
     {
+        this.rng = rng ?? throw new ArgumentNullException(nameof(rng));
+
         if (deck.Count <= 0)
         {
-            Debug.LogWarning($"{name} deck is empty.");
+            Debug.LogWarning("Cannot set up card piles: the deck is empty.");
             return;
         }
         DrawPile = new CardPile(deck, CardPileType.Draw);
         ExhaustPile = new CardPile(new List<CardInstance>(), CardPileType.Exhaust);
         DiscardPile = new CardPile(new List<CardInstance>(), CardPileType.Discard);
-        
-        DrawPile.Shuffle();
-        
+
+        DrawPile.Shuffle(this.rng);
+
         OnCardPilesInitialized?.Invoke();
     }
 
@@ -56,7 +56,7 @@ public class CardPileManager : MonoBehaviour
         }
     }
 
- 
+
 
     [CanBeNull]
     public CardInstance DrawOneCard()
@@ -73,7 +73,7 @@ public class CardPileManager : MonoBehaviour
         if (DiscardPile.IsEmpty) return;
         var discarded = DiscardPile.GetAllCards();
         DrawPile.AddCardsToPile(discarded);
-        DrawPile.Shuffle();
-        Debug.Log($"{name} reshuffled discard pile into deck.");
+        DrawPile.Shuffle(this.rng);
+        Debug.Log("Reshuffled discard pile into deck.");
     }
 }

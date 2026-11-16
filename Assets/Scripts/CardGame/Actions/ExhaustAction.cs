@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-
 public class ExhaustAction : ICombatAction
 {
     private readonly CombatSystem _combatSystem;
@@ -14,18 +11,17 @@ public class ExhaustAction : ICombatAction
         _card = card;
     }
 
-    public IEnumerator ExecuteAction()
+    public void Execute()
     {
-        if (_card == null) yield break;
+        if (_card == null) return;
 
-        _source.CombatManager.PlayerHandView.TryBeginAnimateOut(_card, out _);
+        CombatActionQueue queue = _source.CombatManager.ActionQueue;
+
+        queue.Publish(new CardsLeavingHandEvent(_source, new[] { _card }));
 
         _combatSystem.ResolveExhaust(_source, CardMoveCause.CardEffect, _card);
 
-        yield return _source.CombatManager.PlayerHandView.ExhaustCardsAnimation(new[] { _card });
-
-        _source.CombatManager.PlayerHandView.CompleteAnimateOut(_card);
-        _source.CombatManager.PlayerHandView.RefreshHand(_source.Hand.Cards);
+        queue.Publish(new CardExhaustedEvent(_source, _card));
     }
 
     public string GetActionDetails()
