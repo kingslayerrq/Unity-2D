@@ -12,7 +12,7 @@ public class CombatSystem : MonoBehaviour
         if (source == null || source.IsDead || source.CurrentIntent == null) return;
         EnemyIntentData intent = source.CurrentIntent;
         EnemyIntentContext context =
-            new EnemyIntentContext(source, intent.EnemyIntent.IntentTargets, cards, intent.EnemyIntent, source.CombatManager);
+            new EnemyIntentContext(source, source.CurrentIntentTargets, cards, intent.EnemyIntent, source.CombatManager);
         
         intent.EnemyIntent.ExecuteIntent(context, intent);
     }
@@ -119,8 +119,14 @@ public class CombatSystem : MonoBehaviour
         
         if (source.Hand.RemoveCard(cardInstance))
         {
+            if (cardInstance.IsPower)
+            {
+                // A Power stays in play until the combat ends. It joins no pile
+                // and does not count as exhausted, so exhaust triggers stay quiet.
+                cardInstance.CurrentCardState = CardState.InPlay;
+            }
             // exhaust
-            if (cardInstance.ShouldExhaustAfterPlay())
+            else if (cardInstance.ShouldExhaustAfterPlay())
             {
                 source.CardPileManager.ExhaustPile.AddCardToPile(cardInstance);
 
@@ -166,7 +172,7 @@ public class CombatSystem : MonoBehaviour
             {
                 Debug.LogWarning($"Dont have enough energy! Current-{t.CurrentEnergy}: " +
                                  $"Required-{amount}");
-                return;
+                continue;
             }
 
             t.SpendEnergy(amount);
@@ -295,6 +301,10 @@ public class CombatSystem : MonoBehaviour
 
             source.BuffManager.OnAfterDealDamage(source, damageEvent, this);
             t.BuffManager.OnAfterTakeDamage(t, damageEvent, this);
+
+            // Death is checked here, for the units actually hit, so every
+            // damage source (cards, intents, secondary targets) is covered.
+            t.OnDmgResolved();
         }
     }
 
@@ -364,6 +374,22 @@ public class CombatSystem : MonoBehaviour
             if (u.IsDead) continue;
 
             u.BuffManager?.OnTurnEnd(u, this);
+        }
+    }
+
+    /// <summary>
+    /// Runs the once-per-round countdown of timed buffs on every living unit.
+    /// </summary>
+    public void ResolveEndRound(IReadOnlyList<BaseUnitInstance> allUnits)
+    {
+        if (allUnits == null) return;
+
+        for (var index = 0; index < allUnits.Count; index++)
+        {
+            var u = allUnits[index];
+            if (u == null || u.IsDead) continue;
+
+            u.BuffManager?.OnRoundEnd(u, this);
         }
     }
 

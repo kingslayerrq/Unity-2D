@@ -33,13 +33,89 @@ public class CombatActionQueue
     public IEnumerator ResolveCoroutine()
     {
         IsResolvingAction = true;
-        while (combatActionQueue.Count > 0)
+        try
         {
-            QueuedAction current = combatActionQueue.Dequeue();
-            yield return current.Action.ExecuteAction();
-            Debug.Log("Resolved" + current.Action.GetActionDetails());
-            current.Callback?.Invoke();
+            while (combatActionQueue.Count > 0)
+            {
+                QueuedAction current = combatActionQueue.Dequeue();
+
+                // Step the action by hand so an exception inside it is logged
+                // and skipped instead of killing the queue for the whole combat.
+                IEnumerator runner = RunSafely(current.Action);
+                while (runner.MoveNext())
+                {
+                    yield return runner.Current;
+                }
+
+                try
+                {
+                    Debug.Log("Resolved " + current.Action.GetActionDetails());
+                    current.Callback?.Invoke();
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogException(exception);
+                }
+            }
         }
-        IsResolvingAction = false;
+        finally
+        {
+            IsResolvingAction = false;
+        }
+    }
+
+    /// <summary>
+    /// Runs an action and any nested enumerators it yields, catching exceptions
+    /// from every step. Never throws.
+    /// </summary>
+    private static IEnumerator RunSafely(ICombatAction action)
+    {
+        Stack<IEnumerator> stack = new Stack<IEnumerator>();
+
+        try
+        {
+            IEnumerator root = action.ExecuteAction();
+            if (root != null) stack.Push(root);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+        }
+
+        while (stack.Count > 0)
+        {
+            IEnumerator top = stack.Peek();
+            bool moved = false;
+            bool failed = false;
+
+            try
+            {
+                moved = top.MoveNext();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                failed = true;
+            }
+
+            if (failed) break;
+
+            if (!moved)
+            {
+                stack.Pop();
+                continue;
+            }
+
+            object current = top.Current;
+            if (current is IEnumerator nested)
+            {
+                // Nested coroutines and CustomYieldInstructions (WaitUntil) are
+                // stepped here so their exceptions are caught too.
+                stack.Push(nested);
+                continue;
+            }
+
+            yield return current;
+        }
     }
 }

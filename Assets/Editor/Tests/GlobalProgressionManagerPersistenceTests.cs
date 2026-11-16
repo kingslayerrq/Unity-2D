@@ -263,11 +263,119 @@ public sealed class GlobalProgressionManagerPersistenceTests
             File.ReadAllText(store.Location));
     }
 
+    [Test]
+    public void StoreRoundTripPreservesGlobalTotals()
+    {
+        LocalJsonProgressionStore store =
+            new(testDirectory);
+        GlobalProgressionSave save = new();
+
+        save.RecordGame(true);
+        save.RecordGame(false);
+        save.RecordEliteDefeated();
+
+        store.Save(save);
+        ProgressionLoadResult result = store.Load();
+
+        Assert.That(result.Save.TotalGames, Is.EqualTo(2));
+        Assert.That(
+            result.Save.TotalElitesDefeated,
+            Is.EqualTo(1));
+    }
+
+    [Test]
+    public void RelicUnlockSurvivesReloadWithoutDuplicateRecords()
+    {
+        RelicData relic = CreateRelic("relic-1");
+        RelicCatalog relicCatalog = CreateRelicCatalog(relic);
+
+        GlobalProgressionManager progression =
+            CreateManager(
+                new LocalJsonProgressionStore(testDirectory),
+                CreateCardCatalog(),
+                CreateCharacterCatalog(),
+                relicCatalog: relicCatalog);
+
+        Assert.That(progression.IsUnlocked(relic), Is.False);
+
+        progression.UnlockRelic(relic);
+        DestroyManager();
+
+        for (int launch = 0; launch < 2; launch++)
+        {
+            progression =
+                CreateManager(
+                    new LocalJsonProgressionStore(testDirectory),
+                    CreateCardCatalog(),
+                    CreateCharacterCatalog(),
+                    relicCatalog: relicCatalog);
+
+            Assert.That(progression.IsUnlocked(relic), Is.True);
+            DestroyManager();
+        }
+
+        ProgressionLoadResult result =
+            new LocalJsonProgressionStore(testDirectory).Load();
+
+        Assert.That(
+            result.Save.RelicProgress.Count,
+            Is.EqualTo(1));
+    }
+
+    [Test]
+    public void DuplicateRelicRecordsFromOlderSavesAreMerged()
+    {
+        LocalJsonProgressionStore store =
+            new(testDirectory);
+        GlobalProgressionSave save = new();
+
+        RelicProgressRecord unlocked =
+            new(
+                "relic-1",
+                isUnlockedByDefault: false,
+                isDiscoveredByDefault: false);
+        unlocked.Unlock();
+        unlocked.Discover();
+
+        save.RelicProgress.Add(
+            new RelicProgressRecord("relic-1", false, false));
+        save.RelicProgress.Add(unlocked);
+        save.RelicProgress.Add(
+            new RelicProgressRecord("relic-1", false, false));
+
+        store.Save(save);
+
+        RelicData relic = CreateRelic("relic-1");
+
+        GlobalProgressionManager progression =
+            CreateManager(
+                new LocalJsonProgressionStore(testDirectory),
+                CreateCardCatalog(),
+                CreateCharacterCatalog(),
+                relicCatalog: CreateRelicCatalog(relic));
+
+        Assert.That(progression.IsUnlocked(relic), Is.True);
+        Assert.That(progression.IsDiscovered(relic), Is.True);
+
+        DestroyManager();
+
+        ProgressionLoadResult result =
+            new LocalJsonProgressionStore(testDirectory).Load();
+
+        Assert.That(
+            result.Save.RelicProgress.Count,
+            Is.EqualTo(1));
+        Assert.That(
+            result.Save.RelicProgress[0].IsUnlocked,
+            Is.True);
+    }
+
     private GlobalProgressionManager CreateManager(
         IProgressionStore store,
         CardCatalog cardCatalog,
         CharacterCatalog characterCatalog,
-        CharacterUnlockCatalog unlockCatalog = null)
+        CharacterUnlockCatalog unlockCatalog = null,
+        RelicCatalog relicCatalog = null)
     {
         managerObject =
             new GameObject("Progression Manager Test");
@@ -285,7 +393,7 @@ public sealed class GlobalProgressionManagerPersistenceTests
         SetField(
             progression,
             "relicCatalog",
-            CreateRelicCatalog());
+            relicCatalog ?? CreateRelicCatalog());
         SetField(
             progression,
             "persistBetweenScenes",
@@ -361,14 +469,24 @@ public sealed class GlobalProgressionManagerPersistenceTests
         return catalog;
     }
 
-    private RelicCatalog CreateRelicCatalog()
+    private RelicCatalog CreateRelicCatalog(
+        params RelicData[] relics)
     {
         RelicCatalog catalog = CreateAsset<RelicCatalog>();
         SetField(
             catalog,
             "relics",
-            new List<RelicData>());
+            new List<RelicData>(relics));
         return catalog;
+    }
+
+    private RelicData CreateRelic(string relicId)
+    {
+        RelicData relic = CreateAsset<RelicData>();
+        SetField(relic, "relicId", relicId);
+        SetField(relic, "isUnlockedByDefault", false);
+        SetField(relic, "isDiscoveredByDefault", false);
+        return relic;
     }
 
     private CharacterUnlockCatalog CreateUnlockCatalog(
@@ -379,7 +497,7 @@ public sealed class GlobalProgressionManagerPersistenceTests
             CreateAsset<CharacterTotalGamesUnlockCondition>();
         SetField(
             condition,
-            "requiredCharacter",
+            "character",
             requiredCharacter);
 
         CharacterUnlockDefinition definition =

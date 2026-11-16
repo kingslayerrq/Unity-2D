@@ -1,7 +1,7 @@
 using UnityEngine;
 using CardScene.Combat.Hooks;
 
-public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
+public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd, IOnRoundEnd
 {
     public BuffData Data { get; private set; }
     public int Stacks { get; protected set; }
@@ -9,6 +9,13 @@ public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
     // Dynamic Description
     public string BuffDescription => Data.GetDescription(Stacks);
     public bool IsExpired => Stacks <= 0;
+
+    /// <summary>
+    /// When set, the next round-end countdown is skipped once. Used for timed
+    /// buffs applied during the enemy turn, so they are still active on the
+    /// following enemy turn instead of expiring in the round they were applied.
+    /// </summary>
+    public bool SkipNextDurationTick { get; set; }
     
     protected BuffInstance(BuffData data, int stacks)
     {
@@ -39,14 +46,28 @@ public abstract class BuffInstance: IOnTurnStart, IOnTurnEnd
     }
 
     /**
-     * base OnTurnEnd removes decrease the stack by 1
+     * Called at the end of the turn of the owner's own side.
+     * Override for effects that only last that turn (e.g. Temp Strength).
      */
     public virtual void OnTurnEnd(BaseUnitInstance owner, CombatSystem combatSystem)
     {
-        if (Data.ExpiresAtEndOfTurn)
+    }
+
+    /**
+     * Called once per round after both sides have acted.
+     * Timed buffs (Data.ExpiresAtEndOfTurn) lose one stack here.
+     */
+    public virtual void OnRoundEnd(BaseUnitInstance owner, CombatSystem combatSystem)
+    {
+        if (!Data.ExpiresAtEndOfTurn) return;
+
+        if (SkipNextDurationTick)
         {
-            Debug.Log(BuffDescription);
-            RemoveStacks(1);
+            SkipNextDurationTick = false;
+            return;
         }
+
+        Debug.Log(BuffDescription);
+        RemoveStacks(1);
     }
 }

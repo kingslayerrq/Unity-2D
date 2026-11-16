@@ -25,7 +25,10 @@ public abstract class BaseUnitInstance :  ICardTarget
     protected bool isInitialized = false;
 
     protected BaseUnitInstance lastDamagedBy = null;
-    
+
+    // True once this unit's defeat has been queued, so it is only handled once.
+    private bool isDefeatPending = false;
+
     public bool IsDead => currentHealth <= 0;
 
     public event Action<int, int> OnHealthChanged;
@@ -184,14 +187,24 @@ public abstract class BaseUnitInstance :  ICardTarget
     public void ReceiveBuff(BuffData buffData, int stacks)
     {
         if (BuffManager == null) return;
-        BuffManager.ApplyBuff(buffData, stacks);
+
+        // A timed buff applied during the enemy turn must survive this round's
+        // countdown, or it would expire before the enemy turn it is meant for.
+        bool appliedDuringEnemyTurn = CombatManager != null && CombatManager.IsEnemyTurn;
+        BuffManager.ApplyBuff(buffData, stacks, appliedDuringEnemyTurn);
     }
     
+    /// <summary>
+    /// Queues this unit's defeat once it is dead. Safe to call repeatedly:
+    /// only the first call after death has any effect, so multi-hit attacks
+    /// cannot dispose the same unit twice.
+    /// </summary>
     public void OnDmgResolved()
     {
         Debug.Log($"{CurrentName} OnDmgResolved, final health: {currentHealth}");
-        if (IsDead)
+        if (IsDead && !isDefeatPending)
         {
+            isDefeatPending = true;
             if (lastDamagedBy != null && lastDamagedBy.CombatManager != null)
             {
                 lastDamagedBy.CombatManager.ActionQueue.Enqueue(new DefeatUnitAction(lastDamagedBy.CombatManager.CombatSystem,

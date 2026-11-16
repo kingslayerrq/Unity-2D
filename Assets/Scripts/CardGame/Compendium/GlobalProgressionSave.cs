@@ -77,6 +77,8 @@ public sealed class GlobalProgressionSave
 
     internal static GlobalProgressionSave FromPersistence(
         int totalRunWins,
+        int totalGames,
+        int totalElitesDefeated,
         Dictionary<string, int> defeatedBosses,
         List<CardProgressRecord> cardProgress,
         List<CharacterProgressRecord> characterProgress,
@@ -86,6 +88,8 @@ public sealed class GlobalProgressionSave
         {
             version = CurrentVersion,
             totalRunWins = totalRunWins,
+            totalGames = totalGames,
+            totalElitesDefeated = totalElitesDefeated,
             defeatedBosses = defeatedBosses,
             cardProgress = cardProgress,
             characterProgress = characterProgress,

@@ -5,9 +5,18 @@ namespace CardScene.Combat.Hooks
         void OnTurnStart(BaseUnitInstance owner, CombatSystem combatSystem);
     }
     
+    /// <summary>Fires at the end of the turn of the owner's own side.</summary>
     public interface IOnTurnEnd
     {
         void OnTurnEnd(BaseUnitInstance owner, CombatSystem combatSystem);
+    }
+
+    /// <summary>
+    /// Fires once per round for every unit, after both sides have acted.
+    /// </summary>
+    public interface IOnRoundEnd
+    {
+        void OnRoundEnd(BaseUnitInstance owner, CombatSystem combatSystem);
     }
 
     public interface IOnEnergySpent

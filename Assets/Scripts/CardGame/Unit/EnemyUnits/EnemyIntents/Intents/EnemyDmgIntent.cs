@@ -24,19 +24,12 @@ public class EnemyDmgIntent : BaseEnemyIntent
         for (int i = 0; i < dmgActionConfig.NumberOfAttacks; i++)
         {
             DamageAction damageAction = new DamageAction(context.CombatManager.CombatSystem, context.Source,
-                context.Targets, dmgActionConfig.Amount, CardType.None);
-            context.CombatManager.ActionQueue.Enqueue(damageAction, () => CheckTargetsHealth(context.Targets));
+                context.Targets, dmgActionConfig.Amount, CardType.Attack);
+            // Death is handled inside CombatSystem.ResolveDamage.
+            context.CombatManager.ActionQueue.Enqueue(damageAction, null);
         }
         
     }
-    private void CheckTargetsHealth(IReadOnlyList<BaseUnitInstance> targets)
-    {
-        foreach (var target in targets)
-        {
-            target.OnDmgResolved();
-        }
-    }
-
     public override BasePlayerUnitInstance ChoosePlayerTarget(CombatSnapshot snapshot)
     {
         return snapshot.AllPlayers[0] ?? null;
@@ -48,7 +41,7 @@ public class EnemyDmgIntent : BaseEnemyIntent
         
         if (validEnemies.Count > 0)
         {
-            int randomIndex = UnityEngine.Random.Range(0, validEnemies.Count); 
+            int randomIndex = RunManager.Instance.CombatRng.Next(validEnemies.Count); 
             var chosenEnemy = validEnemies[randomIndex];
 
             return chosenEnemy;

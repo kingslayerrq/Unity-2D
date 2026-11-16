@@ -73,11 +73,13 @@ public class RunManager : MonoBehaviour
     private System.Random _combatRng;
     private System.Random _shopRng;
 
-    public System.Random MapRng => _mapRng;
-    public System.Random LootRng => _lootRng;
-    public System.Random EventRng => _eventRng;
-    public System.Random CombatRng => _combatRng;
-    public System.Random ShopRng => _shopRng;
+    // Seeded per run in StartRun. The fallback only applies when a scene is
+    // played directly without starting a run, where there is no seed to honour.
+    public System.Random MapRng => _mapRng ??= new System.Random();
+    public System.Random LootRng => _lootRng ??= new System.Random();
+    public System.Random EventRng => _eventRng ??= new System.Random();
+    public System.Random CombatRng => _combatRng ??= new System.Random();
+    public System.Random ShopRng => _shopRng ??= new System.Random();
     
     [Header("Debug")]
     [SerializeField] private PlayerUnitData playerUnitData;
@@ -222,31 +224,26 @@ public class RunManager : MonoBehaviour
         // On enter setup
         node.OnEnter();
 
-        switch (node.Type)
+        // An Unknown node picks its real content in OnEnter, so route on the
+        // resolved node rather than on the map node itself.
+        BaseNode resolvedNode = node.ResolvedNode;
+
+        if (resolvedNode is BaseCombatNode combatNode)
         {
-            case NodeType.CombatNonElite:
-            case NodeType.CombatElite:
-            case NodeType.CombatBoss:
-                SetRunState(RunState.CombatState);
-                combatPanel.SetActive(true);
-                combatManager.StartBattle((BaseCombatNode)node);
-                break;
-            case NodeType.RestSite:
-                Debug.Log("Entering Campfire");
-                break;
-            case NodeType.Merchant:
-                Debug.Log("Entering Shop");
-                break;
-            case NodeType.Treasure:
-                Debug.Log("Entering Treasure");
-                break;
-            case NodeType.Event:
-                Debug.Log("Entering Event");
-                break;
-            default:
-                Debug.Log($"Node type {node.Type}");
-                break;
+            SetRunState(RunState.CombatState);
+            combatPanel.SetActive(true);
+            combatManager.StartBattle(combatNode);
+            return;
         }
+
+        // Rest sites, merchants, treasure and events have no screen yet.
+        // Complete them immediately so the run cannot get stuck with every
+        // panel hidden.
+        Debug.LogWarning(
+            $"Node type {resolvedNode.Type} is not implemented yet; skipping it.",
+            this);
+        _currentFloor += 1;
+        ExitNode(node);
     }
     
     public void ExitNode(BaseNode node)
@@ -254,7 +251,7 @@ public class RunManager : MonoBehaviour
         node.OnExit();
         if (GlobalProgressionManager.HasInstance)
         {
-            GlobalProgressionManager.Instance.RecordNodeCompleted(playerUnitData, node);
+            GlobalProgressionManager.Instance.RecordNodeCompleted(playerUnitData, node.ResolvedNode);
         }
         EnterMap();
     }
@@ -277,6 +274,10 @@ public class RunManager : MonoBehaviour
             return;
         }
 
+        // Drop everything left over from the previous run (map, floor, node,
+        // player) before this one begins.
+        ResetRunState();
+
         _hasRunStarted = true;
         OnRunStarted?.Invoke();
         
@@ -293,6 +294,32 @@ public class RunManager : MonoBehaviour
         _shopRng = new System.Random(SeedUtility.DeriveSeed(currentRunSeed, RngCategory.Shop));
 
         CoroutineRunner.Instance.StartCoroutine(LoadScene("CombatNodeScene"));
+    }
+
+    /// <summary>
+    /// Clears all per-run gameplay state. The run seed and RNG streams are
+    /// replaced by <see cref="StartRun"/> right after.
+    /// </summary>
+    private void ResetRunState()
+    {
+        currentNode = null;
+        _currentAct = 0;
+        _currentFloor = 0;
+        _isMapGenerated = false;
+        playerUnitData = null;
+        playerUnitInstance = null;
+        AllowCardClassOverride = false;
+        currentRunState = RunState.None;
+    }
+
+    /// <summary>
+    /// Ends the current run if one is still active and starts a new one with a
+    /// new seed, reloading the run scene at character select.
+    /// </summary>
+    public void RestartRun()
+    {
+        EndRun();
+        StartRunWithRandomSeed();
     }
 
     /// <summary>
@@ -388,7 +415,7 @@ public class RunManager : MonoBehaviour
         if (newNodeState == CombatManager.NodeState.Victory)
         {
             if (currentNode != null &&
-                currentNode.Type == NodeType.CombatBoss)
+                currentNode.ResolvedNode.Type == NodeType.CombatBoss)
             {
                 EnterRunVictory();
             }

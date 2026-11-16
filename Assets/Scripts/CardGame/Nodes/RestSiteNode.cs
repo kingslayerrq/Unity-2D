@@ -11,6 +11,6 @@ public class RestSiteNode : BaseNode
 
     public override void OnExit()
     {
-        throw new System.NotImplementedException();
+        // Nothing to clean up yet.
     }
 }

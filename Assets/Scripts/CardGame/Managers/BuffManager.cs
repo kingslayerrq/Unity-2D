@@ -37,7 +37,10 @@ public class BuffManager : MonoBehaviour
     /// </summary>
     /// <param name="data">The static buff definition asset.</param>
     /// <param name="stacks">How many stacks/duration to add.</param>
-    public void ApplyBuff(BuffData data, int stacks)
+    /// <param name="skipNextDurationTick">
+    /// If a new instance is created, it skips its first round-end countdown.
+    /// </param>
+    public void ApplyBuff(BuffData data, int stacks, bool skipNextDurationTick = false)
     {
         if (data == null || stacks <= 0)
             return;
@@ -50,7 +53,9 @@ public class BuffManager : MonoBehaviour
         }
         else
         {
-            activeBuffs.Add(data.CreateInstance(stacks));
+            BuffInstance newBuffInstance = data.CreateInstance(stacks);
+            newBuffInstance.SkipNextDurationTick = skipNextDurationTick;
+            activeBuffs.Add(newBuffInstance);
         }
 
         OnBuffsChanged?.Invoke();
@@ -161,12 +166,22 @@ public class BuffManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Called at the end of the owner's turn.
-    /// Buffs like Weak/Vulnerable duration reduction often react here.
+    /// Called at the end of the turn of the owner's own side.
+    /// Buffs that only last that turn, like Temp Strength, expire here.
     /// </summary>
     public void OnTurnEnd(BaseUnitInstance owner, CombatSystem combatSystem)
     {
         Dispatch<IOnTurnEnd>(handler => handler.OnTurnEnd(owner, combatSystem));
+        CleanUpExpiredBuffs();
+    }
+
+    /// <summary>
+    /// Called once per round after both sides have acted.
+    /// Timed buffs like Weak/Vulnerable count down here.
+    /// </summary>
+    public void OnRoundEnd(BaseUnitInstance owner, CombatSystem combatSystem)
+    {
+        Dispatch<IOnRoundEnd>(handler => handler.OnRoundEnd(owner, combatSystem));
         CleanUpExpiredBuffs();
     }
 

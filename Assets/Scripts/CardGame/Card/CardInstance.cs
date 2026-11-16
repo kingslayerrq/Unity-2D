@@ -12,9 +12,15 @@ public class CardInstance
     
     [NonSerialized] private BasePlayerUnitInstance currentOwner;
     
+    /// <summary>
+    /// Powers stay in play for the rest of the combat. They are neither
+    /// discarded nor exhausted when played.
+    /// </summary>
+    public bool IsPower => CurrentCardType == CardType.Power;
+
     public bool ShouldExhaustAfterPlay()
     {
-        return CurrentCardType == CardType.Power || IsExhaustOnPlay();
+        return !IsPower && IsExhaustOnPlay();
     }
 
     #region Dynamic Properties
@@ -158,5 +164,6 @@ public enum CardState
     InDiscard,
     InDraw,
     InExhaust,
-    InDeck
+    InDeck,
+    InPlay
 }

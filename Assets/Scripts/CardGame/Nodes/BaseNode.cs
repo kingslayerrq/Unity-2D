@@ -22,6 +22,12 @@ public abstract class BaseNode
 
     public NodeType Type => NodeConfig.NodeType;
 
+    /// <summary>
+    /// The node whose content actually runs. Differs from this node only for
+    /// nodes that turn into another type when entered, such as Unknown nodes.
+    /// </summary>
+    public virtual BaseNode ResolvedNode => this;
+
     protected BaseNode(BaseNodeConfig nodeConfig)
     {
         NodeConfig = nodeConfig;

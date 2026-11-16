@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 using DG.Tweening;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -86,8 +85,7 @@ public class NodeRewardManager : MonoBehaviour
         if (_retryButton == null) _retryButton = _losePanel.GetComponentInChildren<Button>();
         if (_retryButton != null)
         {
-            _retryButton.onClick.AddListener(HideResultCanvas);
-            // TODO: return to title
+            _retryButton.onClick.AddListener(RetryRun);
         }
         
         // set inactive
@@ -120,8 +118,8 @@ public class NodeRewardManager : MonoBehaviour
 
         if (progression != null)
         {
-            progression.CardProgressChanged +=
-                HandleCardProgressChanged;
+            progression.CardUnlocked +=
+                HandleCardUnlocked;
         }
     }
 
@@ -129,17 +127,18 @@ public class NodeRewardManager : MonoBehaviour
     {
         if (progression != null)
         {
-            progression.CardProgressChanged -=
-                HandleCardProgressChanged;
+            progression.CardUnlocked -=
+                HandleCardUnlocked;
         }
     }
     
     /// <summary>
-    /// Rebuild the reward pool immediately after progression
+    /// Rebuild the reward pools when a card becomes unlocked. Plays and
+    /// discoveries do not change the pools, so they are not listened to.
     /// </summary>
     /// <param name="card"></param>
     /// <param name="progress"></param>
-    private void HandleCardProgressChanged(
+    private void HandleCardUnlocked(
         CardData card,
         CardProgressRecord progress)
     {
@@ -178,7 +177,6 @@ public class NodeRewardManager : MonoBehaviour
         _cardRewardDict.Add(CardClass.Regent, regentReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
         _cardRewardDict.Add(CardClass.None, neutralReward.availableCards.Where(card => progression.IsUnlocked(card)).ToList());
         _cachedOverridePool = null;
-        _cachedRewardCards = null;
     }
 
     public void DisplayResultCanvas(bool isWin)
@@ -211,13 +209,22 @@ public class NodeRewardManager : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Leaves the lost run behind and starts a fresh one from character select.
+    /// </summary>
+    private void RetryRun()
+    {
+        HideResultCanvas();
+        RunManager.Instance.RestartRun();
+    }
+
     public void GetCardRewardButton()
     {
         if (_cachedRewardCards == null)
         {
             _cachedRewardCards = GetCardReward(RunManager.Instance.PlayerUnitInstance.PlayerUnitData.PlayerCardClass,
                 RunManager.Instance.CardRewardAmountAfterCombat,
-                RunManager.Instance.CurrentNode.NodeConfig.NodeType == NodeType.CombatElite,
+                RunManager.Instance.CurrentNode.ResolvedNode.Type == NodeType.CombatElite,
                 RunManager.Instance.AllowCardClassOverride);
         }
         ShowSelectionCanvasGroup();
@@ -334,6 +341,9 @@ public class NodeRewardManager : MonoBehaviour
         // Copy the pool so we can remove cards and prevent duplicates
         List<CardData> availablePool = new List<CardData>(pool);
         
+        // Rewards come from the run's seeded loot stream so a seed reproduces them.
+        System.Random rng = RunManager.Instance.LootRng;
+
         int baseRareChance = isElite ? 10 : 3;
         int baseUncommonChance = isElite ? 40 : 37;
 
@@ -342,7 +352,7 @@ public class NodeRewardManager : MonoBehaviour
             int actualRareChance = baseRareChance + _rareChanceOffset;
             actualRareChance = Mathf.Clamp(actualRareChance, 0, 100);
 
-            int roll = Random.Range(0, 100);
+            int roll = rng.Next(0, 100);
             CardRarity rarity;
 
             if (roll < actualRareChance)
@@ -369,7 +379,7 @@ public class NodeRewardManager : MonoBehaviour
                 cardsOfRarity = availablePool;
             }
             
-            int randomInd = Random.Range(0, cardsOfRarity.Count);
+            int randomInd = rng.Next(cardsOfRarity.Count);
             CardData chosenCard = cardsOfRarity[randomInd];
             
             selectedCards.Add(chosenCard);
@@ -387,7 +397,7 @@ public class NodeRewardManager : MonoBehaviour
             totalWeight += cd.SpawnWeight;
         }
         
-        int randValue = Random.Range(0, totalWeight);
+        int randValue = RunManager.Instance.LootRng.Next(Mathf.Max(totalWeight, 0));
         int currentWeight = 0;
         foreach (var cd in pool)
         {
@@ -410,7 +420,7 @@ public class NodeRewardManager : MonoBehaviour
 
         if (_retryButton != null)
         {
-            _retryButton.onClick.RemoveListener(HideResultCanvas);
+            _retryButton.onClick.RemoveListener(RetryRun);
         }
         
         if (_cardRewardButton != null)
@@ -420,7 +430,7 @@ public class NodeRewardManager : MonoBehaviour
 
         if (_skipRewardButton != null)
         {
-            _skipRewardButton.onClick.RemoveListener(HideResultCanvas);
+            _skipRewardButton.onClick.RemoveListener(HideSelectionCanvasGroup);
         }
         
         transform.DOKill();

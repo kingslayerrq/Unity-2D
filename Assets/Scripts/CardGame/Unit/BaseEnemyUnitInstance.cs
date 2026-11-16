@@ -13,6 +13,9 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
     public IReadOnlyList<EnemyIntentData> CurrentAvailableIntentDatas => currentAvailableIntentDatas;
     public EnemyIntentData CurrentIntent => currentIntent;
 
+    private List<BaseUnitInstance> currentIntentTargets = new List<BaseUnitInstance>();
+    public List<BaseUnitInstance> CurrentIntentTargets => currentIntentTargets;
+
     public event Action<EnemyIntentData> OnEnemyIntentDetermined;
 
     public override void Initialize(CombatManager combatManager, BuffManager buffManager)
@@ -42,9 +45,13 @@ public class BaseEnemyUnitInstance : BaseUnitInstance
             return;
         }
         // TODO: use snapshot to determine intent
-        int randomIndex = UnityEngine.Random.Range(0, currentAvailableIntentDatas.Count);
+        // Seeded combat stream, so the same run seed gives the same enemy moves.
+        int randomIndex = RunManager.Instance.CombatRng.Next(currentAvailableIntentDatas.Count);
         currentIntent = currentAvailableIntentDatas[randomIndex];
-        currentIntent.EnemyIntent.ChooseTargets(currentIntent, snapshot);
+        // The intent object lives in the shared EnemyUnitData asset, so the chosen
+        // targets are stored on this instance. A fresh list each time keeps
+        // already-queued actions pointing at the targets they were given.
+        currentIntentTargets = currentIntent.EnemyIntent.ChooseTargets(currentIntent, snapshot);
         // TODO: trigger ui updates
         OnEnemyIntentDetermined?.Invoke(currentIntent);
     }
