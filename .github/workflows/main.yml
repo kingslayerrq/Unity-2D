@@ -56,6 +56,11 @@ jobs:
           path: test-results
           if-no-files-found: warn
 
+      # unity-builder refuses to version a dirty checkout; drop the
+      # untracked test output (written as root by the test container).
+      - name: Clean test output
+        run: sudo rm -rf test-results
+
       - name: Build Unity WebGL Project
         uses: game-ci/unity-builder@v4
         env:
