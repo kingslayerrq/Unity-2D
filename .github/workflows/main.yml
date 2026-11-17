@@ -56,10 +56,16 @@ jobs:
           path: test-results
           if-no-files-found: warn
 
-      # unity-builder refuses to version a dirty checkout; drop the
-      # untracked test output (written as root by the test container).
+      # unity-builder refuses to version a dirty checkout. The test run
+      # leaves test-results/ and edits Packages/manifest.json and
+      # packages-lock.json, as root; reset the tracked tree to the commit.
       - name: Clean test output
-        run: sudo rm -rf test-results
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" .
+          rm -rf test-results
+          git checkout -- .
+          git clean -fd
+          git status --porcelain
 
       - name: Build Unity WebGL Project
         uses: game-ci/unity-builder@v4
