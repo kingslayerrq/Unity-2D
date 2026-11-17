@@ -1584,7 +1584,6 @@ MonoBehaviour:
   verticalOffset: 0
   nodesPerFloor: 7
   floorPerAct: 15
-  minHorizontalGap: 50
   minVerticalGap: 100
   runSeed: 1512380226
   mapContainerHeightMult: 3
@@ -4808,8 +4807,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 617174f5cebd59b40a2c0a0f61a00abb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitsManager
-  combatManager: {fileID: 1397850591}
-  cardPileManager: {fileID: 1614026533}
   playerPrefab: {fileID: 6547091388253023128, guid: 56c80e755ef4f4c4cb94a6bb936cf60d, type: 3}
   enemyPrefab: {fileID: 6547091388253023128, guid: 56c80e755ef4f4c4cb94a6bb936cf60d, type: 3}
   playerSpawnPoint: {fileID: 349137574}
@@ -5799,10 +5796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4c206bffe5fab142ba7aa50ebb7f2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatManager
-  combatSystem: {fileID: 1991472473}
-  unitsManager: {fileID: 1030778944}
-  currentTurn: 0
-  currentCombatState: 0
+  unitSpawner: {fileID: 1030778944}
   playerHandView: {fileID: 1952661081}
   endTurnButton: {fileID: 881539873}
   unitEnergyView: {fileID: 1756717353}
@@ -6354,7 +6348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6691dbef5ab73764c9d0bffdace151de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayCardArea
-  combatManager: {fileID: 1397850591}
+  combatPresenter: {fileID: 1397850591}
 --- !u!114 &1597267184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6492,7 +6486,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96

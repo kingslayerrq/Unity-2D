@@ -144,7 +144,8 @@ public class MapGenerator : MonoBehaviour
             return false;
         }
 
-        _mapContainerHeight = Screen.height * mapContainerHeightMult;
+        RectTransform canvasRect = (RectTransform)_mapContainerRect.GetComponentInParent<Canvas>().rootCanvas.transform;
+        _mapContainerHeight = canvasRect.rect.height * mapContainerHeightMult;
         _mapContainerRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _mapContainerHeight);
 
         RectTransform nodeRect = nodePrefab.GetComponent<RectTransform>();
