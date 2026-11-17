@@ -6,6 +6,13 @@ public sealed class PersistentDiscordOverlay : MonoBehaviour
 
     private void Awake()
     {
+#if !DISCORD_SOCIAL_SDK_EXISTS
+        // Builds without the Discord Social SDK (WebGL) compile out the code
+        // that hides the lobby and connect controls, so they would stay on
+        // screen in every scene. Nothing in the overlay works there; hide it.
+        gameObject.SetActive(false);
+        return;
+#else
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -14,6 +21,7 @@ public sealed class PersistentDiscordOverlay : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+#endif
     }
 
     private void OnDestroy()
